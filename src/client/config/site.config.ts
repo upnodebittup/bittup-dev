@@ -1,105 +1,146 @@
 // src/client/config/site.config.ts
-// ⚠️ PREENCHA ESSES DADOS PARA CADA CLIENTE
+// Configuração visual e institucional — BITTUP
 
 export const siteConfig = {
-  nome: "Nome do Negócio",
+  nome: "BittUp",
 
-  // Logo
-  logoHorizontal: "/logo-horizontal.png",
-  logoVertical: "/logo-vertical.png",
-  logoAlt: "Logo do negócio",
+  // ───────────────── LOGO ─────────────────
+  logoHorizontal: "/logo-bittup-horizontal.png",
+  logoVertical: "/logo-bittup-vertical.png",
+  logoAlt: "Logo BittUp - Sua Empresa no Google",
 
-  // WhatsApp
-  whatsapp: "5521999999999",
-  whatsappDisplay: "(21) 99999-9999",
-  whatsappMensagem: "Olá! Vim pelo site e gostaria de mais informações.",
+  // ───────────────── WHATSAPP ─────────────────
+  whatsapp: "5521982708329",
+  whatsappDisplay: "(21) 98270-8329",
+  whatsappMensagem:
+    "Olá! Vim pelo site da BittUp e quero colocar minha empresa no Google.",
 
-  // Header
-  headerCta: "Fale conosco",
+  // ───────────────── HEADER ─────────────────
+  headerCta: "Saiba Mais",
 
-  // Redes sociais
-  instagram: "@instagram",
-  facebook: "",
+  // ───────────────── REDES SOCIAIS ─────────────────
+  instagram: "@bitt_up_",
+  facebook: "bitt.up.web",
   tiktok: "",
 
-  cidade: "Cidade, Estado",
+  cidade: "Rio de Janeiro, RJ",
 
-  // Navegação desktop
+  // ───────────────── NAVEGAÇÃO DESKTOP ─────────────────
   navLinks: [
-    { label: "Início",   href: "/" },
-    { label: "Sobre",    href: "/sobre" },
-    { label: "Loja",     href: "/loja" },
-    { label: "Blog",     href: "/blog" },
-    { label: "Contato",  href: "/contato" },
+    { label: "Início", href: "/" },
+    { label: "Vantagens", href: "/#advantages" },
+    { label: "Sobre", href: "/#aboutbittup" },
+    { label: "Portfólio", href: "/portfolio" },
+    { label: "Contato", href: "https://wa.me/5521982708329" },
   ],
 
-  // Navegação mobile
+  // ───────────────── NAVEGAÇÃO MOBILE ─────────────────
   mobileNavLinks: [
-    { label: "Início",   href: "/" },
-    { label: "Sobre",    href: "/sobre" },
-    { label: "Loja",     href: "/loja" },
-    { label: "Carrinho", href: "/loja/carrinho" },
-    { label: "Contato",  href: "/contato" },
+    { label: "Início", href: "/" },
+    { label: "Vantagens", href: "/#advantages" },
+    { label: "Sobre", href: "/#aboutbittup" },
+    { label: "Portfólio", href: "/portfolio" },
+    { label: "Blog", href: "/blog" },
+    { label: "Contato", href: "https://wa.me/5521982708329" },
   ],
 
-  // Footer — benefícios
+  // ───────────────── BENEFÍCIOS ─────────────────
   benefits: [
-    { title: "Benefício 1", description: "Descrição do benefício" },
-    { title: "Benefício 2", description: "Descrição do benefício" },
-    { title: "Benefício 3", description: "Descrição do benefício" },
-  ],
-
-  // Footer — links
-  footerNavLinks: [
-    { label: "Início",  href: "/" },
-    { label: "Sobre",   href: "/sobre" },
-    { label: "Contato", href: "/contato" },
-  ],
-
-  footerDescription: "Descrição do seu negócio aqui.",
-  copyrightTagline: "",
-
-    seo: {
-    titulo: "Nome do Negócio – Slogan curto",
-    descricao: "Descrição do negócio...",
-    url: "https://www.seudominio.com.br",
-    ogImage: "/og-image.png",        // ← adicionar
-    keywords: [                       // ← adicionar
-        "palavra-chave 1",
-        "palavra-chave 2",
-    ],
+    {
+      title: "Atendimento 100% humano",
+      description:
+        "Você fala direto no WhatsApp. Nada de robô, nada de enrolação.",
     },
+    {
+      title: "Soluções ágeis e profissionais",
+      description:
+        "Sites completos, com domínio e hospedagem inclusos, prontos pra trazer resultado.",
+    },
+    {
+      title: "Presença digital profissional",
+      description:
+        "Seu negócio aparece no Google com mais autoridade, confiança e chance de fechar novos clientes.",
+    },
+  ],
 
-  // ─── TEMA VISUAL ────────────────────────────────────────
- theme: {
-    bgPrimary:       "#000000",
-    bgSecondary:     "#0B0B0B",
-    bgTertiary:      "#111111",
-    bgCard:          "#1a1a1a",
-    bgHover:         "#222222",
-    overlay:         "#0A0A0F",
+  // ───────────────── FOOTER LINKS ─────────────────
+  footerNavLinks: [
+    { label: "Início", href: "/" },
+    { label: "Vantagens", href: "/#advantages" },
+    { label: "Sobre", href: "/#aboutbittup" },
+    { label: "Portfólio", href: "/portfolio" },
+    { label: "Contato", href: "https://wa.me/5521982708329" },
+  ],
 
-    textPrimary:     "#ffffff",    
-    textSecondary:   "#e2e8f0",   
-    textTertiary:    "#94a3b8",   
-    textMuted:       "#9ca3af",
-    textLight:       "#ffffff",
-    textHeroMuted:   "#d1d5db",
+  // ───────────────── FOOTER ─────────────────
+  footerDescription:
+    "Criando presença digital para quem quer ser visto de verdade. Fale direto no WhatsApp e comece hoje mesmo.",
 
-    accent:          "#6C63FF",
-    accentHover:     "#5A52E0",
-    accentLight:     "#A78BFA",
+  copyrightTagline: "BittUp • Sua empresa no Google",
 
-    error:           "#dc2626",
-    success:         "#16a34a",
-    info:            "#6C63FF",
+  // ───────────────── SEO ─────────────────
+  seo: {
+    titulo: "BittUp | Sua Empresa no Google",
+    descricao:
+      "Seja encontrado no Google com um site profissional, rápido e acessível. A BittUp cuida de tudo: domínio, hospedagem e design pronto pra gerar clientes.",
+    url: "https://bittup.com.br",
+    ogImage: "/og-image.png",
+    keywords: [
+      "bittup",
+      "sua empresa no google",
+      "criação de sites",
+      "site profissional",
+      "empresa no google",
+      "site para pequenos negócios",
+      "presença digital",
+      "domínio e hospedagem",
+      "site para negócio local",
+      "site acessível",
+      "rio de janeiro",
+    ],
+  },
 
-    border:          "#333333",
-    borderLight:     "#444444",
+  // ───────────────── TEMA VISUAL ─────────────────
+  theme: {
+    // FUNDOS
+    bgPrimary: "#03131D",
+    bgSecondary: "#051A26",
+    bgTertiary: "#0A2230",
+    bgCard: "#0C1F2B",
+    bgHover: "#102938",
+    overlay: "#020B12",
 
-    adminBg:         "#1a1a1a",
-    adminText:       "#ffffff",   
-    adminBorder:     "#333333",
-},
+    // TEXTOS
+    textPrimary: "#F4F8FB",
+    textSecondary: "#A9BAC7",
+    textTertiary: "#7F96A8",
+    textMuted: "#607587",
+    textLight: "#FFFFFF",
+    textHeroMuted: "#C7D6E2",
 
-}
+    // CORES PRINCIPAIS
+    accent: "#12324A",
+    accentHover: "#0057D8",
+    accentLight: "#2D8CFF",
+
+    // SECUNDÁRIA
+    secondary: "#12324A",
+    secondaryHover: "#18415F",
+    secondaryLight: "#1E5378",
+
+    // STATUS
+    success: "#13a300",
+    info: "#2EA8FF",
+    warning: "#F4B942",
+    error: "#FF5C74",
+
+    // BORDAS
+    border: "#163041",
+    borderLight: "#1E3C50",
+
+    // ADMIN
+    adminBg: "#081722",
+    adminText: "#F4F8FB",
+    adminBorder: "#163041",
+  },
+};
