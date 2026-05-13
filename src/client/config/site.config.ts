@@ -29,8 +29,8 @@ export const siteConfig = {
   navLinks: [
     { label: "Início", href: "/" },
     { label: "Vantagens", href: "/#advantages" },
-    { label: "Sobre", href: "/#aboutbittup" },
-    { label: "Portfólio", href: "/portfolio" },
+    { label: "Sobre", href: "/sobre" },
+    { label: "Portfólio", href: "/loja" },
     { label: "Contato", href: "https://wa.me/5521982708329" },
   ],
 
@@ -38,8 +38,8 @@ export const siteConfig = {
   mobileNavLinks: [
     { label: "Início", href: "/" },
     { label: "Vantagens", href: "/#advantages" },
-    { label: "Sobre", href: "/#aboutbittup" },
-    { label: "Portfólio", href: "/portfolio" },
+    { label: "Sobre", href: "/sobre" },
+    { label: "Portfólio", href: "/loja" },
     { label: "Blog", href: "/blog" },
     { label: "Contato", href: "https://wa.me/5521982708329" },
   ],
@@ -67,8 +67,8 @@ export const siteConfig = {
   footerNavLinks: [
     { label: "Início", href: "/" },
     { label: "Vantagens", href: "/#advantages" },
-    { label: "Sobre", href: "/#aboutbittup" },
-    { label: "Portfólio", href: "/portfolio" },
+    { label: "Sobre", href: "/sobre" },
+    { label: "Portfólio", href: "/loja" },
     { label: "Contato", href: "https://wa.me/5521982708329" },
   ],
 
