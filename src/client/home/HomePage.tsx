@@ -810,122 +810,12 @@ export default async function HomePage() {
     </div>
   </div>
 </section>
-      {/* SOBRE */}
-<section
-  id="aboutbittup"
-  className="py-16 md:py-24 border-b"
-  style={{
-    backgroundColor: "#08212B",
-    borderColor: "var(--color-border)",
-  }}
->
-  <div className="max-w-7xl mx-auto px-4 sm:px-6">
-    <p
-      className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] mb-3"
-      style={{
-        color: "var(--color-textMuted)",
-        fontFamily: "var(--font-heading)",
-      }}
-    >
-      Sobre a BittUp
-    </p>
-
-    <h2
-      className="text-[1.9rem] sm:text-[2.3rem] md:text-[2.7rem] leading-tight mb-10 uppercase"
-      style={{
-        color: "var(--color-text-light)",
-        fontFamily: "var(--font-heading)",
-      }}
-    >
-      BittUp
-    </h2>
-
-    <div
-      className="rounded-[10px] border p-5 md:p-8"
-      style={{
-        backgroundColor: "#10212C",
-        borderColor: "var(--color-border)",
-      }}
-    >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center">
-        {/* TEXTO */}
-        <div className="w-full order-1">
-          <div className="flex items-start gap-3 mb-5">
-            <Sparkles
-              className="w-5 h-5 mt-1 shrink-0"
-              style={{ color: "#F6D768" }}
-            />
-
-            <div>
-              <h3
-                className="text-xl md:text-2xl mb-4"
-                style={{
-                  color: "var(--color-text-light)",
-                  fontFamily: "var(--font-heading)",
-                }}
-              >
-                Tudo começou com um incômodo
-              </h3>
-
-              <p
-                className="text-sm md:text-base leading-7 max-w-2xl"
-                style={{
-                  color: "var(--color-text-secondary)",
-                  fontFamily: "var(--font-body)",
-                }}
-              >
-                Eu via profissionais incríveis desaparecendo na internet.
-                Pessoas que mereciam ser encontradas, mas que não tinham um
-                site e acabavam ficando invisíveis no Google.
-              </p>
-            </div>
-          </div>
-
-          <div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mt-2"
-            style={{
-              backgroundColor: "rgba(45,140,255,0.10)",
-              color: "var(--color-text-light)",
-            }}
-          >
-            <MessageCircle className="w-4 h-4" />
-            <span
-              className="text-sm"
-              style={{ fontFamily: "var(--font-body)" }}
-            >
-              Objetivo.
-            </span>
-          </div>
-        </div>
-
-        {/* IMAGEM */}
-        <div className="w-full order-2 flex justify-center lg:justify-end">
-          <div
-            className="rounded-[12px] overflow-hidden border w-full max-w-[320px]"
-            style={{
-              borderColor: "var(--color-border)",
-              backgroundColor: "var(--color-bg-card)",
-            }}
-          >
-            <Image
-              src="/about-bittup-founder.jpg"
-              alt="Pessoa trabalhando no notebook representando a origem da BittUp"
-              width={400}
-              height={500}
-              className="w-full h-auto object-cover"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
+     
 {/* FAQ */}
 <section
   className="py-16 md:py-24 border-b"
   style={{
-    backgroundColor: "#03131D",
+    backgroundColor: "#08212B",
     borderColor: "var(--color-border)",
   }}
 >

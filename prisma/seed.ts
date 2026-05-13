@@ -3,41 +3,13 @@ import 'dotenv/config'
 import { PrismaClient } from '../src/generated/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
-import bcrypt from 'bcryptjs'
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL! })
 const adapter = new PrismaPg(pool)
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
-  console.log('🧹 Limpando banco...')
 
-  await prisma.postSEO.deleteMany()
-  await prisma.post.deleteMany()
-  await prisma.blogCategory.deleteMany()
-  await prisma.orderItem.deleteMany()
-  await prisma.order.deleteMany()
-  await prisma.productImage.deleteMany()
-  await prisma.productColor.deleteMany()
-  await prisma.size.deleteMany()
-  await prisma.product.deleteMany()
-  await prisma.category.deleteMany()
-  await prisma.customPage.deleteMany()
-  await prisma.adminUser.deleteMany()
-
-  console.log('✅ Banco limpo!')
-
-  // ─────────────────────────────────────────
-  // 🔐 ADMIN
-  // ─────────────────────────────────────────
-  await prisma.adminUser.create({
-    data: {
-      email: 'admin@upnode.com.br',
-      passwordHash: await bcrypt.hash('upnode123', 10),
-      role: 'admin',
-    },
-  })
-  console.log('✅ Admin criado: admin@upnode.com.br / upnode123')
 
   // ─────────────────────────────────────────
   // 🛍️ CATEGORIAS DE PRODUTO
@@ -181,9 +153,9 @@ async function main() {
   // ─────────────────────────────────────────
   const posts = [
     {
-      title: 'Como aparecer no Google sem pagar por anúncios',
-      slug: 'como-aparecer-no-google-sem-pagar-anuncios',
-      excerpt: 'Descubra como o SEO pode colocar o seu negócio na primeira página do Google gratuitamente.',
+      title: 'Como aparecer no Google',
+      slug: 'como-aparecer-no-google',
+      excerpt: 'Descubra como o SEO pode colocar o seu negócio na primeira página do Google',
       content: `## O que é SEO e por que importa para o seu negócio?
 
 SEO (Search Engine Optimization) é o conjunto de técnicas que fazem o seu site aparecer nos primeiros resultados do Google quando alguém pesquisa pelo seu produto ou serviço.
@@ -208,8 +180,8 @@ Escreva um artigo por semana respondendo perguntas que seus clientes fazem. Com 
       categoryId: blogSEO.id,
       published: true,
       seo: {
-        metaTitle: 'Como aparecer no Google sem pagar anúncios | UpNode',
-        metaDesc: 'Aprenda como o SEO pode colocar seu negócio na primeira página do Google de forma gratuita.',
+        metaTitle: 'Como aparecer no Google | UpNode',
+        metaDesc: 'Aprenda como o SEO pode colocar seu negócio na primeira página do Google',
         keywords: 'SEO, Google, pequenos negócios, aparecer no Google',
       },
     },
@@ -332,9 +304,6 @@ Cada site UpNode é desenvolvido especificamente para o negócio do cliente — 
   })
   console.log('✅ Páginas sobre e personalizado criadas!')
 
-  console.log('')
-  console.log('🎉 Seed completo! UpNode by BittUp pronto.')
-  console.log('   Admin: admin@upnode.com.br / upnode123')
 }
 
 main()
