@@ -104,7 +104,7 @@ export const siteConfig = {
   pwa: {
   enabled: true,
 
-  shortName: "Nome do Negócio",
+  shortName: "BittUp",
 
   orientation: "any" as const,
 
