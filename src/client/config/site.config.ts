@@ -30,7 +30,7 @@ export const siteConfig = {
     { label: "Início", href: "/" },
     { label: "Vantagens", href: "/#advantages" },
     { label: "Sobre", href: "/sobre" },
-    { label: "Portfólio", href: "/loja" },
+    { label: "Portfólio", href: "/portfolio" },
     { label: "Contato", href: "https://wa.me/5521982708329" },
   ],
 
@@ -39,7 +39,7 @@ export const siteConfig = {
     { label: "Início", href: "/" },
     { label: "Vantagens", href: "/#advantages" },
     { label: "Sobre", href: "/sobre" },
-    { label: "Portfólio", href: "/loja" },
+    { label: "Portfólio", href: "/portfolio" },
     { label: "Blog", href: "/blog" },
     { label: "Contato", href: "https://wa.me/5521982708329" },
   ],
@@ -68,7 +68,7 @@ export const siteConfig = {
     { label: "Início", href: "/" },
     { label: "Vantagens", href: "/#advantages" },
     { label: "Sobre", href: "/sobre" },
-    { label: "Portfólio", href: "/loja" },
+    { label: "Portfólio", href: "/portfolio"},
     { label: "Contato", href: "https://wa.me/5521982708329" },
   ],
 
@@ -116,7 +116,7 @@ export const siteConfig = {
   offlineRoutes: [
     "/",
     "/sobre",
-    "/loja",
+    "/portfolio",
     "/blog",
   ],
 },
@@ -132,7 +132,7 @@ export const siteConfig = {
     overlay: "#020B12",
 
     // TEXTOS
-    textPrimary: "#F4F8FB",
+    textPrimary: "#12324A",
     textSecondary: "#A9BAC7",
     textTertiary: "#7F96A8",
     textMuted: "#607587",
