@@ -64,6 +64,10 @@ const institutionalLinks = [
     label: "Blog",
     href: "/blog",
   },
+  {
+    label: "Loja",
+    href: "/loja",
+  },
 ];
 
 const supportLinks = [

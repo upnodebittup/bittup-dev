@@ -69,6 +69,7 @@ export const siteConfig = {
     { label: "Serviços", href: "/servicos" },
     { label: "Sobre", href: "/sobre" },
     { label: "Portfólio", href: "/portfolio"},
+    { label: "Loja", href: "/loja"},
     { label: "Contato", href: "https://wa.me/5521982708329" },
   ],
 
@@ -115,9 +116,11 @@ export const siteConfig = {
 
   offlineRoutes: [
     "/",
+    "/servicos",
     "/sobre",
     "/portfolio",
     "/blog",
+    "/loja",
   ],
 },
 

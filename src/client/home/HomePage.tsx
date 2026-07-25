@@ -254,7 +254,7 @@ export default async function HomePage() {
             </div>
 
             <h1
-              className="mb-6 text-[2.6rem] uppercase leading-[0.98] sm:text-[2rem] md:text-[2rem] lg:text-[3rem]"
+              className="mb-6 text-[2rem] uppercase leading-[0.98] sm:text-[2rem] md:text-[2rem] lg:text-[3rem]"
               style={{
                 color: "var(--color-text-light)",
                 fontFamily: "var(--font-heading)",
