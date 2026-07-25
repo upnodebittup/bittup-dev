@@ -239,3 +239,39 @@ body {
     animation-duration: 22s;
   }
 }
+
+/* =========================================================
+   PORTFÓLIO — CARROSSEL INFINITO DA HOME
+========================================================= */
+
+@keyframes bittupPortfolioMarquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.bittup-portfolio-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: bittupPortfolioMarquee 42s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+@media (max-width: 767px) {
+  .bittup-portfolio-marquee-track {
+    animation-duration: 30s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bittup-portfolio-marquee-track {
+    animation: none;
+    transform: none;
+  }
+}

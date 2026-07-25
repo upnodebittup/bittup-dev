@@ -1,4 +1,8 @@
 // src/client/home/HomePage.tsx
+
+import { projects } from "@/client/projects";
+import PortfolioMarquee from "@/client/projects/PortfolioMarquee";
+
 import Reveal from "@/client/components/Reveal";
 import Image from "next/image";
 import Link from "next/link";
@@ -208,7 +212,7 @@ export default async function HomePage() {
 
       {/* HERO */}
       <section
-        className="relative min-h-[760px] overflow-hidden border-b pt-[110px] lg:min-h-screen lg:pt-[120px]"
+        className="relative min-h-[760px] overflow-hidden border-b pt-[40px] lg:min-h-screen lg:pt-[50px]"
         style={{
           background:
             "radial-gradient(circle at 80% 24%, rgba(45,140,255,0.18), transparent 25%), radial-gradient(circle at 15% 80%, rgba(30,83,120,0.18), transparent 28%), linear-gradient(180deg, var(--color-bg-primary) 0%, #031722 100%)",
@@ -228,7 +232,7 @@ export default async function HomePage() {
         />
 
         <div className="relative z-10 mx-auto grid min-h-[650px] max-w-7xl grid-cols-1 items-center gap-10 px-4 pb-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:pb-20">
-          <div className="max-w-3xl">
+          <div className="max-w-4xl">
             <div
               className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-2"
               style={{
@@ -250,7 +254,7 @@ export default async function HomePage() {
             </div>
 
             <h1
-              className="mb-6 text-[2.6rem] uppercase leading-[0.98] sm:text-[3.5rem] md:text-[4.8rem] lg:text-[5.4rem]"
+              className="mb-6 text-[2.6rem] uppercase leading-[0.98] sm:text-[2rem] md:text-[2rem] lg:text-[3rem]"
               style={{
                 color: "var(--color-text-light)",
                 fontFamily: "var(--font-heading)",
@@ -707,6 +711,8 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      <PortfolioMarquee projects={projects} />
 
       {/* PORTFÓLIO */}
       <section

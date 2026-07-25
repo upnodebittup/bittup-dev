@@ -28,7 +28,7 @@ export const siteConfig = {
   // ───────────────── NAVEGAÇÃO DESKTOP ─────────────────
   navLinks: [
     { label: "Início", href: "/" },
-    { label: "Vantagens", href: "/#advantages" },
+    { label: "Serviços", href: "/servicos" },
     { label: "Sobre", href: "/sobre" },
     { label: "Portfólio", href: "/portfolio" },
     { label: "Contato", href: "https://wa.me/5521982708329" },
@@ -37,7 +37,7 @@ export const siteConfig = {
   // ───────────────── NAVEGAÇÃO MOBILE ─────────────────
   mobileNavLinks: [
     { label: "Início", href: "/" },
-    { label: "Vantagens", href: "/#advantages" },
+    { label: "Serviços", href: "/servicos" },
     { label: "Sobre", href: "/sobre" },
     { label: "Portfólio", href: "/portfolio" },
     { label: "Blog", href: "/blog" },
@@ -66,7 +66,7 @@ export const siteConfig = {
   // ───────────────── FOOTER LINKS ─────────────────
   footerNavLinks: [
     { label: "Início", href: "/" },
-    { label: "Vantagens", href: "/#advantages" },
+    { label: "Serviços", href: "/servicos" },
     { label: "Sobre", href: "/sobre" },
     { label: "Portfólio", href: "/portfolio"},
     { label: "Contato", href: "https://wa.me/5521982708329" },
