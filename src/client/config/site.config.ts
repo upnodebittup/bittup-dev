@@ -28,18 +28,18 @@ export const siteConfig = {
   // ───────────────── NAVEGAÇÃO DESKTOP ─────────────────
   navLinks: [
     { label: "Início", href: "/" },
-    { label: "Vantagens", href: "/#advantages" },
+    { label: "Serviços", href: "/servicos" },
     { label: "Sobre", href: "/sobre" },
-    { label: "Portfólio", href: "/loja" },
+    { label: "Portfólio", href: "/portfolio" },
     { label: "Contato", href: "https://wa.me/5521982708329" },
   ],
 
   // ───────────────── NAVEGAÇÃO MOBILE ─────────────────
   mobileNavLinks: [
     { label: "Início", href: "/" },
-    { label: "Vantagens", href: "/#advantages" },
+    { label: "Serviços", href: "/servicos" },
     { label: "Sobre", href: "/sobre" },
-    { label: "Portfólio", href: "/loja" },
+    { label: "Portfólio", href: "/portfolio" },
     { label: "Blog", href: "/blog" },
     { label: "Contato", href: "https://wa.me/5521982708329" },
   ],
@@ -66,9 +66,10 @@ export const siteConfig = {
   // ───────────────── FOOTER LINKS ─────────────────
   footerNavLinks: [
     { label: "Início", href: "/" },
-    { label: "Vantagens", href: "/#advantages" },
+    { label: "Serviços", href: "/servicos" },
     { label: "Sobre", href: "/sobre" },
-    { label: "Portfólio", href: "/loja" },
+    { label: "Portfólio", href: "/portfolio"},
+    { label: "Loja", href: "/loja"},
     { label: "Contato", href: "https://wa.me/5521982708329" },
   ],
 
@@ -115,9 +116,11 @@ export const siteConfig = {
 
   offlineRoutes: [
     "/",
+    "/servicos",
     "/sobre",
-    "/loja",
+    "/portfolio",
     "/blog",
+    "/loja",
   ],
 },
 
@@ -132,7 +135,7 @@ export const siteConfig = {
     overlay: "#020B12",
 
     // TEXTOS
-    textPrimary: "#F4F8FB",
+    textPrimary: "#12324A",
     textSecondary: "#A9BAC7",
     textTertiary: "#7F96A8",
     textMuted: "#607587",

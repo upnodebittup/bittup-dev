@@ -53,14 +53,6 @@ export default function CategoriasMenu() {
               {cat.name}
             </Link>
           ))}
-
-          <Link
-            href="/personalizado"
-            className="text-sm font-semibold text-[var(--color-accent)]"
-            onClick={() => setOpen(false)}
-          >
-            Personalizado
-          </Link>
         </div>
       )}
 
@@ -79,10 +71,6 @@ export default function CategoriasMenu() {
             {cat.name}
           </Link>
         ))}
-
-        <Link href="/personalizado" className="text-sm font-semibold text-[var(--color-accent)] hover:underline">
-          Personalizado
-        </Link>
       </div>
     </nav>
   )

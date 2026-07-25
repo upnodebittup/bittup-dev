@@ -1,1030 +1,1009 @@
 // src/client/home/HomePage.tsx
+
+import { projects } from "@/client/projects";
+import PortfolioMarquee from "@/client/projects/PortfolioMarquee";
+
+import Reveal from "@/client/components/Reveal";
 import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
   BriefcaseBusiness,
-  Building2,
   Check,
   ChevronRight,
-  CircleHelp,
-  Clock3,
-  Gem,
-  Globe,
+  CodeXml,
+  Globe2,
+  Headphones,
   LayoutTemplate,
-  MapPinned,
   MessageCircle,
   MonitorSmartphone,
   Search,
-  ShieldCheck,
+  ShoppingCart,
   Sparkles,
   Zap,
 } from "lucide-react";
+
 import { prisma } from "@/core/lib/prisma";
 import { siteConfig } from "@/client/config/site.config";
 
+const services = [
+  {
+    icon: Globe2,
+    title: "Sites Institucionais",
+    description:
+      "Sites profissionais para apresentar sua empresa, seus serviços e fortalecer sua presença no Google.",
+    href: "/servicos/sites-institucionais",
+  },
+  {
+    icon: LayoutTemplate,
+    title: "Landing Pages",
+    description:
+      "Páginas estratégicas para campanhas, lançamentos, eventos e geração de novos contatos.",
+    href: "/servicos/landing-pages",
+  },
+  {
+    icon: ShoppingCart,
+    title: "Lojas Virtuais",
+    description:
+      "Estruturas completas para vender produtos online com organização, segurança e facilidade.",
+    href: "/servicos/lojas-virtuais",
+  },
+  {
+    icon: CodeXml,
+    title: "Sistemas Web",
+    description:
+      "Soluções personalizadas para organizar processos, clientes, conteúdos e operações da sua empresa.",
+    href: "/servicos/sistemas-web",
+  },
+];
+
+const advantages = [
+  {
+    icon: Search,
+    title: "Estrutura preparada para o Google",
+    description:
+      "Desenvolvimento com boas práticas de SEO, performance e conteúdo organizado.",
+  },
+  {
+    icon: MonitorSmartphone,
+    title: "Experiência em todos os dispositivos",
+    description:
+      "Sites responsivos, rápidos e preparados para celular, tablet e computador.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Atendimento direto e humano",
+    description:
+      "Você acompanha o projeto e fala diretamente com quem está desenvolvendo.",
+  },
+];
+
+const processSteps = [
+  {
+    number: "01",
+    title: "Entendimento",
+    description:
+      "Conhecemos sua empresa, seus objetivos, público e necessidades.",
+  },
+  {
+    number: "02",
+    title: "Planejamento",
+    description:
+      "Definimos estrutura, conteúdo, identidade e estratégia do projeto.",
+  },
+  {
+    number: "03",
+    title: "Desenvolvimento",
+    description:
+      "Construímos a solução com atenção ao design, SEO e desempenho.",
+  },
+  {
+    number: "04",
+    title: "Publicação",
+    description:
+      "Colocamos o projeto no ar e acompanhamos os ajustes necessários.",
+  },
+];
+
+const featuredProjects = [
+  {
+    title: "Thaíse Libras",
+    category: "Site institucional",
+    description:
+      "Presença digital inclusiva para professora e profissional de Libras.",
+    href: "/portfolio/thaise-libras",
+  },
+  {
+    title: "CM Teixeiras",
+    category: "Loja virtual",
+    description:
+      "Estrutura digital para venda de camisas, uniformes e produtos personalizados.",
+    href: "/portfolio/cm-teixeiras",
+  },
+  {
+    title: "Jornada da Transformação",
+    category: "Landing page",
+    description:
+      "Página estratégica para divulgação e inscrição em evento presencial.",
+    href: "/portfolio/jornada-da-transformacao",
+  },
+];
+
+const faqPreview = [
+  {
+    question: "Quanto custa desenvolver um site?",
+    answer:
+      "O investimento depende do tipo de projeto, quantidade de páginas e funcionalidades. Após entendermos sua necessidade, apresentamos uma proposta personalizada.",
+  },
+  {
+    question: "O site será preparado para aparecer no Google?",
+    answer:
+      "Sim. Os projetos são desenvolvidos com estrutura semântica, desempenho, responsividade e configurações fundamentais de SEO.",
+  },
+  {
+    question: "Vocês cuidam do domínio e da hospedagem?",
+    answer:
+      "Sim. Podemos cuidar da configuração técnica, domínio, hospedagem e publicação do projeto.",
+  },
+  {
+    question: "O site funciona bem no celular?",
+    answer:
+      "Sim. Todas as páginas são desenvolvidas com experiência responsiva para celulares, tablets e computadores.",
+  },
+];
+
 export default async function HomePage() {
   const categories = await prisma.blogCategory.findMany({
-    where: { showOnHome: true },
-    orderBy: { order: "asc" },
+    where: {
+      showOnHome: true,
+    },
+    orderBy: {
+      order: "asc",
+    },
     take: 3,
   });
 
-  const whatsappHref = `https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent(
-    siteConfig.whatsappMensagem
-  )}`;
+  const whatsappHref = `https://wa.me/${
+    siteConfig.whatsapp
+  }?text=${encodeURIComponent(siteConfig.whatsappMensagem)}`;
 
-  const solutions = [
-    {
-      icon: Globe,
-      title: "Presença Digital Profissional",
-      description:
-        "Um site passa mais autoridade para seu negócio, aumenta sua credibilidade no Google e cria mais oportunidades reais.",
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    name: siteConfig.nome,
+    url: siteConfig.seo.url,
+    image: `${siteConfig.seo.url}${siteConfig.seo.ogImage}`,
+    description: siteConfig.seo.descricao,
+    telephone: `+${siteConfig.whatsapp}`,
+    areaServed: {
+      "@type": "Country",
+      name: "Brasil",
     },
-    {
-      icon: Gem,
-      title: "Redes Sociais não substituem um site",
-      description:
-        "Instagram e Facebook ajudam, mas um site profissional é o que realmente coloca sua empresa em outro nível.",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Rio de Janeiro",
+      addressRegion: "RJ",
+      addressCountry: "BR",
     },
-    {
-      icon: Zap,
-      title: "Sites que vendem pra você",
-      description:
-        "Além de mostrar seus serviços, um bom site trabalha 24h por dia conduzindo o cliente até seu contato.",
-      featured: true,
-    },
-    {
-      icon: Search,
-      title: "Apareça no Google sem complicação",
-      description:
-        "A BittUp cuida da parte técnica, domínio, hospedagem e estrutura pra sua empresa ser encontrada.",
-    },
-    {
-      icon: MapPinned,
-      title: "Seu negócio merece ser encontrado",
-      description:
-        "Se alguém procurar por você agora, sua empresa precisa aparecer com presença e confiança.",
-    },
-    {
-      icon: BriefcaseBusiness,
-      title: "Investimento acessível, com retorno",
-      description:
-        "Você não precisa gastar alto pra ter um site profissional com visual forte e estratégia.",
-      muted: true,
-    },
-  ];
-
-  const processSteps = [
-    {
-      step: "PASSO 01",
-      title: "Conversa inicial pelo WhatsApp",
-      description:
-        "Você manda mensagem, me conta sobre seu negócio e o que precisa pra começar a aparecer nas buscas.",
-    },
-    {
-      step: "PASSO 02",
-      title: "Planejamento do seu site",
-      description:
-        "Com base no seu momento, defino visual, estrutura, conteúdo e posicionamento ideal.",
-    },
-    {
-      step: "PASSO 03",
-      title: "Criação e configuração",
-      description:
-        "Desenvolvo seu site, configuro domínio e hospedagem, e deixo tudo preparado para o Google.",
-    },
-    {
-      step: "PASSO 04",
-      title: "Lançamento e suporte",
-      description:
-        "Seu site vai ao ar pronto para trazer clientes, com acompanhamento quando necessário.",
-    },
-  ];
-
- const faqs = [
-  {
-    pergunta: "Preciso entender de tecnologia para ter meu site?",
-    resposta:
-      "De forma alguma! Eu cuido de tudo pra você. Você só me passa as informações básicas do seu negócio e aprova o layout.",
-  },
-  {
-    pergunta: "O que está incluso no serviço da BittUp?",
-    resposta:
-      "Você recebe um site completo, com primeiro ano de domínio grátis, hospedagem dois anos grátis, design personalizado, otimização para o Google e botões de contato no WhatsApp.",
-  },
-  {
-    pergunta: "Em quanto tempo meu site fica pronto?",
-    resposta:
-      "O prazo médio é de 3 a 5 dias úteis após o envio das informações. Sempre aviso cada etapa no WhatsApp.",
-  },
-  {
-    pergunta: "Posso usar meu site no celular e no computador?",
-    resposta:
-      "Sim! Seu site será 100% responsivo, adaptado para funcionar perfeitamente em qualquer dispositivo.",
-  },
-  {
-    pergunta: "Como funciona o pagamento?",
-    resposta:
-      "Trabalho com valores acessíveis e formas de pagamento facilitadas. Pix e cartão de crédito são aceitos.",
-  },
-  {
-    pergunta: "Depois que o site estiver pronto, posso pedir alterações?",
-    resposta:
-      "Sim! Faço ajustes básicos sem custo extra durante o período de suporte. E você sempre pode falar direto comigo no WhatsApp.",
-  },
-];
+    sameAs: [
+      siteConfig.instagram
+        ? `https://instagram.com/${siteConfig.instagram.replace("@", "")}`
+        : null,
+      siteConfig.facebook
+        ? `https://facebook.com/${siteConfig.facebook}`
+        : null,
+    ].filter(Boolean),
+  };
 
   return (
     <main
       className="w-full overflow-x-hidden"
       style={{
         backgroundColor: "var(--color-bg-primary)",
-        color: "var(--color-text-primary)",
+        color: "var(--color-text-light)",
       }}
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
+
       {/* HERO */}
       <section
-        className="relative border-b"
+        className="relative min-h-[760px] overflow-hidden border-b pt-[40px] lg:min-h-screen lg:pt-[50px]"
         style={{
           background:
-            "radial-gradient(circle at 78% 18%, rgba(45,140,255,0.15), transparent 22%), linear-gradient(180deg, var(--color-bg-primary) 0%, #03111A 100%)",
+            "radial-gradient(circle at 80% 24%, rgba(45,140,255,0.18), transparent 25%), radial-gradient(circle at 15% 80%, rgba(30,83,120,0.18), transparent 28%), linear-gradient(180deg, var(--color-bg-primary) 0%, #031722 100%)",
           borderColor: "var(--color-border)",
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-[60px] md:pt-[60px] pb-16 md:pb-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center">
-            <div className="max-w-2xl order-1">
-              <p
-                className="text-[10px] sm:text-xs uppercase tracking-[0.24em] mb-4"
+        <div
+          aria-hidden="true"
+          className="absolute left-0 top-0 h-full w-full opacity-[0.13]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)",
+            backgroundSize: "70px 70px",
+            maskImage:
+              "linear-gradient(to bottom, rgba(0,0,0,0.9), transparent 85%)",
+          }}
+        />
+
+        <div className="relative z-10 mx-auto grid min-h-[650px] max-w-7xl grid-cols-1 items-center gap-10 px-4 pb-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:pb-20">
+          <div className="max-w-4xl">
+            <div
+              className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-2"
+              style={{
+                backgroundColor: "rgba(45,140,255,0.07)",
+                borderColor: "var(--color-borderLight)",
+                color: "var(--color-textHeroMuted)",
+              }}
+            >
+              <Sparkles className="h-4 w-4" />
+
+              <span
+                className="text-[10px] uppercase tracking-[0.2em] sm:text-xs"
                 style={{
-                  color: "var(--color-textHeroMuted)",
                   fontFamily: "var(--font-heading)",
                 }}
               >
-                BittUp
-              </p>
+                Desenvolvimento de soluções digitais
+              </span>
+            </div>
 
-              <h1
-                className="text-[2.3rem] sm:text-[3rem] md:text-[4.6rem] leading-[0.94] uppercase mb-5"
-                style={{
-                  color: "var(--color-text-light)",
-                  fontFamily: "var(--font-heading)",
-                }}
-              >
-                Sua Empresa
-                <br />
-                no Google
-              </h1>
+            <h1
+              className="mb-6 text-[2rem] uppercase leading-[0.98] sm:text-[2rem] md:text-[2rem] lg:text-[3rem]"
+              style={{
+                color: "var(--color-text-light)",
+                fontFamily: "var(--font-heading)",
+              }}
+            >
+              Sua empresa precisa
+              <br />
+              ser encontrada,
+              <br />
 
-              <p
-                className="text-sm md:text-base leading-7 max-w-xl mb-8"
-                style={{
-                  color: "var(--color-text-secondary)",
-                  fontFamily: "var(--font-body)",
-                }}
-              >
-                Seja encontrado no Google com um site profissional, rápido e
-                acessível. Cuidamos de tudo: domínio, hospedagem e design
-                pronto pra gerar clientes. Você só precisa chamar no WhatsApp.
-              </p>
+              <span style={{ color: "var(--color-accentLight)" }}>
+                lembrada e escolhida.
+              </span>
+            </h1>
 
+            <p
+              className="mb-8 max-w-2xl text-base leading-8 md:text-lg"
+              style={{
+                color: "var(--color-text-secondary)",
+                fontFamily: "var(--font-body)",
+              }}
+            >
+              A BittUp desenvolve sites institucionais, landing pages, lojas
+              virtuais e sistemas web para empresas que querem crescer com uma
+              presença digital profissional.
+            </p>
+
+            <div className="flex flex-col gap-4 sm:flex-row">
               <a
                 href={whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-full text-[11px] uppercase tracking-[0.15em] transition hover:opacity-90"
+                className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full px-7 py-4 text-xs font-semibold uppercase tracking-[0.12em] transition hover:-translate-y-0.5 hover:brightness-110"
                 style={{
-                  backgroundColor: "transparent",
-                  border: "1px solid var(--color-borderLight)",
+                  backgroundColor: "var(--color-success)",
+                  color: "var(--color-text-light)",
+                  fontFamily: "var(--font-heading)",
+                  boxShadow: "0 14px 36px rgba(19,163,0,0.22)",
+                }}
+              >
+                Solicitar orçamento
+                <ArrowRight className="h-4 w-4" />
+              </a>
+
+              <Link
+                href="/portfolio"
+                className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full border px-7 py-4 text-xs font-semibold uppercase tracking-[0.12em] transition hover:bg-white/5"
+                style={{
+                  borderColor: "var(--color-borderLight)",
                   color: "var(--color-text-light)",
                   fontFamily: "var(--font-heading)",
                 }}
               >
-                Quero ser encontrado online
-                <ArrowRight className="w-4 h-4" />
-              </a>
+                Conhecer projetos
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
 
-            <div className="order-2 relative w-full flex justify-center lg:justify-end">
-              <div className="relative w-full max-w-[500px] min-h-[340px] sm:min-h-[420px] md:min-h-[520px] flex items-end justify-center">
-                <Image
-                  src="/hero-bittup-person.png"
-                  alt="Profissional representando negócios que querem aparecer no Google"
-                  width={500}
-                  height={640}
-                  priority
-                  className="relative z-10 w-auto h-[300px] sm:h-[390px] md:h-[520px] object-contain"
+            <div
+              className="mt-10 flex flex-wrap gap-x-7 gap-y-3 text-xs"
+              style={{
+                color: "var(--color-text-secondary)",
+                fontFamily: "var(--font-body)",
+              }}
+            >
+              <span className="flex items-center gap-2">
+                <Check
+                  className="h-4 w-4"
+                  style={{ color: "var(--color-success)" }}
+                />
+                Design responsivo
+              </span>
+
+              <span className="flex items-center gap-2">
+                <Check
+                  className="h-4 w-4"
+                  style={{ color: "var(--color-success)" }}
+                />
+                Estrutura otimizada para SEO
+              </span>
+
+              <span className="flex items-center gap-2">
+                <Check
+                  className="h-4 w-4"
+                  style={{ color: "var(--color-success)" }}
+                />
+                Atendimento humano
+              </span>
+            </div>
+          </div>
+
+          <div className="relative flex min-h-[360px] items-end justify-center lg:min-h-[620px] lg:justify-end">
+            <div
+              aria-hidden="true"
+              className="absolute left-1/2 top-1/2 h-[75%] w-[75%] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[100px]"
+              style={{
+                backgroundColor: "rgba(45,140,255,0.14)",
+              }}
+            />
+
+            <Image
+              src="/hero-bittup-person.png"
+              alt="Profissional apresentando soluções digitais desenvolvidas pela BittUp"
+              width={540}
+              height={680}
+              priority
+              sizes="(max-width: 1024px) 90vw, 45vw"
+              className="relative z-10 h-auto max-h-[620px] w-auto object-contain"
+            />
+
+            <div
+              className="absolute bottom-6 left-0 z-20 max-w-[240px] rounded-2xl border p-4 backdrop-blur-md sm:left-8 lg:bottom-12 lg:left-0"
+              style={{
+                backgroundColor: "rgba(12,31,43,0.88)",
+                borderColor: "var(--color-borderLight)",
+              }}
+            >
+              <div className="mb-2 flex items-center gap-2">
+                <Zap
+                  className="h-4 w-4"
+                  style={{ color: "var(--color-accentLight)" }}
                 />
 
-                <div
-                  className="absolute right-0 sm:right-4 bottom-6 sm:bottom-10 z-20 rounded-xl px-4 py-3 max-w-[210px]"
+                <span
+                  className="text-[10px] uppercase tracking-[0.16em]"
                   style={{
-                    backgroundColor: "rgba(20,39,54,0.88)",
-                    border: "1px solid var(--color-border)",
-                    backdropFilter: "blur(6px)",
+                    color: "var(--color-accentLight)",
+                    fontFamily: "var(--font-heading)",
                   }}
                 >
-                  <p
-                    className="text-[11px] leading-5"
-                    style={{
-                      color: "var(--color-text-secondary)",
-                      fontFamily: "var(--font-body)",
-                    }}
-                  >
-                    Nunca foi tão acessível
-                    <br />
-                    ser visto no google
-                  </p>
-                </div>
+                  Presença digital
+                </span>
               </div>
+
+              <p
+                className="text-sm leading-6"
+                style={{
+                  color: "var(--color-textHeroMuted)",
+                  fontFamily: "var(--font-body)",
+                }}
+              >
+                Tecnologia, estratégia e design trabalhando juntos pelo seu
+                negócio.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ESCOLHER A BITTUP */}
-<section
-  className="py-16 md:py-24 border-b"
-  style={{
-    backgroundColor: "#031722",
-    borderColor: "var(--color-border)",
-  }}
->
-  <div className="max-w-7xl mx-auto px-4 sm:px-6">
-    <p
-      className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] mb-8"
-      style={{
-        color: "var(--color-textMuted)",
-        fontFamily: "var(--font-heading)",
-      }}
-    >
-      Escolher a BittUp?
-    </p>
-
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-      {/* IMAGEM */}
-      <div className="w-full">
-        <div
-          className="rounded-[10px] overflow-hidden border"
-          style={{
-            borderColor: "var(--color-border)",
-            backgroundColor: "var(--color-bg-card)",
-          }}
-        >
-          <Image
-            src="/about-bittup-team.jpg"
-            alt="Equipe em reunião estratégica"
-            width={720}
-            height={920}
-            className="w-full h-auto object-cover"
-          />
-        </div>
-      </div>
-
-      {/* TEXTO */}
-      <div className="w-full">
-        <h2
-          className="text-[1.9rem] sm:text-[2.3rem] md:text-[2.8rem] leading-tight mb-5"
-          style={{
-            color: "var(--color-text-light)",
-            fontFamily: "var(--font-heading)",
-          }}
-        >
-          Elevando Negócios com
-          <br />
-          Presença Digital de Verdade
-        </h2>
-
-        <p
-          className="text-sm md:text-base leading-7 mb-6 max-w-2xl"
-          style={{
-            color: "var(--color-text-secondary)",
-            fontFamily: "var(--font-body)",
-          }}
-        >
-          Na BittUp, transformamos ideias em sites que realmente vendem.
-          Oferecemos uma presença digital clara, profissional e acessível para
-          negócios que precisam aparecer no Google e conquistar mais clientes.
-        </p>
-
-        <p
-          className="text-sm md:text-base leading-7 mb-8 max-w-2xl"
-          style={{
-            color: "var(--color-text-secondary)",
-            fontFamily: "var(--font-body)",
-          }}
-        >
-          Acreditamos que todo negócio merece ser encontrado online e tratado
-          com cuidado, mesmo que esteja começando agora.
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div
-            className="rounded-[8px] p-5 border h-full"
-            style={{
-              backgroundColor: "#081C29",
-              borderColor: "var(--color-border)",
-            }}
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div
-                className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-                style={{
-                  backgroundColor: "rgba(45,140,255,0.14)",
-                  color: "var(--color-accentLight)",
-                }}
-              >
-                <Building2 className="w-5 h-5" />
-              </div>
-
-              <h3
-                className="text-sm leading-5"
-                style={{
-                  color: "var(--color-text-light)",
-                  fontFamily: "var(--font-heading)",
-                }}
-              >
-                Atendimento 100%
-                <br />
-                Humano
-              </h3>
-            </div>
-
-            <p
-              className="text-xs leading-6"
-              style={{
-                color: "var(--color-text-secondary)",
-                fontFamily: "var(--font-body)",
-              }}
-            >
-              Você fala comigo no WhatsApp, sem robôs, sem enrolação.
-            </p>
-          </div>
-
-          <div
-            className="rounded-[8px] p-5 border h-full"
-            style={{
-              backgroundColor: "#081C29",
-              borderColor: "var(--color-border)",
-            }}
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div
-                className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-                style={{
-                  backgroundColor: "rgba(45,140,255,0.14)",
-                  color: "var(--color-accentLight)",
-                }}
-              >
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-
-              <h3
-                className="text-sm leading-5"
-                style={{
-                  color: "var(--color-text-light)",
-                  fontFamily: "var(--font-heading)",
-                }}
-              >
-                Soluções Ágeis e
-                <br />
-                Profissionais
-              </h3>
-            </div>
-
-            <p
-              className="text-xs leading-6"
-              style={{
-                color: "var(--color-text-secondary)",
-                fontFamily: "var(--font-body)",
-              }}
-            >
-              Sites completos, com domínio e hospedagem inclusos, pensados pra
-              dar resultado.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-      {/* SOLUÇÕES */}
+      {/* APRESENTAÇÃO INSTITUCIONAL */}
       <section
-        className="py-16 md:py-24 border-b"
+        className="border-b py-20 md:py-28"
         style={{
-          background:
-            "linear-gradient(180deg, #041825 0%, #041520 100%)",
+          backgroundColor: "var(--color-bg-secondary)",
           borderColor: "var(--color-border)",
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr,0.9fr] gap-8 lg:gap-10 items-start mb-10">
-            <div>
+        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16">
+          <div className="relative overflow-hidden rounded-2xl border">
+            <Image
+              src="/about-bittup-team.jpg"
+              alt="Planejamento de projeto digital realizado pela BittUp"
+              width={800}
+              height={760}
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="h-full min-h-[420px] w-full object-cover"
+            />
+
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(to top, rgba(3,19,29,0.55), transparent 60%)",
+              }}
+            />
+          </div>
+
+          <div>
+            <p
+              className="mb-4 text-[11px] uppercase tracking-[0.22em]"
+              style={{
+                color: "var(--color-accentLight)",
+                fontFamily: "var(--font-heading)",
+              }}
+            >
+              Sobre a BittUp
+            </p>
+
+            <h2
+              className="mb-6 text-[2rem] leading-tight sm:text-[2.6rem] md:text-[3.1rem]"
+              style={{
+                color: "var(--color-text-light)",
+                fontFamily: "var(--font-heading)",
+              }}
+            >
+              Desenvolvimento digital com estratégia, tecnologia e cuidado.
+            </h2>
+
+            <p
+              className="mb-5 text-sm leading-7 md:text-base"
+              style={{
+                color: "var(--color-text-secondary)",
+                fontFamily: "var(--font-body)",
+              }}
+            >
+              A BittUp nasceu para facilitar o acesso de pequenas e médias
+              empresas a soluções digitais profissionais, sem processos
+              confusos ou atendimento distante.
+            </p>
+
+            <p
+              className="mb-8 text-sm leading-7 md:text-base"
+              style={{
+                color: "var(--color-text-secondary)",
+                fontFamily: "var(--font-body)",
+              }}
+            >
+              Cada projeto é desenvolvido considerando os objetivos do negócio,
+              a experiência do cliente, o posicionamento da marca e a
+              possibilidade de crescimento futuro.
+            </p>
+
+            <Link
+              href="/sobre"
+              className="inline-flex items-center gap-2 text-sm font-semibold transition hover:gap-3"
+              style={{
+                color: "var(--color-accentLight)",
+                fontFamily: "var(--font-heading)",
+              }}
+            >
+              Conheça a história da BittUp
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* SERVIÇOS */}
+      <section
+        className="border-b py-20 md:py-28"
+        style={{
+          background:
+            "linear-gradient(180deg, var(--color-bg-primary) 0%, #041925 100%)",
+          borderColor: "var(--color-border)",
+        }}
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <p
+                className="mb-4 text-[11px] uppercase tracking-[0.22em]"
+                style={{
+                  color: "var(--color-accentLight)",
+                  fontFamily: "var(--font-heading)",
+                }}
+              >
+                Nossos serviços
+              </p>
+
               <h2
-                className="text-[1.9rem] sm:text-[2.4rem] md:text-[2.8rem] leading-tight"
+                className="text-[2rem] leading-tight sm:text-[2.6rem] md:text-[3.1rem]"
                 style={{
                   color: "var(--color-text-light)",
                   fontFamily: "var(--font-heading)",
                 }}
               >
-                Soluções inovadoras para
-                <br />
-                <span style={{ color: "var(--color-accentLight)" }}>
-                  impulsionar seu negócio Online
-                </span>
+                Soluções digitais para diferentes momentos da sua empresa.
               </h2>
             </div>
 
-            <div>
-              <p
-                className="text-sm md:text-base leading-7 mb-5"
-                style={{
-                  color: "var(--color-text-secondary)",
-                  fontFamily: "var(--font-body)",
-                }}
-              >
-                Na BittUp, entendemos que cada negócio é único, por isso,
-                oferecemos soluções personalizadas pra fazer sua empresa ser
-                encontrada no Google e gerar novas oportunidades.
-              </p>
-
-              <a
-                href={whatsappHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-md text-[11px] uppercase tracking-[0.15em]"
-                style={{
-                  backgroundColor: "var(--color-accentHover)",
-                  color: "var(--color-text-light)",
-                  fontFamily: "var(--font-heading)",
-                }}
-              >
-                Saber Mais
-                <ChevronRight className="w-4 h-4" />
-              </a>
-            </div>
+            <Link
+              href="/servicos"
+              className="inline-flex items-center gap-2 text-sm font-semibold transition hover:gap-3"
+              style={{
+                color: "var(--color-accentLight)",
+                fontFamily: "var(--font-heading)",
+              }}
+            >
+              Ver todos os serviços
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-            {solutions.map((item) => {
-              const Icon = item.icon;
+<div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+  {services.map((service, index) => {
+    const Icon = service.icon;
+
+    return (
+      <Reveal
+        key={service.title}
+        delay={index * 100}
+        direction={index % 2 === 0 ? "right" : "left"}
+      >
+        <Link
+          href={service.href}
+          className="group relative block h-full overflow-hidden rounded-2xl border p-6 transition duration-300 hover:-translate-y-1 md:p-8"
+          style={{
+            backgroundColor: "var(--color-bg-card)",
+            borderColor: "var(--color-border)",
+          }}
+        >
+          <div className="mb-7 flex items-start justify-between gap-5">
+            <div
+              className="bittup-icon-pulse flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
+              style={{
+                backgroundColor: "rgba(45,140,255,0.11)",
+                color: "var(--color-accentLight)",
+              }}
+            >
+              <Icon className="h-6 w-6" />
+            </div>
+
+            <span
+              aria-hidden="true"
+              className="shrink-0 text-3xl font-semibold leading-none opacity-10 sm:text-4xl"
+              style={{
+                color: "var(--color-text-light)",
+                fontFamily: "var(--font-heading)",
+              }}
+            >
+              {String(index + 1).padStart(2, "0")}
+            </span>
+          </div>
+
+          <h3
+            className="mb-3 text-xl md:text-2xl"
+            style={{
+              color: "var(--color-text-light)",
+              fontFamily: "var(--font-heading)",
+            }}
+          >
+            {service.title}
+          </h3>
+
+          <p
+            className="mb-7 max-w-xl text-sm leading-7"
+            style={{
+              color: "var(--color-text-secondary)",
+              fontFamily: "var(--font-body)",
+            }}
+          >
+            {service.description}
+          </p>
+
+          <span
+            className="inline-flex items-center gap-2 text-sm font-semibold transition-all duration-300 group-hover:gap-3"
+            style={{
+              color: "var(--color-accentLight)",
+              fontFamily: "var(--font-heading)",
+            }}
+          >
+            Conhecer serviço
+            <ChevronRight className="h-4 w-4" />
+          </span>
+
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent, var(--color-accentLight), transparent)",
+            }}
+          />
+        </Link>
+      </Reveal>
+    );
+  })}
+</div>
+        </div>
+      </section>
+
+      {/* VANTAGENS */}
+      <section
+        id="advantages"
+        className="scroll-mt-24 border-b py-20 md:py-28"
+        style={{
+          backgroundColor: "var(--color-bg-secondary)",
+          borderColor: "var(--color-border)",
+        }}
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="mx-auto mb-12 max-w-3xl text-center">
+            <p
+              className="mb-4 text-[11px] uppercase tracking-[0.22em]"
+              style={{
+                color: "var(--color-accentLight)",
+                fontFamily: "var(--font-heading)",
+              }}
+            >
+              Por que escolher a BittUp?
+            </p>
+
+            <h2
+              className="text-[2rem] leading-tight sm:text-[2.6rem] md:text-[3.1rem]"
+              style={{
+                color: "var(--color-text-light)",
+                fontFamily: "var(--font-heading)",
+              }}
+            >
+              Seu projeto precisa ser bonito, mas também precisa funcionar.
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            {advantages.map((advantage, index) => {
+              const Icon = advantage.icon;
 
               return (
-                <article
-                  key={item.title}
-                  className="relative rounded-[4px] p-5 md:p-6 border min-h-[210px]"
-                  style={{
-                    backgroundColor: item.featured
-                      ? "#13344D"
-                      : item.muted
-                      ? "rgba(255,255,255,0.10)"
-                      : "#071A27",
-                    borderColor: "var(--color-border)",
-                  }}
+                <Reveal
+                  key={advantage.title}
+                  delay={index * 130}
+                  direction="up"
                 >
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center mb-5"
+                  <article
+                    className="h-full rounded-2xl border p-6 transition duration-300 hover:-translate-y-1 md:p-8"
                     style={{
-                      backgroundColor: "rgba(45,140,255,0.10)",
-                      color: "var(--color-accentLight)",
+                      backgroundColor: "var(--color-bg-card)",
+                      borderColor: "var(--color-border)",
                     }}
                   >
-                    <Icon className="w-5 h-5" />
-                  </div>
+                    <div
+                      className="bittup-icon-pulse mb-6 flex h-12 w-12 items-center justify-center rounded-full"
+                      style={{
+                        backgroundColor: "rgba(45,140,255,0.11)",
+                        color: "var(--color-accentLight)",
+                      }}
+                    >
+                      <Icon className="h-6 w-6" />
+                    </div>
 
-                  <h3
-                    className="text-lg md:text-xl leading-tight mb-4"
-                    style={{
-                      color: "var(--color-text-light)",
-                      fontFamily: "var(--font-heading)",
-                    }}
-                  >
-                    {item.title}
-                  </h3>
+                    <h3
+                      className="mb-3 text-lg"
+                      style={{
+                        color: "var(--color-text-light)",
+                        fontFamily: "var(--font-heading)",
+                      }}
+                    >
+                      {advantage.title}
+                    </h3>
 
-                  <p
-                    className="text-sm leading-7"
-                    style={{
-                      color: "var(--color-text-secondary)",
-                      fontFamily: "var(--font-body)",
-                    }}
-                  >
-                    {item.description}
-                  </p>
-                </article>
+                    <p
+                      className="text-sm leading-7"
+                      style={{
+                        color: "var(--color-text-secondary)",
+                        fontFamily: "var(--font-body)",
+                      }}
+                    >
+                      {advantage.description}
+                    </p>
+                  </article>
+                </Reveal>
               );
             })}
           </div>
         </div>
       </section>
 
-      {/* PASSOS */}
+      <PortfolioMarquee projects={projects} />
+
+      {/* PROCESSO */}
       <section
-        className="py-16 md:py-24 border-b"
+        className="border-b py-20 md:py-28"
         style={{
-          backgroundColor: "#031722",
+          backgroundColor: "var(--color-bg-secondary)",
           borderColor: "var(--color-border)",
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <p
-            className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] mb-3"
-            style={{
-              color: "var(--color-textMuted)",
-              fontFamily: "var(--font-heading)",
-            }}
-          >
-            Nosso processo
-          </p>
-
-          <h2
-            className="text-[1.9rem] sm:text-[2.3rem] md:text-[2.7rem] leading-tight mb-10 uppercase"
-            style={{
-              color: "var(--color-text-light)",
-              fontFamily: "var(--font-heading)",
-            }}
-          >
-            Seu site pronto em 7 dias
-          </h2>
-
-          <div className="grid gap-5">
-            {processSteps.map((item) => (
-              <div
-                key={item.step}
-                className="grid grid-cols-1 md:grid-cols-[64px,1fr,44px] gap-4 md:gap-5 items-start md:items-center rounded-[6px] border px-4 md:px-8 py-5 md:py-6"
-                style={{
-                  backgroundColor: "#10212C",
-                  borderColor: "rgba(255,255,255,0.08)",
-                }}
-              >
-                <div
-                  className="w-11 h-11 rounded-full flex items-center justify-center"
-                  style={{
-                    backgroundColor: "rgba(13,110,253,0.10)",
-                    color: "var(--color-accentLight)",
-                  }}
-                >
-                  <Clock3 className="w-5 h-5" />
-                </div>
-
-                <div>
-                  <p
-                    className="text-[10px] uppercase tracking-[0.2em] mb-2"
-                    style={{
-                      color: "var(--color-textMuted)",
-                      fontFamily: "var(--font-heading)",
-                    }}
-                  >
-                    {item.step}
-                  </p>
-
-                  <h3
-                    className="text-base md:text-lg mb-2"
-                    style={{
-                      color: "var(--color-text-light)",
-                      fontFamily: "var(--font-heading)",
-                    }}
-                  >
-                    {item.title}
-                  </h3>
-
-                  <p
-                    className="text-sm leading-7"
-                    style={{
-                      color: "var(--color-text-secondary)",
-                      fontFamily: "var(--font-body)",
-                    }}
-                  >
-                    {item.description}
-                  </p>
-                </div>
-
-                <div className="hidden md:flex justify-end">
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center"
-                    style={{
-                      border: "1px solid var(--color-border)",
-                      color: "var(--color-accentLight)",
-                    }}
-                  >
-                    <Check className="w-4 h-4" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-<section
-  className="py-16 md:py-24 border-b relative overflow-hidden"
-  style={{
-    background:
-      "radial-gradient(circle at 88% 50%, rgba(13,110,253,0.14), transparent 18%), linear-gradient(180deg, #041621 0%, #031520 100%)",
-    borderColor: "var(--color-border)",
-  }}
->
-  <div className="max-w-7xl mx-auto px-4 sm:px-6">
-    <div className="hidden lg:flex lg:items-center lg:justify-between gap-12">
-      {/* TEXTO */}
-      <div className="flex-1 max-w-2xl">
-        <p
-          className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] mb-4"
-          style={{
-            color: "var(--color-textMuted)",
-            fontFamily: "var(--font-heading)",
-          }}
-        >
-          Mude sua presença online
-        </p>
-
-        <h2
-          className="text-[1.9rem] sm:text-[2.3rem] md:text-[2.8rem] leading-tight mb-6"
-          style={{
-            color: "var(--color-text-light)",
-            fontFamily: "var(--font-heading)",
-          }}
-        >
-          Se seu negócio não tem site, ele
-          <br />
-          simplesmente não existe para
-          <br />
-          quem procura no Google
-        </h2>
-
-        <p
-          className="text-sm md:text-base leading-7 mb-8 max-w-xl"
-          style={{
-            color: "var(--color-text-secondary)",
-            fontFamily: "var(--font-body)",
-          }}
-        >
-          Pare de depender apenas de Instagram ou indicações. Com um site
-          profissional, sua empresa pode gerar mais presença e confiança.
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-4">
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md text-[11px] uppercase tracking-[0.15em]"
-            style={{
-              backgroundColor: "var(--color-accentHover)",
-              color: "var(--color-text-light)",
-              fontFamily: "var(--font-heading)",
-            }}
-          >
-            Quero ser encontrado online
-          </a>
-
-          <Link
-            href="/portfolio"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md text-[11px] uppercase tracking-[0.15em]"
-            style={{
-              border: "1px solid var(--color-border)",
-              color: "var(--color-text-light)",
-              fontFamily: "var(--font-heading)",
-            }}
-          >
-            Ver meus trabalhos
-          </Link>
-        </div>
-      </div>
-
-      {/* ÍCONE AO LADO */}
-      <div className="w-[220px] flex justify-end shrink-0">
-        <div className="relative w-[180px] h-[180px]">
-          <div
-            className="absolute inset-0 rounded-full border"
-            style={{
-              borderColor: "rgba(255,255,255,0.10)",
-              backgroundColor: "rgba(255,255,255,0.02)",
-            }}
-          />
-
-          <div
-            className="absolute inset-[22%] rounded-full flex items-center justify-center"
-            style={{
-              backgroundColor: "rgba(13,110,253,0.10)",
-              color: "var(--color-accentLight)",
-            }}
-          >
-            <MonitorSmartphone className="w-10 h-10" />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    {/* MOBILE / TABLET */}
-    <div className="flex flex-col gap-8 lg:hidden">
-      <div className="max-w-2xl">
-        <p
-          className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] mb-4"
-          style={{
-            color: "var(--color-textMuted)",
-            fontFamily: "var(--font-heading)",
-          }}
-        >
-          Mude sua presença online
-        </p>
-
-        <h2
-          className="text-[1.9rem] sm:text-[2.3rem] leading-tight mb-6"
-          style={{
-            color: "var(--color-text-light)",
-            fontFamily: "var(--font-heading)",
-          }}
-        >
-          Se seu negócio não tem site, ele
-          <br />
-          simplesmente não existe para
-          <br />
-          quem procura no Google
-        </h2>
-
-        <p
-          className="text-sm md:text-base leading-7 mb-8 max-w-xl"
-          style={{
-            color: "var(--color-text-secondary)",
-            fontFamily: "var(--font-body)",
-          }}
-        >
-          Pare de depender apenas de Instagram ou indicações. Com um site
-          profissional, sua empresa pode gerar mais presença e confiança.
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-4">
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md text-[11px] uppercase tracking-[0.15em]"
-            style={{
-              backgroundColor: "var(--color-accentHover)",
-              color: "var(--color-text-light)",
-              fontFamily: "var(--font-heading)",
-            }}
-          >
-            Quero ser encontrado online
-          </a>
-
-          <Link
-            href="/portfolio"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md text-[11px] uppercase tracking-[0.15em]"
-            style={{
-              border: "1px solid var(--color-border)",
-              color: "var(--color-text-light)",
-              fontFamily: "var(--font-heading)",
-            }}
-          >
-            Ver meus trabalhos
-          </Link>
-        </div>
-      </div>
-
-      <div className="flex justify-center">
-        <div className="relative w-[180px] h-[180px]">
-          <div
-            className="absolute inset-0 rounded-full border"
-            style={{
-              borderColor: "rgba(255,255,255,0.10)",
-              backgroundColor: "rgba(255,255,255,0.02)",
-            }}
-          />
-
-          <div
-            className="absolute inset-[22%] rounded-full flex items-center justify-center"
-            style={{
-              backgroundColor: "rgba(13,110,253,0.10)",
-              color: "var(--color-accentLight)",
-            }}
-          >
-            <MonitorSmartphone className="w-10 h-10" />
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-     
-{/* FAQ */}
-<section
-  className="py-16 md:py-24 border-b"
-  style={{
-    backgroundColor: "#08212B",
-    borderColor: "var(--color-border)",
-  }}
->
-  <div className="max-w-7xl mx-auto px-4 sm:px-6">
-    <div className="grid grid-cols-1 lg:grid-cols-[0.9fr,1.1fr] gap-10 lg:gap-12 items-start">
-      {/* TEXTO LADO ESQUERDO */}
-      <div>
-        <p
-          className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] mb-3"
-          style={{
-            color: "var(--color-textMuted)",
-            fontFamily: "var(--font-heading)",
-          }}
-        >
-          Está com dúvidas?
-        </p>
-
-        <h2
-          className="text-[1.9rem] sm:text-[2.3rem] md:text-[2.7rem] leading-tight mb-5"
-          style={{
-            color: "var(--color-text-light)",
-            fontFamily: "var(--font-heading)",
-          }}
-        >
-          Confira as perguntas
-          <br />
-          frequentes
-        </h2>
-
-        <p
-          className="text-sm md:text-base leading-7 max-w-md"
-          style={{
-            color: "var(--color-text-secondary)",
-            fontFamily: "var(--font-body)",
-          }}
-        >
-          Respondemos as dúvidas mais comuns para você entender como
-          funciona o nosso serviço.
-        </p>
-      </div>
-
-      {/* DROPDOWN FAQ */}
-      <div className="flex flex-col gap-3">
-        {faqs.map((faq, index) => (
-          <details
-            key={index}
-            className="group rounded-[6px] border px-4 md:px-5 py-3"
-            style={{
-              backgroundColor: "#0A1B27",
-              borderColor: "var(--color-border)",
-            }}
-          >
-            <summary className="flex items-center justify-between gap-3 cursor-pointer list-none">
-              <span
-                className="text-sm leading-6"
-                style={{
-                  color: "var(--color-text-light)",
-                  fontFamily: "var(--font-body)",
-                }}
-              >
-                {faq.pergunta}
-              </span>
-
-              <span
-                className="flex items-center justify-center w-6 h-6 shrink-0 rounded-full"
-                style={{
-                  backgroundColor: "rgba(45,140,255,0.10)",
-                  color: "var(--color-accentLight)",
-                }}
-              >
-                <svg
-                  className="w-3 h-3 transition-transform duration-200 group-open:rotate-180"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
-              </span>
-            </summary>
-
-            <div className="mt-3 pr-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="mb-12 grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div>
               <p
-                className="text-sm leading-7"
-                style={{
-                  color: "var(--color-text-secondary)",
-                  fontFamily: "var(--font-body)",
-                }}
-              >
-                {faq.resposta}
-              </p>
-            </div>
-          </details>
-        ))}
-      </div>
-    </div>
-  </div>
-</section>
-
-      {/* BLOG */}
-      {categories.length > 0 && (
-        <section
-          className="py-16 md:py-24 border-b"
-          style={{
-            backgroundColor: "#041722",
-            borderColor: "var(--color-border)",
-          }}
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
-              <div>
-                <p
-                  className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] mb-3"
-                  style={{
-                    color: "var(--color-textMuted)",
-                    fontFamily: "var(--font-heading)",
-                  }}
-                >
-                  Blog
-                </p>
-
-                <h2
-                  className="text-[1.8rem] sm:text-[2.1rem] md:text-[2.2rem] leading-tight"
-                  style={{
-                    color: "var(--color-text-light)",
-                    fontFamily: "var(--font-heading)",
-                  }}
-                >
-                  Conteúdos para fortalecer sua presença online
-                </h2>
-              </div>
-
-              <Link
-                href="/blog"
-                className="inline-flex items-center gap-2 text-sm"
+                className="mb-4 text-[11px] uppercase tracking-[0.22em]"
                 style={{
                   color: "var(--color-accentLight)",
                   fontFamily: "var(--font-heading)",
                 }}
               >
-                Ver todos <ArrowRight className="w-4 h-4" />
+                Como trabalhamos
+              </p>
+
+              <h2
+                className="text-[2rem] leading-tight sm:text-[2.6rem] md:text-[3.1rem]"
+                style={{
+                  color: "var(--color-text-light)",
+                  fontFamily: "var(--font-heading)",
+                }}
+              >
+                Um processo organizado do planejamento à publicação.
+              </h2>
+            </div>
+
+            <div className="flex items-end lg:justify-end">
+              <Link
+                href="/processo"
+                className="inline-flex items-center gap-2 text-sm font-semibold transition hover:gap-3"
+                style={{
+                  color: "var(--color-accentLight)",
+                  fontFamily: "var(--font-heading)",
+                }}
+              >
+                Conhecer nosso processo
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+
+          <ol className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {processSteps.map((step) => (
+              <li
+                key={step.number}
+                className="rounded-2xl border p-6"
+                style={{
+                  backgroundColor: "var(--color-bg-card)",
+                  borderColor: "var(--color-border)",
+                }}
+              >
+                <span
+                  className="mb-7 block text-sm font-semibold"
+                  style={{
+                    color: "var(--color-accentLight)",
+                    fontFamily: "var(--font-heading)",
+                  }}
+                >
+                  {step.number}
+                </span>
+
+                <h3
+                  className="mb-3 text-lg"
+                  style={{
+                    color: "var(--color-text-light)",
+                    fontFamily: "var(--font-heading)",
+                  }}
+                >
+                  {step.title}
+                </h3>
+
+                <p
+                  className="text-sm leading-7"
+                  style={{
+                    color: "var(--color-text-secondary)",
+                    fontFamily: "var(--font-body)",
+                  }}
+                >
+                  {step.description}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* FAQ RESUMIDO */}
+      <section
+        className="border-b py-20 md:py-28"
+        style={{
+          backgroundColor: "var(--color-bg-primary)",
+          borderColor: "var(--color-border)",
+        }}
+      >
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr]">
+          <div>
+            <p
+              className="mb-4 text-[11px] uppercase tracking-[0.22em]"
+              style={{
+                color: "var(--color-accentLight)",
+                fontFamily: "var(--font-heading)",
+              }}
+            >
+              Perguntas frequentes
+            </p>
+
+            <h2
+              className="mb-6 text-[2rem] leading-tight sm:text-[2.6rem]"
+              style={{
+                color: "var(--color-text-light)",
+                fontFamily: "var(--font-heading)",
+              }}
+            >
+              Algumas dúvidas antes de iniciar seu projeto.
+            </h2>
+
+            <p
+              className="mb-7 max-w-md text-sm leading-7 md:text-base"
+              style={{
+                color: "var(--color-text-secondary)",
+                fontFamily: "var(--font-body)",
+              }}
+            >
+              Reunimos respostas sobre desenvolvimento, prazos, SEO,
+              hospedagem e funcionamento dos projetos.
+            </p>
+
+            <Link
+              href="/faq"
+              className="inline-flex items-center gap-2 text-sm font-semibold transition hover:gap-3"
+              style={{
+                color: "var(--color-accentLight)",
+                fontFamily: "var(--font-heading)",
+              }}
+            >
+              Ver todas as perguntas
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {faqPreview.map((faq) => (
+              <details
+                key={faq.question}
+                className="group rounded-xl border p-5"
+                style={{
+                  backgroundColor: "var(--color-bg-card)",
+                  borderColor: "var(--color-border)",
+                }}
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
+                  <span
+                    className="text-sm font-medium leading-6 md:text-base"
+                    style={{
+                      color: "var(--color-text-light)",
+                      fontFamily: "var(--font-body)",
+                    }}
+                  >
+                    {faq.question}
+                  </span>
+
+                  <span
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition group-open:rotate-90"
+                    style={{
+                      backgroundColor: "rgba(45,140,255,0.1)",
+                      color: "var(--color-accentLight)",
+                    }}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </span>
+                </summary>
+
+                <p
+                  className="mt-4 pr-10 text-sm leading-7"
+                  style={{
+                    color: "var(--color-text-secondary)",
+                    fontFamily: "var(--font-body)",
+                  }}
+                >
+                  {faq.answer}
+                </p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* BLOG */}
+      {categories.length > 0 && (
+        <section
+          className="border-b py-20 md:py-28"
+          style={{
+            backgroundColor: "var(--color-bg-secondary)",
+            borderColor: "var(--color-border)",
+          }}
+        >
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+              <div className="max-w-3xl">
+                <p
+                  className="mb-4 text-[11px] uppercase tracking-[0.22em]"
+                  style={{
+                    color: "var(--color-accentLight)",
+                    fontFamily: "var(--font-heading)",
+                  }}
+                >
+                  Conteúdos
+                </p>
+
+                <h2
+                  className="text-[2rem] leading-tight sm:text-[2.6rem] md:text-[3.1rem]"
+                  style={{
+                    color: "var(--color-text-light)",
+                    fontFamily: "var(--font-heading)",
+                  }}
+                >
+                  Informação para fortalecer sua presença digital.
+                </h2>
+              </div>
+
+              <Link
+                href="/blog"
+                className="inline-flex items-center gap-2 text-sm font-semibold transition hover:gap-3"
+                style={{
+                  color: "var(--color-accentLight)",
+                  fontFamily: "var(--font-heading)",
+                }}
+              >
+                Acessar o blog
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {categories.map((cat) => (
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+              {categories.map((category) => (
                 <Link
-                  key={cat.id}
-                  href={`/blog/categoria/${cat.slug}`}
-                  className="rounded-[8px] border p-5 md:p-6 transition hover:translate-y-[-2px]"
+                  key={category.id}
+                  href={`/blog/categoria/${category.slug}`}
+                  className="group rounded-2xl border p-6 transition duration-300 hover:-translate-y-1"
                   style={{
-                    backgroundColor: "#0A1B27",
+                    backgroundColor: "var(--color-bg-card)",
                     borderColor: "var(--color-border)",
                   }}
                 >
-                  <div className="flex items-center gap-3 mb-5">
-                    <div
-                      className="w-10 h-10 rounded-full flex items-center justify-center"
-                      style={{
-                        backgroundColor: "rgba(45,140,255,0.10)",
-                        color: "var(--color-accentLight)",
-                      }}
-                    >
-                      <LayoutTemplate className="w-5 h-5" />
-                    </div>
-
-                    <span
-                      className="text-xs uppercase tracking-[0.16em]"
-                      style={{
-                        color: "var(--color-textMuted)",
-                        fontFamily: "var(--font-heading)",
-                      }}
-                    >
-                      Categoria
-                    </span>
+                  <div
+                    className="mb-7 flex h-11 w-11 items-center justify-center rounded-xl"
+                    style={{
+                      backgroundColor: "rgba(45,140,255,0.1)",
+                      color: "var(--color-accentLight)",
+                    }}
+                  >
+                    <BriefcaseBusiness className="h-5 w-5" />
                   </div>
 
                   <h3
-                    className="text-xl mb-3"
+                    className="mb-3 text-xl"
                     style={{
                       color: "var(--color-text-light)",
                       fontFamily: "var(--font-heading)",
                     }}
                   >
-                    {cat.name}
+                    {category.name}
                   </h3>
 
                   <p
-                    className="text-sm leading-7 mb-4"
+                    className="mb-6 text-sm leading-7"
                     style={{
                       color: "var(--color-text-secondary)",
                       fontFamily: "var(--font-body)",
                     }}
                   >
-                    {cat.description ??
-                      "Conteúdos pensados para ajudar negócios a serem vistos no Google."}
+                    {category.description ??
+                      "Conteúdos para ajudar empresas a crescerem e serem encontradas online."}
                   </p>
 
                   <span
-                    className="inline-flex items-center gap-2 text-sm"
+                    className="inline-flex items-center gap-2 text-sm font-semibold transition group-hover:gap-3"
                     style={{
                       color: "var(--color-accentLight)",
                       fontFamily: "var(--font-heading)",
                     }}
                   >
-                    Ler artigos <ArrowRight className="w-4 h-4" />
+                    Ver conteúdos
+                    <ArrowRight className="h-4 w-4" />
                   </span>
                 </Link>
               ))}
@@ -1032,6 +1011,89 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* CTA FINAL */}
+      <section
+        className="relative overflow-hidden py-20 md:py-28"
+        style={{
+          background:
+            "radial-gradient(circle at 85% 50%, rgba(45,140,255,0.18), transparent 25%), linear-gradient(145deg, #08212B 0%, #03131D 100%)",
+        }}
+      >
+        <div
+          aria-hidden="true"
+          className="absolute -right-28 top-1/2 h-72 w-72 -translate-y-1/2 rounded-full blur-[120px]"
+          style={{
+            backgroundColor: "rgba(45,140,255,0.2)",
+          }}
+        />
+
+        <div className="relative z-10 mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_auto]">
+          <div className="max-w-3xl">
+            <p
+              className="mb-4 text-[11px] uppercase tracking-[0.22em]"
+              style={{
+                color: "var(--color-accentLight)",
+                fontFamily: "var(--font-heading)",
+              }}
+            >
+              Vamos conversar?
+            </p>
+
+            <h2
+              className="mb-5 text-[2rem] leading-tight sm:text-[2.7rem] md:text-[3.4rem]"
+              style={{
+                color: "var(--color-text-light)",
+                fontFamily: "var(--font-heading)",
+              }}
+            >
+              Sua empresa está pronta para dar o próximo passo no digital?
+            </h2>
+
+            <p
+              className="max-w-2xl text-sm leading-7 md:text-base"
+              style={{
+                color: "var(--color-text-secondary)",
+                fontFamily: "var(--font-body)",
+              }}
+            >
+              Conte o que você precisa e receba uma orientação sobre a solução
+              mais adequada para o seu negócio.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full px-7 py-4 text-xs font-semibold uppercase tracking-[0.12em] transition hover:-translate-y-0.5 hover:brightness-110"
+              style={{
+                backgroundColor: "var(--color-success)",
+                color: "var(--color-text-light)",
+                fontFamily: "var(--font-heading)",
+                boxShadow: "0 14px 36px rgba(19,163,0,0.22)",
+              }}
+            >
+              <MessageCircle className="h-4 w-4" />
+              Conversar no WhatsApp
+            </a>
+
+            <Link
+              href="/orcamento"
+              className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full border px-7 py-4 text-xs font-semibold uppercase tracking-[0.12em] transition hover:bg-white/5"
+              style={{
+                borderColor: "var(--color-borderLight)",
+                color: "var(--color-text-light)",
+                fontFamily: "var(--font-heading)",
+              }}
+            >
+              Solicitar orçamento
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
