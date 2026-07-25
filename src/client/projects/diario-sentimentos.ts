@@ -23,9 +23,9 @@ export const diarioSentimentos: Project = {
   url: "https://diario-de-sentimentos.vercel.app/",
 
   images: {
-    card: "/assets/portfolio/diario-de-sentimentos-01.png",
-    desktop: "/assets/portfolio/diario-de-sentimentos-02.png",
-    mobile: "/assets/portfolio/diario-de-sentimentos-03.png",
+    card: "/assets/portfolio/diario-tecnica-01.png",
+    desktop: "/assets/portfolio/diario-tecnica-02.png",
+    mobile: "/assets/portfolio/diario-tecnica-02.png",
   },
 
   shortDescription:

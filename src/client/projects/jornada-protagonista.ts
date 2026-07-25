@@ -16,7 +16,7 @@ export const jornadaProtagonista: Project = {
 
   service: "Landing Page",
 
-  year: 2026,
+  year: 2023,
 
   featured: false,
 
@@ -48,12 +48,9 @@ export const jornadaProtagonista: Project = {
   ],
 
   technologies: [
-    "Next.js",
-    "React",
-    "TypeScript",
-    "Tailwind CSS",
-    "SEO",
-    "PWA",
+    "HTML",
+    "CSS",
+    "JS",
   ],
 
   color: "#D04F8A",

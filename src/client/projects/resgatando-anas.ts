@@ -16,7 +16,7 @@ export const resgatandoAnas: Project = {
 
   service: "Landing Page",
 
-  year: 2026,
+  year: 2024,
 
   featured: false,
 

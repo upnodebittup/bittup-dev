@@ -16,7 +16,7 @@ export const elVidracaria: Project = {
 
   service: "Site Institucional",
 
-  year: 2026,
+  year: 2025,
 
   featured: true,
 
