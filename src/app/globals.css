@@ -195,3 +195,83 @@ body {
   background: rgba(220, 38, 38, 0.2);
   color: var(--color-error);
 }
+
+@keyframes bittup-icon-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(45, 140, 255, 0),
+      0 0 18px rgba(45, 140, 255, 0.08);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 7px rgba(45, 140, 255, 0.04),
+      0 0 30px rgba(45, 140, 255, 0.28);
+  }
+}
+
+.bittup-icon-pulse {
+  animation: bittup-icon-pulse 3.2s ease-in-out infinite;
+}
+
+@keyframes bittup-portfolio-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.bittup-portfolio-marquee {
+  animation: bittup-portfolio-marquee 28s linear infinite;
+  will-change: transform;
+}
+
+.bittup-portfolio-marquee:hover {
+  animation-play-state: paused;
+}
+
+@media (max-width: 640px) {
+  .bittup-portfolio-marquee {
+    animation-duration: 22s;
+  }
+}
+
+/* =========================================================
+   PORTFÓLIO — CARROSSEL INFINITO DA HOME
+========================================================= */
+
+@keyframes bittupPortfolioMarquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.bittup-portfolio-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: bittupPortfolioMarquee 42s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+@media (max-width: 767px) {
+  .bittup-portfolio-marquee-track {
+    animation-duration: 30s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bittup-portfolio-marquee-track {
+    animation: none;
+    transform: none;
+  }
+}
