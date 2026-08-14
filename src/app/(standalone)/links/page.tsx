@@ -10,7 +10,7 @@ import { siteConfig } from "@/client/config/site.config";
 export const metadata: Metadata = {
   title: `Links importantes | ${siteConfig.nome}`,
   description:
-    "Acesse cursos, conteúdos e redes sociais da Bittup.",
+    "Acesse conteúdos e redes sociais da Bittup.",
   robots: {
     index: false,
     follow: true,
@@ -162,15 +162,15 @@ export default function LinksPage() {
           <h1>Seja bem-vindo</h1>
 
           <p className="profile-description">
-            Encontre os cursos, conteúdos e redes sociais da{" "}
+            Encontre os conteúdos e redes sociais da{" "}
             {siteConfig.nome}.
           </p>
 
           <Link
-            href="/lp/intensivao"
+            href="https://wa.me/5521982708329"
             className="profile-main-button"
           >
-            Quero aprender Libras
+            Clique e faça seu orçamento.
             <ArrowUpRight aria-hidden="true" />
           </Link>
         </header>
