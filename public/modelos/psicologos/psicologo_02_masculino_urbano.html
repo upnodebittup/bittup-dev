@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Modelo masculino contemporâneo para psicólogo clínico, com linguagem visual forte e urbana." />
+  <title>Dr. Felipe Monteiro | Psicólogo Clínico</title>
+
+  <style>
+    :root{
+      --bg:#f3efe8;
+      --paper:#fffaf2;
+      --ink:#111417;
+      --blue:#1d3f68;
+      --orange:#d66b2b;
+      --cream:#f3efe8;
+      --muted:#6d6a66;
+      --line:rgba(17,20,23,.16);
+      --shadow:0 26px 70px rgba(17,20,23,.14);
+      --max:1220px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      overflow-x:hidden;
+    }
+
+    a{color:inherit;text-decoration:none}
+    img{display:block;width:100%}
+    .container{width:min(calc(100% - 32px),var(--max));margin:auto}
+
+    header{
+      position:fixed;
+      inset:0 0 auto 0;
+      z-index:50;
+      background:rgba(243,239,232,.90);
+      backdrop-filter:blur(14px);
+      border-bottom:2px solid var(--ink);
+    }
+
+    nav{
+      min-height:72px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+    }
+
+    .brand{
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      font-size:.95rem;
+    }
+
+    .brand span{
+      display:inline-block;
+      padding:5px 8px;
+      background:var(--orange);
+      color:white;
+      margin-left:5px;
+      transform:rotate(-2deg);
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:24px;
+      text-transform:uppercase;
+      font-size:.78rem;
+      font-weight:800;
+      letter-spacing:.08em;
+    }
+
+    .nav-links a:not(.nav-cta){
+      position:relative;
+    }
+
+    .nav-links a:not(.nav-cta)::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:100%;
+      height:3px;
+      background:var(--orange);
+      transform:scaleX(0);
+      transform-origin:left;
+      transition:transform .25s ease;
+    }
+
+    .nav-links a:hover::after{transform:scaleX(1)}
+
+    .nav-cta,.btn-primary{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:46px;
+      padding:0 20px;
+      background:var(--ink);
+      color:white;
+      border:2px solid var(--ink);
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-size:.78rem;
+      transition:transform .22s ease,box-shadow .22s ease;
+    }
+
+    .nav-cta:hover,.btn-primary:hover{
+      transform:translate(-4px,-4px);
+      box-shadow:6px 6px 0 var(--orange);
+    }
+
+    .hero{
+      min-height:100vh;
+      padding:118px 0 54px;
+      display:grid;
+      align-items:center;
+      position:relative;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.06fr .94fr;
+      gap:48px;
+      align-items:center;
+    }
+
+    .kicker{
+      display:inline-block;
+      padding:8px 12px;
+      border:2px solid var(--ink);
+      font-size:.74rem;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      background:var(--paper);
+      animation:popIn .6s both;
+    }
+
+    h1{
+      font-size:clamp(4rem,8vw,8.5rem);
+      line-height:.82;
+      letter-spacing:-.07em;
+      margin:24px 0 28px;
+      text-transform:uppercase;
+      max-width:760px;
+      animation:rise .8s .08s both;
+    }
+
+    h1 .outline{
+      color:transparent;
+      -webkit-text-stroke:2px var(--blue);
+      text-stroke:2px var(--blue);
+    }
+
+    h1 .accent{
+      color:var(--orange);
+      display:inline-block;
+      transform:rotate(-2deg);
+    }
+
+    .hero-copy{
+      color:#504d49;
+      font-size:1.04rem;
+      line-height:1.8;
+      max-width:620px;
+      animation:rise .8s .16s both;
+    }
+
+    .hero-actions{
+      margin-top:30px;
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      animation:rise .8s .24s both;
+    }
+
+    .btn-alt{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:46px;
+      padding:0 20px;
+      border:2px solid var(--ink);
+      background:transparent;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-size:.78rem;
+      transition:background .22s ease,color .22s ease,transform .22s ease;
+    }
+
+    .btn-alt:hover{
+      background:var(--blue);
+      color:white;
+      transform:translateY(-3px);
+    }
+
+    .hero-visual{
+      position:relative;
+      min-height:660px;
+      animation:visualIn .9s .12s both;
+    }
+
+    .photo-main{
+      position:absolute;
+      right:0;
+      top:20px;
+      width:84%;
+      height:600px;
+      object-fit:cover;
+      border:3px solid var(--ink);
+      box-shadow:14px 14px 0 var(--blue);
+      filter:saturate(.82) contrast(1.05);
+    }
+
+    .photo-cut{
+      position:absolute;
+      left:0;
+      bottom:0;
+      width:43%;
+      height:250px;
+      object-fit:cover;
+      border:3px solid var(--ink);
+      box-shadow:-10px 10px 0 var(--orange);
+      animation:floatCut 4s ease-in-out infinite;
+    }
+
+    .stamp{
+      position:absolute;
+      left:8px;
+      top:44px;
+      width:132px;
+      height:132px;
+      border-radius:50%;
+      background:var(--paper);
+      border:3px solid var(--ink);
+      display:grid;
+      place-items:center;
+      text-align:center;
+      font-weight:900;
+      text-transform:uppercase;
+      font-size:.72rem;
+      letter-spacing:.08em;
+      animation:spin 16s linear infinite;
+    }
+
+    .stripe{
+      background:var(--blue);
+      color:white;
+      padding:16px 0;
+      border-top:3px solid var(--ink);
+      border-bottom:3px solid var(--ink);
+      overflow:hidden;
+    }
+
+    .stripe-track{
+      display:inline-block;
+      white-space:nowrap;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      font-size:.78rem;
+      font-weight:900;
+      animation:marquee 15s linear infinite;
+    }
+
+    section{padding:100px 0}
+
+    .section-head{
+      display:grid;
+      grid-template-columns:.62fr 1.38fr;
+      gap:44px;
+      align-items:start;
+      margin-bottom:44px;
+    }
+
+    .label{
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-weight:900;
+      font-size:.75rem;
+      color:var(--orange);
+    }
+
+    h2{
+      font-size:clamp(2.8rem,5vw,5.5rem);
+      line-height:.92;
+      text-transform:uppercase;
+      letter-spacing:-.055em;
+      margin:0;
+    }
+
+    .section-copy{
+      max-width:760px;
+      color:var(--muted);
+      line-height:1.8;
+      margin-top:18px;
+    }
+
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:18px;
+    }
+
+    .card{
+      background:var(--paper);
+      border:3px solid var(--ink);
+      padding:28px;
+      min-height:320px;
+      position:relative;
+      transition:transform .24s ease,box-shadow .24s ease;
+    }
+
+    .card:nth-child(2){transform:translateY(26px)}
+    .card:hover{
+      transform:translate(-5px,-5px);
+      box-shadow:9px 9px 0 var(--orange);
+    }
+    .card:nth-child(2):hover{transform:translate(-5px,21px)}
+
+    .card-number{
+      font-size:3.6rem;
+      font-weight:900;
+      color:var(--blue);
+      line-height:1;
+    }
+
+    .card h3{
+      font-size:1.35rem;
+      text-transform:uppercase;
+      margin:46px 0 12px;
+      letter-spacing:-.02em;
+    }
+
+    .card p{
+      color:var(--muted);
+      line-height:1.75;
+    }
+
+    .about{
+      background:var(--ink);
+      color:white;
+    }
+
+    .about-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:54px;
+      align-items:center;
+    }
+
+    .about-photo-wrap{
+      position:relative;
+      min-height:590px;
+    }
+
+    .about-photo{
+      height:560px;
+      object-fit:cover;
+      border:3px solid white;
+    }
+
+    .about-block{
+      position:absolute;
+      right:-26px;
+      bottom:0;
+      background:var(--orange);
+      color:white;
+      padding:22px;
+      width:220px;
+      border:3px solid white;
+      text-transform:uppercase;
+      font-weight:900;
+      font-size:.82rem;
+      line-height:1.45;
+      animation:blockFloat 4.4s ease-in-out infinite;
+    }
+
+    .about .label{color:#f2a16e}
+    .about h2{color:white}
+    .about p{
+      color:#c9c9c9;
+      line-height:1.9;
+      font-size:1.02rem;
+    }
+
+    .quote-inline{
+      margin:26px 0;
+      padding:18px 20px;
+      border-left:5px solid var(--orange);
+      background:rgba(255,255,255,.05);
+      font-size:1.18rem;
+      line-height:1.6;
+      color:#f3f3f3;
+    }
+
+    .process{
+      background:#dce2e8;
+    }
+
+    .process-list{
+      margin-top:48px;
+      display:grid;
+      border-top:3px solid var(--ink);
+    }
+
+    .step{
+      display:grid;
+      grid-template-columns:120px 1fr 220px;
+      gap:24px;
+      align-items:center;
+      padding:24px 0;
+      border-bottom:3px solid var(--ink);
+      transition:padding-left .24s ease,background .24s ease;
+    }
+
+    .step:hover{
+      padding-left:16px;
+      background:rgba(255,255,255,.4);
+    }
+
+    .step span{
+      color:var(--orange);
+      font-size:2.3rem;
+      font-weight:900;
+    }
+
+    .step h3{
+      margin:0;
+      text-transform:uppercase;
+      font-size:1.25rem;
+    }
+
+    .step p{
+      margin:0;
+      text-align:right;
+      color:#60676c;
+      font-size:.9rem;
+      line-height:1.5;
+    }
+
+    .quote{
+      min-height:540px;
+      display:grid;
+      place-items:center;
+      text-align:center;
+      color:white;
+      background:
+        linear-gradient(rgba(17,20,23,.54),rgba(17,20,23,.70)),
+        url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1900&q=85") center/cover;
+      border-top:3px solid var(--ink);
+      border-bottom:3px solid var(--ink);
+    }
+
+    .quote p{
+      font-size:clamp(2.8rem,6vw,6rem);
+      line-height:.98;
+      text-transform:uppercase;
+      letter-spacing:-.055em;
+      max-width:1000px;
+      margin:0;
+      font-weight:900;
+    }
+
+    .quote p span{color:#ff9b5c}
+
+    .contact{
+      background:var(--paper);
+    }
+
+    .contact-grid{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:50px;
+      align-items:end;
+    }
+
+    .contact-box{
+      border:3px solid var(--ink);
+      background:white;
+      padding:28px;
+      box-shadow:12px 12px 0 var(--blue);
+    }
+
+    .contact-line{
+      padding:13px 0;
+      border-bottom:2px solid var(--line);
+      color:#5d5a56;
+      font-size:.92rem;
+    }
+
+    .contact-box .btn-primary{
+      margin-top:20px;
+      width:100%;
+    }
+
+    footer{
+      padding:30px 0;
+      border-top:3px solid var(--ink);
+      font-size:.86rem;
+      color:#625e59;
+    }
+
+    .footer-row{
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    @keyframes rise{
+      from{opacity:0;transform:translateY(30px)}
+      to{opacity:1;transform:none}
+    }
+
+    @keyframes visualIn{
+      from{opacity:0;transform:translateX(42px) scale(.97)}
+      to{opacity:1;transform:none}
+    }
+
+    @keyframes popIn{
+      from{opacity:0;transform:scale(.8) rotate(-4deg)}
+      to{opacity:1;transform:scale(1) rotate(0)}
+    }
+
+    @keyframes floatCut{
+      0%,100%{transform:translateY(0) rotate(-1deg)}
+      50%{transform:translateY(-12px) rotate(1deg)}
+    }
+
+    @keyframes blockFloat{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-10px)}
+    }
+
+    @keyframes spin{
+      to{transform:rotate(360deg)}
+    }
+
+    @keyframes marquee{
+      to{transform:translateX(-50%)}
+    }
+
+    @media(max-width:900px){
+      .nav-links a:not(.nav-cta){display:none}
+      .hero-grid,.section-head,.about-grid,.contact-grid{grid-template-columns:1fr}
+      .hero-visual{min-height:560px}
+      .photo-main{height:520px;width:80%}
+      .cards{grid-template-columns:1fr}
+      .card:nth-child(2){transform:none}
+      .card:nth-child(2):hover{transform:translate(-5px,-5px)}
+      .step{grid-template-columns:80px 1fr}
+      .step p{grid-column:2;text-align:left}
+    }
+
+    @media(max-width:560px){
+      .hero{padding-top:108px}
+      .hero-visual{min-height:460px}
+      .photo-main{height:430px;width:84%}
+      .photo-cut{height:180px;width:48%}
+      .stamp{width:110px;height:110px;font-size:.65rem}
+      .about-photo{height:450px}
+      .about-photo-wrap{min-height:480px}
+      .about-block{right:8px;width:190px}
+      .step{grid-template-columns:56px 1fr}
+      section{padding:80px 0}
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <a class="brand" href="#">Felipe <span>Monteiro</span></a>
+
+        <div class="nav-links">
+          <a href="#atuacao">Atuação</a>
+          <a href="#sobre">Sobre</a>
+          <a href="#processo">Processo</a>
+          <a class="nav-cta" href="#contato">Agendar sessão</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="kicker">Psicologia clínica • CRP 00/000000</div>
+
+          <h1>
+            Menos ruído. Mais <span class="outline">clareza.</span>
+            Mais <span class="accent">escolha.</span>
+          </h1>
+
+          <p class="hero-copy">
+            Psicoterapia para adultos que vivem em ritmo acelerado, sentem dificuldade
+            de desacelerar ou querem compreender melhor suas relações, decisões e padrões
+            de funcionamento.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn-primary" href="#contato">Agendar atendimento</a>
+            <a class="btn-alt" href="#atuacao">Ver áreas de atuação</a>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <img
+            class="photo-main"
+            src="https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?auto=format&fit=crop&w=1200&q=85"
+            alt="Homem em retrato profissional"
+          >
+
+          <img
+            class="photo-cut"
+            src="https://images.unsplash.com/photo-1549923746-c502d488b3ea?auto=format&fit=crop&w=900&q=85"
+            alt="Ambiente profissional urbano"
+          >
+
+          <div class="stamp">
+            ONLINE<br>+<br>PRESENCIAL
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="stripe">
+      <div class="stripe-track">
+        ANSIEDADE • AUTOCOBRANÇA • RELACIONAMENTOS • CARREIRA • IDENTIDADE • RECOMEÇOS •
+        ANSIEDADE • AUTOCOBRANÇA • RELACIONAMENTOS • CARREIRA • IDENTIDADE • RECOMEÇOS •
+      </div>
+    </div>
+
+    <section id="atuacao">
+      <div class="container">
+        <div class="section-head">
+          <span class="label">Áreas de atuação</span>
+
+          <div>
+            <h2>Questões reais. Conversas diretas.</h2>
+            <p class="section-copy">
+              Um espaço terapêutico para compreender o que se repete, o que pesa e o
+              que precisa mudar — sem respostas prontas e sem fórmulas genéricas.
+            </p>
+          </div>
+        </div>
+
+        <div class="cards">
+          <article class="card">
+            <div class="card-number">01</div>
+            <h3>Ansiedade e sobrecarga</h3>
+            <p>Excesso de pensamento, dificuldade de desligar, tensão constante e sensação de estar sempre atrasado em relação à própria vida.</p>
+          </article>
+
+          <article class="card">
+            <div class="card-number">02</div>
+            <h3>Relações e conflitos</h3>
+            <p>Dificuldades de comunicação, limites, repetições afetivas e padrões que desgastam vínculos importantes.</p>
+          </article>
+
+          <article class="card">
+            <div class="card-number">03</div>
+            <h3>Carreira e decisões</h3>
+            <p>Pressão profissional, mudanças de direção, esgotamento, insegurança e construção de escolhas mais conscientes.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="about" id="sobre">
+      <div class="container about-grid">
+        <div class="about-photo-wrap">
+          <img
+            class="about-photo"
+            src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=1200&q=85"
+            alt="Psicólogo em ambiente profissional"
+          >
+
+          <div class="about-block">
+            Atendimento individual para adultos • Online e presencial
+          </div>
+        </div>
+
+        <div>
+          <span class="label">Sobre</span>
+          <h2>Dr. Felipe Monteiro</h2>
+
+          <p>
+            Meu trabalho é voltado a adultos que desejam compreender com mais profundidade
+            como pensam, reagem e se relacionam. A terapia não precisa ser distante,
+            excessivamente formal ou cheia de termos difíceis para ser séria.
+          </p>
+
+          <div class="quote-inline">
+            “Clareza não significa ter certeza de tudo. Significa conseguir enxergar melhor de onde você está partindo.”
+          </div>
+
+          <p>
+            O processo acontece com ética, sigilo e uma postura ativa de escuta,
+            respeitando o ritmo e a singularidade de cada pessoa.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="process" id="processo">
+      <div class="container">
+        <span class="label">Como funciona</span>
+        <h2>Começar sem complicar.</h2>
+
+        <div class="process-list">
+          <div class="step">
+            <span>01</span>
+            <h3>Contato inicial</h3>
+            <p>Horários, modalidade e informações práticas</p>
+          </div>
+
+          <div class="step">
+            <span>02</span>
+            <h3>Primeira sessão</h3>
+            <p>Entendimento do momento e da demanda</p>
+          </div>
+
+          <div class="step">
+            <span>03</span>
+            <h3>Processo terapêutico</h3>
+            <p>Sessões individualizadas e acompanhamento</p>
+          </div>
+
+          <div class="step">
+            <span>04</span>
+            <h3>Reavaliação</h3>
+            <p>Novos objetivos e próximos passos</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="quote">
+      <div class="container">
+        <p>
+          Não é sobre <span>dar conta de tudo.</span><br>
+          É sobre entender o que precisa mudar.
+        </p>
+      </div>
+    </section>
+
+    <section class="contact" id="contato">
+      <div class="container contact-grid">
+        <div>
+          <span class="label">Primeiro contato</span>
+          <h2>Quer entender se a terapia faz sentido para você?</h2>
+          <p class="section-copy">
+            Envie uma mensagem para conhecer horários, formato de atendimento e demais informações.
+          </p>
+        </div>
+
+        <div class="contact-box">
+          <div class="contact-line">Atendimento individual para adultos</div>
+          <div class="contact-line">Online e presencial</div>
+          <div class="contact-line">Segunda a sexta • mediante agendamento</div>
+
+          <a
+            class="btn-primary"
+            href="https://wa.me/5500000000000"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Falar pelo WhatsApp
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-row">
+      <span>© 2026 Felipe Monteiro • Psicologia Clínica</span>
+      <span>CRP 00/000000 • Modelo demonstrativo BittUp</span>
+    </div>
+  </footer>
+</body>
+</html>

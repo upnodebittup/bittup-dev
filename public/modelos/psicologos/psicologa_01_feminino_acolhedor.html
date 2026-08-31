@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Modelo de site para psicóloga clínica com identidade acolhedora e elegante." />
+  <title>Dra. Helena Duarte | Psicóloga Clínica</title>
+
+  <style>
+    :root {
+      --wine: #7e4f5f;
+      --rose: #d8b7c1;
+      --cream: #fbf7f3;
+      --paper: #fffdfb;
+      --ink: #332a2d;
+      --muted: #74686c;
+      --line: rgba(126,79,95,.16);
+      --shadow: 0 22px 70px rgba(78,55,62,.10);
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--cream);
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { display: block; width: 100%; }
+
+    .container {
+      width: min(calc(100% - 32px), var(--max));
+      margin-inline: auto;
+    }
+
+    header {
+      position: fixed;
+      z-index: 50;
+      inset: 0 0 auto 0;
+      background: rgba(251,247,243,.88);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    nav {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      font-family: Georgia, serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -.02em;
+    }
+
+    .brand span { color: var(--wine); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      font-size: .9rem;
+    }
+
+    .nav-links > a:not(.nav-btn) {
+      position: relative;
+    }
+
+    .nav-links > a:not(.nav-btn)::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -7px;
+      width: 100%;
+      height: 1px;
+      background: var(--wine);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .28s ease;
+    }
+
+    .nav-links > a:hover::after { transform: scaleX(1); }
+
+    .nav-btn, .primary-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 20px;
+      border-radius: 999px;
+      background: var(--wine);
+      color: #fff;
+      font-weight: 700;
+      transition: transform .25s ease, box-shadow .25s ease;
+      box-shadow: 0 10px 28px rgba(126,79,95,.18);
+    }
+
+    .nav-btn:hover, .primary-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 34px rgba(126,79,95,.24);
+    }
+
+    .hero {
+      min-height: 100vh;
+      padding: 122px 0 70px;
+      position: relative;
+      isolation: isolate;
+      display: grid;
+      align-items: center;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: 460px;
+      height: 460px;
+      border-radius: 50%;
+      right: -130px;
+      top: 120px;
+      background: radial-gradient(circle, rgba(216,183,193,.56), rgba(216,183,193,0));
+      animation: drift 8s ease-in-out infinite alternate;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: .88fr 1.12fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      color: var(--wine);
+      font-weight: 800;
+      animation: fadeUp .8s ease both;
+    }
+
+    h1 {
+      font-family: Georgia, serif;
+      font-size: clamp(3rem, 6vw, 6rem);
+      line-height: .98;
+      letter-spacing: -.055em;
+      margin: 18px 0 24px;
+      font-weight: 500;
+      animation: fadeUp .9s .08s ease both;
+    }
+
+    .hero-copy {
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.8;
+      max-width: 580px;
+      animation: fadeUp .9s .16s ease both;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+      animation: fadeUp .9s .24s ease both;
+    }
+
+    .ghost-btn {
+      min-height: 46px;
+      padding: 0 20px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--wine);
+      color: var(--wine);
+      font-weight: 700;
+      transition: transform .25s ease, background .25s ease;
+    }
+
+    .ghost-btn:hover {
+      transform: translateY(-3px);
+      background: rgba(126,79,95,.06);
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 640px;
+      animation: revealRight 1s .12s ease both;
+    }
+
+    .hero-photo {
+      width: 78%;
+      height: 610px;
+      margin-left: auto;
+      object-fit: cover;
+      border-radius: 180px 180px 22px 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .therapy-card {
+      position: absolute;
+      width: 49%;
+      left: 0;
+      bottom: 24px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      padding: 13px;
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      animation: floatCard 4.4s ease-in-out infinite;
+    }
+
+    .therapy-card img {
+      height: 210px;
+      object-fit: cover;
+      border-radius: 15px;
+    }
+
+    .therapy-card p {
+      margin: 12px 6px 5px;
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      line-height: 1.35;
+    }
+
+    .mini-badge {
+      position: absolute;
+      top: 56px;
+      left: -26px;
+      background: var(--wine);
+      color: white;
+      border-radius: 999px;
+      padding: 12px 17px;
+      font-size: .8rem;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+      animation: badgeMove 3.6s ease-in-out infinite;
+    }
+
+    .intro-strip {
+      background: var(--wine);
+      color: white;
+      padding: 20px 0;
+      overflow: hidden;
+    }
+
+    .strip-track {
+      white-space: nowrap;
+      display: inline-block;
+      font-size: .78rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      font-weight: 800;
+      animation: marquee 19s linear infinite;
+    }
+
+    section { padding: 100px 0; }
+
+    .section-label {
+      color: var(--wine);
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      font-weight: 800;
+      font-size: .78rem;
+    }
+
+    h2 {
+      font-family: Georgia, serif;
+      font-weight: 500;
+      font-size: clamp(2.4rem, 5vw, 4.8rem);
+      letter-spacing: -.045em;
+      line-height: 1.03;
+      margin: 12px 0 18px;
+    }
+
+    .section-copy {
+      color: var(--muted);
+      line-height: 1.85;
+      max-width: 680px;
+    }
+
+    .areas-grid {
+      margin-top: 44px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .area-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 30px;
+      min-height: 240px;
+      position: relative;
+      overflow: hidden;
+      transition: transform .3s ease, box-shadow .3s ease;
+    }
+
+    .area-card::after {
+      content: "";
+      position: absolute;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: rgba(216,183,193,.25);
+      right: -28px;
+      bottom: -28px;
+      transition: transform .35s ease;
+    }
+
+    .area-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow);
+    }
+
+    .area-card:hover::after { transform: scale(1.35); }
+
+    .area-index {
+      font-family: Georgia, serif;
+      font-size: 2.2rem;
+      color: var(--rose);
+    }
+
+    .area-card h3 {
+      font-family: Georgia, serif;
+      font-size: 1.4rem;
+      font-weight: 500;
+      margin: 18px 0 10px;
+    }
+
+    .area-card p {
+      color: var(--muted);
+      line-height: 1.75;
+      max-width: 90%;
+    }
+
+    .about {
+      background: #f4ecee;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .about-photo-wrap {
+      position: relative;
+    }
+
+    .about-photo {
+      height: 570px;
+      object-fit: cover;
+      border-radius: 20px 150px 20px 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .about-stamp {
+      position: absolute;
+      right: -24px;
+      bottom: 40px;
+      width: 142px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      font-family: Georgia, serif;
+      text-align: center;
+      color: var(--wine);
+      box-shadow: var(--shadow);
+      animation: slowSpin 16s linear infinite;
+    }
+
+    .checks {
+      display: grid;
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .check {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      color: var(--muted);
+    }
+
+    .check b {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: var(--wine);
+      color: white;
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 auto;
+      font-size: .8rem;
+    }
+
+    .process-grid {
+      margin-top: 44px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .step {
+      border-top: 1px solid var(--wine);
+      padding-top: 18px;
+    }
+
+    .step span {
+      color: var(--wine);
+      font-weight: 800;
+      font-size: .76rem;
+      letter-spacing: .1em;
+    }
+
+    .step h3 {
+      font-family: Georgia, serif;
+      font-weight: 500;
+      font-size: 1.35rem;
+      margin: 10px 0;
+    }
+
+    .step p {
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .quote {
+      padding: 110px 0;
+      background:
+        linear-gradient(rgba(51,42,45,.62), rgba(51,42,45,.62)),
+        url("https://images.unsplash.com/photo-1464029902023-f42eba355bde?auto=format&fit=crop&w=1800&q=85") center/cover;
+      color: white;
+      background-attachment: fixed;
+    }
+
+    blockquote {
+      margin: 0;
+      font-family: Georgia, serif;
+      font-size: clamp(2.2rem, 5vw, 5rem);
+      line-height: 1.15;
+      max-width: 980px;
+      font-weight: 400;
+    }
+
+    .contact-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      padding: 58px;
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 40px;
+      align-items: end;
+      box-shadow: var(--shadow);
+    }
+
+    .contact-info {
+      display: grid;
+      gap: 12px;
+      color: var(--muted);
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 34px 0;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    .footer-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes revealRight {
+      from { opacity: 0; transform: translateX(42px) scale(.97); }
+      to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+
+    @keyframes drift {
+      to { transform: translate(-48px, 38px) scale(1.08); }
+    }
+
+    @keyframes floatCard {
+      0%,100% { transform: translateY(0) rotate(-1deg); }
+      50% { transform: translateY(-12px) rotate(1deg); }
+    }
+
+    @keyframes badgeMove {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(9px); }
+    }
+
+    @keyframes marquee {
+      to { transform: translateX(-50%); }
+    }
+
+    @keyframes slowSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 900px) {
+      .nav-links > a:not(.nav-btn) { display: none; }
+      .hero-grid, .about-grid, .contact-card { grid-template-columns: 1fr; }
+      .hero-visual { min-height: 560px; }
+      .hero-photo { height: 540px; width: 82%; }
+      .areas-grid, .process-grid { grid-template-columns: 1fr; }
+      .quote { background-attachment: scroll; }
+    }
+
+    @media (max-width: 560px) {
+      .hero { padding-top: 108px; }
+      .hero-visual { min-height: 480px; }
+      .hero-photo { height: 450px; width: 88%; }
+      .therapy-card { width: 58%; left: 0; }
+      .therapy-card img { height: 150px; }
+      .mini-badge { left: 4px; top: 30px; }
+      .about-photo { height: 460px; }
+      .about-stamp { right: 10px; }
+      .contact-card { padding: 34px 24px; }
+      section { padding: 78px 0; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <a href="#" class="brand">Helena <span>Duarte</span></a>
+        <div class="nav-links">
+          <a href="#areas">Atuação</a>
+          <a href="#sobre">Sobre</a>
+          <a href="#processo">Como funciona</a>
+          <a class="nav-btn" href="#contato">Agendar conversa</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">Psicóloga Clínica • CRP 00/000000</div>
+          <h1>Um espaço para se escutar com mais cuidado.</h1>
+          <p class="hero-copy">
+            Psicoterapia para mulheres adultas que desejam compreender emoções,
+            fortalecer limites e atravessar mudanças com mais consciência e acolhimento.
+          </p>
+
+          <div class="hero-actions">
+            <a class="primary-btn" href="#contato">Agendar atendimento</a>
+            <a class="ghost-btn" href="#sobre">Conhecer meu trabalho</a>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <img
+            class="hero-photo"
+            src="https://images.unsplash.com/photo-1606738132449-e3590ddb6793?auto=format&fit=crop&w=1200&q=85"
+            alt="Mulher em retrato profissional"
+          >
+
+          <div class="therapy-card">
+            <img
+              src="https://images.unsplash.com/photo-1714976694810-85add1a29c96?auto=format&fit=crop&w=900&q=85"
+              alt="Sessão de terapia entre duas mulheres"
+            >
+            <p>Escuta sem julgamento, respeitando seu ritmo e sua história.</p>
+          </div>
+
+          <div class="mini-badge">Online + presencial</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="intro-strip">
+      <div class="strip-track">
+        ANSIEDADE • AUTOESTIMA • RELACIONAMENTOS • LIMITES • LUTO • RECOMEÇOS •
+        ANSIEDADE • AUTOESTIMA • RELACIONAMENTOS • LIMITES • LUTO • RECOMEÇOS •
+      </div>
+    </div>
+
+    <section id="areas">
+      <div class="container">
+        <span class="section-label">Áreas de cuidado</span>
+        <h2>Nem tudo precisa ser carregado sozinha.</h2>
+        <p class="section-copy">
+          A terapia pode ser um lugar para compreender o que está acontecendo,
+          nomear o que pesa e encontrar novas formas de lidar com aquilo que se repete.
+        </p>
+
+        <div class="areas-grid">
+          <article class="area-card">
+            <div class="area-index">01</div>
+            <h3>Ansiedade e autocobrança</h3>
+            <p>Trabalho sobre excesso de preocupação, perfeccionismo, culpa e a sensação de nunca fazer o suficiente.</p>
+          </article>
+
+          <article class="area-card">
+            <div class="area-index">02</div>
+            <h3>Autoestima e identidade</h3>
+            <p>Um espaço para reconstruir a relação consigo, reconhecer necessidades e fortalecer escolhas mais coerentes.</p>
+          </article>
+
+          <article class="area-card">
+            <div class="area-index">03</div>
+            <h3>Relacionamentos e limites</h3>
+            <p>Compreensão de padrões afetivos, dificuldades de comunicação, conflitos e construção de limites mais saudáveis.</p>
+          </article>
+
+          <article class="area-card">
+            <div class="area-index">04</div>
+            <h3>Perdas e recomeços</h3>
+            <p>Acolhimento em períodos de luto, separações, mudanças profissionais ou momentos em que a vida pede reorganização.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="about" id="sobre">
+      <div class="container about-grid">
+        <div class="about-photo-wrap">
+          <img
+            class="about-photo"
+            src="https://images.unsplash.com/photo-1623121739158-80a9b0e6d2c7?auto=format&fit=crop&w=1200&q=85"
+            alt="Mulher sentada em ambiente acolhedor"
+          >
+          <div class="about-stamp">ESCUTA<br>ACOLHIMENTO<br>PRESENÇA</div>
+        </div>
+
+        <div>
+          <span class="section-label">Sobre mim</span>
+          <h2>Dra. Helena Duarte</h2>
+          <p class="section-copy">
+            Sou psicóloga clínica e acredito que um bom processo terapêutico
+            começa quando a pessoa encontra um espaço em que não precisa se explicar
+            o tempo todo, performar força ou dar respostas prontas.
+          </p>
+
+          <div class="checks">
+            <div class="check"><b>✓</b><span>Atendimento individual para mulheres adultas.</span></div>
+            <div class="check"><b>✓</b><span>Sessões online e presenciais mediante disponibilidade.</span></div>
+            <div class="check"><b>✓</b><span>Trabalho ético, sigiloso e construído de forma individual.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="processo">
+      <div class="container">
+        <span class="section-label">Como funciona</span>
+        <h2>Começar pode ser mais simples do que parece.</h2>
+
+        <div class="process-grid">
+          <article class="step">
+            <span>PASSO 01</span>
+            <h3>Primeiro contato</h3>
+            <p>Você envia uma mensagem para verificar horários, modalidade e tirar dúvidas iniciais.</p>
+          </article>
+
+          <article class="step">
+            <span>PASSO 02</span>
+            <h3>Primeira sessão</h3>
+            <p>Conversamos sobre o que trouxe você até aqui e sobre o que espera encontrar no processo.</p>
+          </article>
+
+          <article class="step">
+            <span>PASSO 03</span>
+            <h3>Seu processo</h3>
+            <p>As sessões seguem a partir das suas necessidades, história e questões que surgem ao longo do caminho.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="quote">
+      <div class="container">
+        <blockquote>
+          “Cuidar de si também pode significar parar de tentar resolver tudo sozinha.”
+        </blockquote>
+      </div>
+    </section>
+
+    <section id="contato">
+      <div class="container">
+        <div class="contact-card">
+          <div>
+            <span class="section-label">Primeiro contato</span>
+            <h2>Vamos conversar?</h2>
+            <p class="section-copy">
+              Se você está pensando em iniciar a psicoterapia, pode me chamar para
+              conhecer horários disponíveis, modalidade de atendimento e valores.
+            </p>
+          </div>
+
+          <div class="contact-info">
+            <span>Atendimento online e presencial</span>
+            <span>Segunda a sexta • mediante agendamento</span>
+            <a class="primary-btn" href="https://wa.me/5500000000000" target="_blank" rel="noopener noreferrer">
+              Falar pelo WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-row">
+      <span>© 2026 Helena Duarte • Psicologia Clínica</span>
+      <span>CRP 00/000000 • Modelo demonstrativo BittUp</span>
+    </div>
+  </footer>
+</body>
+</html>

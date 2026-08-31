@@ -1,5 +1,14 @@
 // src/client/projects/index.ts
 
+import { modeloPetshop1 } from "./modelo-petshop-1";
+import { modeloPetshop2 } from "./modelo-petshop-2";
+import { modeloPetshop3 } from "./modelo-petshop-3";
+import { modeloPsicologa1 } from "./modelo-psicologa-1";
+import { modeloPsicologa2 } from "./modelo-psicologa-2";
+import { modeloClinicaNeuro1 } from "./modelo-clinica-neuro-1";
+import { modeloPsicologo1 } from "./modelo-psicologo-1";
+import { modeloPsicologo2 } from "./modelo-psicologo-2";
+import { modeloClinicaNeuro2 } from "./modelo-clinica-neuro-2";
 
 import { artesanaio } from "./artesanaio";
 import { cmTeixeiras } from "./cm-teixeiras";
@@ -10,10 +19,11 @@ import { jornadaProtagonista } from "./jornada-protagonista";
 import { jornadaTransformacao } from "./jornada-transformacao";
 import { maribela } from "./maribela";
 import { resgatandoAnas } from "./resgatando-anas";
+
 import type { Project, ProjectCategory } from "./types";
 
-
 export const projects: Project[] = [
+  
   jornadaTransformacao,
   elVidracaria,
   cmTeixeiras,
@@ -23,6 +33,16 @@ export const projects: Project[] = [
   resgatandoAnas,
   diarioSentimentos,
   jornadaProtagonista,
+
+  modeloPsicologa1,
+  modeloPsicologa2,
+  modeloClinicaNeuro1,
+  modeloPsicologo1,
+  modeloPsicologo2,
+  modeloClinicaNeuro2,  
+  modeloPetshop1,
+  modeloPetshop2,
+  modeloPetshop3,
 ];
 
 export const featuredProjects: Project[] = projects.filter(

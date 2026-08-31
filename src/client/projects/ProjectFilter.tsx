@@ -24,6 +24,10 @@ const filters: {
     label: "Sites",
   },
   {
+    value: "modelos",
+    label: "Modelos",
+  },
+  {
     value: "landing-page",
     label: "Landing Pages",
   },
