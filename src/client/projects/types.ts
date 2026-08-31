@@ -2,6 +2,7 @@
 
 export type ProjectCategory =
   | "site"
+  | "modelos"
   | "landing-page"
   | "loja-virtual"
   | "sistema"
