@@ -1,3 +1,5 @@
+import { isModuleEnabled } from '@/core/lib/modules';
+import { organizationSchema, websiteSchema, serializeJsonLd } from '@/core/lib/seo';
 // src/client/home/HomePage.tsx
 
 import { projects } from "@/client/projects";
@@ -5,7 +7,7 @@ import PortfolioMarquee from "@/client/projects/PortfolioMarquee";
 
 import Reveal from "@/client/components/Reveal";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/core/components/ModuleLink";
 import {
   ArrowRight,
   BriefcaseBusiness,
@@ -13,7 +15,6 @@ import {
   ChevronRight,
   CodeXml,
   Globe2,
-  Headphones,
   LayoutTemplate,
   MessageCircle,
   MonitorSmartphone,
@@ -105,29 +106,6 @@ const processSteps = [
   },
 ];
 
-const featuredProjects = [
-  {
-    title: "Thaíse Libras",
-    category: "Site institucional",
-    description:
-      "Presença digital inclusiva para professora e profissional de Libras.",
-    href: "/portfolio/thaise-libras",
-  },
-  {
-    title: "CM Teixeiras",
-    category: "Loja virtual",
-    description:
-      "Estrutura digital para venda de camisas, uniformes e produtos personalizados.",
-    href: "/portfolio/cm-teixeiras",
-  },
-  {
-    title: "Jornada da Transformação",
-    category: "Landing page",
-    description:
-      "Página estratégica para divulgação e inscrição em evento presencial.",
-    href: "/portfolio/jornada-da-transformacao",
-  },
-];
 
 const faqPreview = [
   {
@@ -153,7 +131,7 @@ const faqPreview = [
 ];
 
 export default async function HomePage() {
-  const categories = await prisma.blogCategory.findMany({
+  const categories = isModuleEnabled("blog") ? await prisma.blogCategory.findMany({
     where: {
       showOnHome: true,
     },
@@ -161,39 +139,13 @@ export default async function HomePage() {
       order: "asc",
     },
     take: 3,
-  });
+  }) : [];
 
   const whatsappHref = `https://wa.me/${
     siteConfig.whatsapp
   }?text=${encodeURIComponent(siteConfig.whatsappMensagem)}`;
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "ProfessionalService",
-    name: siteConfig.nome,
-    url: siteConfig.seo.url,
-    image: `${siteConfig.seo.url}${siteConfig.seo.ogImage}`,
-    description: siteConfig.seo.descricao,
-    telephone: `+${siteConfig.whatsapp}`,
-    areaServed: {
-      "@type": "Country",
-      name: "Brasil",
-    },
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "Rio de Janeiro",
-      addressRegion: "RJ",
-      addressCountry: "BR",
-    },
-    sameAs: [
-      siteConfig.instagram
-        ? `https://instagram.com/${siteConfig.instagram.replace("@", "")}`
-        : null,
-      siteConfig.facebook
-        ? `https://facebook.com/${siteConfig.facebook}`
-        : null,
-    ].filter(Boolean),
-  };
+  const structuredData = [organizationSchema(), websiteSchema()].filter(Boolean);
 
   return (
     <main
@@ -206,7 +158,7 @@ export default async function HomePage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(structuredData),
+          __html: serializeJsonLd(structuredData),
         }}
       />
 
@@ -492,6 +444,7 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {isModuleEnabled("services") && <>
       {/* SERVIÇOS */}
       <section
         className="border-b py-20 md:py-28"
@@ -625,6 +578,8 @@ export default async function HomePage() {
 </div>
         </div>
       </section>
+      </>}
+
 
       {/* VANTAGENS */}
       <section
@@ -712,7 +667,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <PortfolioMarquee projects={projects} />
+      {isModuleEnabled("portfolio") && <PortfolioMarquee projects={projects} />}
 
       {/* PROCESSO */}
       <section

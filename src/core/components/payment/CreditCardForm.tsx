@@ -69,10 +69,10 @@ export default function CreditCardForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6 text-[var(--color-text-light)]">
       <div className="p-4 rounded-2xl bg-gradient-to-r from-[var(--color-bg-secondary)] to-[var(--color-bg-tertiary)] border border-[var(--color-border)]">
         <p className="text-xs text-[var(--color-text-secondary)] mb-2">NÚMERO DO CARTÃO</p>
-        <p className="text-xl font-mono font-semibold tracking-wider text-[var(--color-text-primary)]">
+        <p className="text-xl font-mono font-semibold tracking-wider text-[var(--color-text-light)]">
           {formattedCardNumber}
         </p>
       </div>
@@ -162,7 +162,7 @@ export default function CreditCardForm({
           <button
             type="button"
             onClick={() => setShowCvv(!showCvv)}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-light)]"
           >
             {showCvv ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
@@ -176,7 +176,7 @@ export default function CreditCardForm({
       <div className="p-4 rounded-2xl bg-[var(--color-bg-secondary)] border border-[var(--color-border)]">
         <div className="flex justify-between items-center">
           <p className="text-sm text-[var(--color-text-secondary)]">Total a pagar:</p>
-          <p className="text-2xl font-bold text-[var(--color-text-primary)]">
+          <p className="text-2xl font-bold text-[var(--color-text-light)]">
             R$ {total.toFixed(2).replace('.', ',')}
           </p>
         </div>

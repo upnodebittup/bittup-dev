@@ -46,7 +46,7 @@ export default function AdminClientsPage() {
 
       setStatus('Cliente criado com sucesso e vinculado ao Asaas.')
       event.currentTarget.reset()
-    } catch (err) {
+    } catch {
       setError('Erro de conexão ao criar cliente.')
     } finally {
       setIsSubmitting(false)

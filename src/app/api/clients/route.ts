@@ -1,3 +1,5 @@
+import { withAdmin } from '@/core/lib/admin-access'
+import { withModuleApi } from '@/core/lib/module-server'
 import { NextResponse } from 'next/server'
 import prisma from '@/core/lib/prisma'
 import { createAsaasAccount } from '@/core/lib/asaas'
@@ -9,7 +11,7 @@ type CreateClientBody = {
   phone?: string
 }
 
-export async function POST(req: Request) {
+async function POST(req: Request) {
   try {
     const body = (await req.json()) as CreateClientBody
     const name = body.name?.trim()
@@ -46,3 +48,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }
+
+const securedPOST = withModuleApi('/api/clients', withAdmin(POST))
+export { securedPOST as POST }

@@ -1,3 +1,5 @@
+import { requireModule } from '@/core/lib/module-server';
+import { completeMetadata } from '@/core/lib/seo/complete-metadata';
 // src/app/(site)/portfolio/page.tsx
 
 import type { Metadata } from "next";
@@ -7,7 +9,7 @@ import { ArrowRight } from "lucide-react";
 import { projects } from "@/client/projects";
 import PortfolioGrid from "@/client/projects/ProjectGrid";
 
-export const metadata: Metadata = {
+const originalMetadata: Metadata = {
   title: "Portfólio | BittUp",
   description:
     "Conheça sites, landing pages, lojas virtuais e sistemas desenvolvidos pela BittUp para negócios reais.",
@@ -22,8 +24,10 @@ export const metadata: Metadata = {
     url: "/portfolio",
   },
 };
+export const metadata = completeMetadata(originalMetadata, "/portfolio");
 
 export default function PortfolioPage() {
+  requireModule("portfolio");
   return (
     <main>
       {/* HERO */}

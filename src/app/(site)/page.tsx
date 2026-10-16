@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 // src/app/(site)/page.tsx
 import type { Metadata } from "next";
 import { generatePageMetadata } from "@/core/lib/seo/generate-metadata";

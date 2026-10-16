@@ -23,6 +23,7 @@ import { resgatandoAnas } from "./resgatando-anas";
 import type { Project, ProjectCategory } from "./types";
 
 export const projects: Project[] = [
+
   
   jornadaTransformacao,
   elVidracaria,
@@ -39,6 +40,7 @@ export const projects: Project[] = [
   modeloClinicaNeuro1,
   modeloPsicologo1,
   modeloPsicologo2,
+  modeloClinicaNeuro2,
   modeloClinicaNeuro2,  
   modeloPetshop1,
   modeloPetshop2,

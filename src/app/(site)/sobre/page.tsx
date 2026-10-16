@@ -1,3 +1,4 @@
+import { completeMetadata } from '@/core/lib/seo/complete-metadata';
 // src/app/(site)/sobre/page.tsx
 
 import type { Metadata } from "next";
@@ -12,7 +13,7 @@ import {
 
 import { siteConfig } from "@/client/config/site.config";
 
-export const metadata: Metadata = {
+const originalMetadata: Metadata = {
   title: "Sobre a BittUp",
   description:
     "Conheça a BittUp e nossa forma de desenvolver sites, landing pages, lojas virtuais e sistemas digitais.",
@@ -27,6 +28,7 @@ export const metadata: Metadata = {
     url: "/sobre",
   },
 };
+export const metadata = completeMetadata(originalMetadata, "/sobre");
 
 const differentials = [
   {

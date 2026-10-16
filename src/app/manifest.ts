@@ -1,8 +1,12 @@
+import { isModuleEnabled } from '@/core/lib/modules';
+import { notFound } from 'next/navigation';
+export const dynamic = 'force-dynamic';
 import type { MetadataRoute } from "next";
 
 import { siteConfig } from "@/client/config/site.config";
 
 export default function manifest(): MetadataRoute.Manifest {
+  if (!isModuleEnabled("pwa")) notFound();
   return {
     name: siteConfig.nome,
 
@@ -38,8 +42,9 @@ export default function manifest(): MetadataRoute.Manifest {
         purpose: "any",
       },
       {
-        src: siteConfig.pwa.maskableIcon512,
-        sizes: "512x512",
+        // Original logo has safe margins; declare its actual dimensions.
+        src: siteConfig.pwa.maskableIcon,
+        sizes: "500x500",
         type: "image/png",
         purpose: "maskable",
       },

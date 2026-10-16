@@ -3,10 +3,7 @@
 import {
   BarChart3,
   Boxes,
-  CheckCircle2,
-  CodeXml,
   CreditCard,
-  FileText,
   Gauge,
   Globe2,
   LayoutDashboard,
@@ -18,7 +15,6 @@ import {
   Search,
   ShieldCheck,
   ShoppingCart,
-  Sparkles,
   Users,
   Workflow,
   Zap,

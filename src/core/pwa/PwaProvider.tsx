@@ -94,6 +94,12 @@ export default function PwaProvider({
   children,
   enabled,
 }: PwaProviderProps) {
+  useEffect(() => {
+    if (enabled || !('serviceWorker' in navigator)) return;
+    void navigator.serviceWorker.getRegistrations().then(registrations => Promise.all(registrations.filter(registration => [registration.active, registration.waiting, registration.installing].some(worker => worker && new URL(worker.scriptURL).pathname === '/serwist/sw.js')).map(registration => registration.unregister())));
+    void caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('bittup-public-v2-') || key.startsWith('upnode-pwa-')).map(key => caches.delete(key))));
+    localStorage.removeItem('upnode-offline-presentation-ready');
+  }, [enabled]);
   if (!enabled) {
     return children;
   }

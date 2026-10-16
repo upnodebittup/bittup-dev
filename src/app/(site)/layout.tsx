@@ -1,3 +1,4 @@
+import { isModuleEnabled } from '@/core/lib/modules';
 import type {
   Metadata,
   Viewport,
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
 
   applicationName: siteConfig.nome,
 
-  manifest: "/manifest.webmanifest",
+  manifest: isModuleEnabled("pwa") ? "/manifest.webmanifest" : undefined,
 
   title: siteConfig.seo.titulo,
 
@@ -138,7 +139,7 @@ export default function RootLayout({
   children,
 }: RootLayoutProps) {
   const pwaEnabled =
-    siteConfig.pwa.enabled &&
+    isModuleEnabled("pwa") &&
     process.env.NODE_ENV === "production";
 
   return (

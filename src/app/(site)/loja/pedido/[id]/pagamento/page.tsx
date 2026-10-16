@@ -18,7 +18,7 @@ interface Order {
   email: string
   cpf: string
   phone: string
-  address: any
+  address: Record<string, unknown>
   items: Array<{
     name: string
     quantity: number
@@ -86,7 +86,7 @@ export default function PagamentoPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: orderData.fullName,
+          orderId: orderData.id,
           email: orderData.email,
           cpf: cpfClean,
           phone: phoneClean,
@@ -100,13 +100,6 @@ export default function PagamentoPage() {
       }
 
       const { customerId } = await res.json()
-
-      // Atualizar o pedido com o customerId
-      await fetch(`/api/orders/${orderData.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customerId }),
-      })
 
       setOrder({ ...orderData, customerId })
       return customerId
@@ -157,9 +150,9 @@ export default function PagamentoPage() {
         toast.success('Pagamento enviado para análise')
         setPaymentId(paymentData.paymentId)
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erro no pagamento:', err)
-      toast.error(err.message || 'Erro ao processar pagamento')
+      toast.error(err instanceof Error ? err.message : 'Erro ao processar pagamento')
     } finally {
       setIsProcessing(false)
     }
@@ -194,9 +187,9 @@ export default function PagamentoPage() {
       const paymentData = await paymentRes.json()
       setPaymentId(paymentData.paymentId)
       toast.success('QR Code PIX gerado!')
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erro ao gerar PIX:', err)
-      toast.error(err.message || 'Erro ao gerar PIX')
+      toast.error(err instanceof Error ? err.message : 'Erro ao gerar PIX')
     } finally {
       setIsProcessing(false)
     }

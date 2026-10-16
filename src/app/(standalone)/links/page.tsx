@@ -1,3 +1,5 @@
+import { isPublicLinkEnabled } from '@/core/lib/modules';
+import { canonicalUrl } from '@/core/lib/seo';
 // src/app/links/page.tsx
 
 import type { Metadata } from "next";
@@ -16,13 +18,13 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: `${siteConfig.seo.url}/links`,
+    canonical: canonicalUrl('/links'),
   },
   openGraph: {
     title: `Links importantes | ${siteConfig.nome}`,
     description:
       "Cursos, conteúdos e redes sociais da Bittup.",
-    url: `${siteConfig.seo.url}/links`,
+    url: canonicalUrl('/links'),
     siteName: siteConfig.nome,
     images: [
       {
@@ -177,7 +179,7 @@ export default function LinksPage() {
 
         {/* CARDS COM IMAGENS */}
         <section className="links-list" aria-label="Links importantes">
-          {links.map((item, index) => (
+          {links.filter(item => isPublicLinkEnabled(item.href)).map((item, index) => (
             <article
               key={item.title}
               className={`animated-link-card ${item.className}`}

@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { requireModule } from '@/core/lib/module-server';
 import type { Metadata } from "next";
 
 import {
@@ -8,7 +10,7 @@ import {
 
 import { siteConfig } from "@/client/config/site.config";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: `Sem conexão | ${siteConfig.nome}`,
@@ -23,6 +25,7 @@ export const metadata: Metadata = {
 };
 
 export default function OfflinePage() {
+  requireModule("pwa");
   return (
     <section
       className="flex min-h-[70svh] items-center py-16"
@@ -71,8 +74,7 @@ export default function OfflinePage() {
         </p>
 
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <a
-            href="/"
+          <Link prefetch={false} href="/"
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl px-6 font-semibold"
             style={{
               backgroundColor:
@@ -88,7 +90,7 @@ export default function OfflinePage() {
             />
 
             Voltar ao início
-          </a>
+          </Link>
 
           <button
             type="button"
@@ -96,7 +98,7 @@ export default function OfflinePage() {
             className="hidden"
           />
 
-          <a
+          <Link prefetch={false}
             href={siteConfig.seo.url}
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border px-6 font-semibold"
             style={{
@@ -116,7 +118,7 @@ export default function OfflinePage() {
             />
 
             Tentar novamente
-          </a>
+          </Link>
         </div>
       </div>
     </section>

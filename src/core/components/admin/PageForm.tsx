@@ -61,6 +61,7 @@ export default function PageForm({ page }: Props) {
       })
 
       const data = await res.json()
+      if (!res.ok) throw new Error('Erro no upload')
       const url = data.urls[0]
 
       setUploadedUrl(url)
@@ -161,7 +162,7 @@ export default function PageForm({ page }: Props) {
 
             {preview && (
               <div className="overflow-hidden rounded-3xl border border-[var(--color-admin-border)]">
-                <img src={preview} className="h-48 w-full object-cover" />
+                <img alt="Prévia da capa da página" src={preview} className="h-48 w-full object-cover" />
               </div>
             )}
 

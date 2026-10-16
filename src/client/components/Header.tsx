@@ -1,5 +1,7 @@
+'use client';
+import { isPublicLinkEnabled } from '@/core/lib/modules';
 // src/client/components/Header.tsx
-"use client";
+
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -122,7 +124,7 @@ export default function Header() {
             aria-label="Navegação principal"
             className="hidden items-center justify-center gap-1 lg:flex"
           >
-            {siteConfig.navLinks.map((link) => {
+            {siteConfig.navLinks.filter(link => isPublicLinkEnabled(link.href)).map((link) => {
               const active = isActiveLink(link.href);
               const external = link.href.startsWith("http");
 
@@ -287,7 +289,7 @@ export default function Header() {
             className="flex flex-1 flex-col justify-center"
           >
             <div className="flex flex-col">
-              {siteConfig.mobileNavLinks.map((link, index) => {
+              {siteConfig.mobileNavLinks.filter(link => isPublicLinkEnabled(link.href)).map((link, index) => {
                 const active = isActiveLink(link.href);
                 const external = link.href.startsWith("http");
 

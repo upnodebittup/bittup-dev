@@ -1,3 +1,4 @@
+import { modulesConfig } from './modules.config'
 // src/client/config/site.config.ts
 // Configuração visual e institucional — BITTUP
 
@@ -103,7 +104,7 @@ export const siteConfig = {
 
    // ─── Instalação Off-Line do site no tablet ────────────────────────────────────────
   pwa: {
-  enabled: true,
+  enabled: modulesConfig.pwa,
 
   shortName: "BittUp",
 
@@ -111,8 +112,8 @@ export const siteConfig = {
 
   icon192: "/pwa/icon-192.png",
   icon512: "/pwa/icon-512.png",
-  maskableIcon512: "/pwa/icon-maskable-512.png",
-  appleTouchIcon: "/pwa/apple-touch-icon.png",
+  maskableIcon: "/logo-bittup-vertical.png",
+  appleTouchIcon: "/pwa/icon-192.png",
 
   offlineRoutes: [
     "/",

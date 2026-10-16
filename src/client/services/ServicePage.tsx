@@ -1,3 +1,6 @@
+import { JsonLd } from '@/core/components/JsonLd';
+import { canonicalUrl, isIndexablePath } from '@/core/lib/seo';
+import { Breadcrumbs } from '@/core/components/Breadcrumbs';
 // src/client/services/ServicePage.tsx
 
 import Link from "next/link";
@@ -27,7 +30,7 @@ export default function ServicePage({ service }: ServicePageProps) {
     "@type": "Service",
     name: service.seo.title,
     description: service.seo.description,
-    url: `${siteConfig.seo.url}/servicos/${service.slug}`,
+    url: canonicalUrl(`/servicos/${service.slug}`),
     provider: {
       "@type": "Organization",
       name: siteConfig.nome,
@@ -61,20 +64,11 @@ export default function ServicePage({ service }: ServicePageProps) {
         color: "var(--color-text-light)",
       }}
     >
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(serviceStructuredData),
-        }}
-      />
+      <JsonLd data={isIndexablePath(`/servicos/${service.slug}`) ? serviceStructuredData : null} />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(faqStructuredData),
-        }}
-      />
+      <JsonLd data={isIndexablePath(`/servicos/${service.slug}`) ? faqStructuredData : null} />
 
+      <Breadcrumbs items={[{ name: "Início", path: "/" }, { name: "Serviços", path: "/servicos" }, { name: service.hero.eyebrow, path: `/servicos/${service.slug}` }]} />
       {/* HERO */}
       <section
         className="relative overflow-hidden border-b pb-16 pt-[70px] md:pb-20"
