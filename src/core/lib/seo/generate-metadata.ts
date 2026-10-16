@@ -1,3 +1,4 @@
+import { canonicalUrl as configuredCanonicalUrl, isIndexablePath } from '@/core/lib/seo';
 import type { Metadata } from "next";
 
 import { siteConfig } from "@/client/config/site.config";
@@ -30,14 +31,13 @@ function normalizePathname(pathname: string): string {
 }
 
 function createAbsoluteUrl(pathname: string): string {
-  const baseUrl = removeTrailingSlash(siteConfig.seo.url);
   const normalizedPathname = normalizePathname(pathname);
 
   if (normalizedPathname === "/") {
-    return baseUrl;
+    return configuredCanonicalUrl("/");
   }
 
-  return `${baseUrl}${normalizedPathname}`;
+  return configuredCanonicalUrl(normalizedPathname);
 }
 
 function createImageUrl(image: string): string {
@@ -99,7 +99,7 @@ export function generatePageMetadata({
     publisher: siteConfig.nome,
 
     robots: {
-      index: !noIndex,
+      index: !noIndex && isIndexablePath(pathname),
       follow: !noIndex,
       nocache: noIndex,
       googleBot: {

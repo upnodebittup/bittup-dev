@@ -1,3 +1,4 @@
+import { modulesConfig } from './modules.config'
 // src/client/config/site.config.ts
 // Configuração visual e institucional — BITTUP
 
@@ -103,7 +104,7 @@ export const siteConfig = {
 
    // ─── Instalação Off-Line do site no tablet ────────────────────────────────────────
   pwa: {
-  enabled: true,
+  enabled: modulesConfig.pwa,
 
   shortName: "BittUp",
 

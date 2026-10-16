@@ -1,4 +1,6 @@
 "use client";
+import Link from "next/link";
+import { CACHE_VERSION } from "@/core/pwa/cache-policy";
 
 import {
   CheckCircle2,
@@ -371,6 +373,12 @@ export default function OfflinePresentationManager({
 
       await delay(1500);
 
+      const publicCache = await caches.open(CACHE_VERSION + '-documents');
+      for (const route of routes) {
+        if (!await publicCache.match(new URL(route, window.location.origin).href)) {
+          throw new Error('A página ' + route + ' não foi salva. Atualize o aplicativo e tente novamente.');
+        }
+      }
       const savedDate =
         new Date().toLocaleString("pt-BR");
 
@@ -791,8 +799,7 @@ export default function OfflinePresentationManager({
             avião e abra o site pelo ícone criado.
           </p>
 
-          <a
-            href="/"
+          <Link prefetch={false} href="/"
             className="mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-5 font-semibold"
             style={{
               backgroundColor:
@@ -803,7 +810,7 @@ export default function OfflinePresentationManager({
             }}
           >
             Abrir página inicial
-          </a>
+          </Link>
         </div>
       </div>
     </section>

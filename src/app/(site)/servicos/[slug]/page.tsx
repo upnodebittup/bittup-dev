@@ -1,3 +1,6 @@
+import { requireModule } from '@/core/lib/module-server';
+import { completeMetadata } from '@/core/lib/seo/complete-metadata';
+import { seoConfig } from '@/client/config/seo.config';
 // src/app/(site)/servicos/[slug]/page.tsx
 
 import type { Metadata } from "next";
@@ -25,16 +28,16 @@ export function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: ServiceRouteProps): Promise<Metadata> {
+  requireModule("services");
   const { slug } = await params;
+  if (seoConfig.records.pages["/servicos/" + slug]?.published === false) notFound();
   const service = getServiceBySlug(slug);
 
-  if (!service) {
-    return {};
-  }
+  if (!service) notFound();
 
   const canonicalUrl = `${siteConfig.seo.url}/servicos/${service.slug}`;
 
-  return {
+  return completeMetadata({
     title: service.seo.title,
     description: service.seo.description,
     keywords: service.seo.keywords,
@@ -78,13 +81,15 @@ export async function generateMetadata({
         "max-video-preview": -1,
       },
     },
-  };
+  }, `/servicos/${slug}`);
 }
 
 export default async function ServiceRoutePage({
   params,
 }: ServiceRouteProps) {
+  requireModule("services");
   const { slug } = await params;
+  if (seoConfig.records.pages["/servicos/" + slug]?.published === false) notFound();
   const service = getServiceBySlug(slug);
 
   if (!service) {

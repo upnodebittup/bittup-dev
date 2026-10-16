@@ -1,3 +1,4 @@
+import { isModuleEnabled } from '@/core/lib/modules';
 import { createSerwistRoute } from "@serwist/turbopack";
 
 import { siteConfig } from "@/client/config/site.config";
@@ -12,20 +13,21 @@ export const {
   dynamicParams,
   revalidate,
   generateStaticParams,
-  GET,
+  GET: serwistGET,
 } = createSerwistRoute({
   swSrc: "src/app/sw.ts",
 
   useNativeEsbuild: true,
 
   additionalPrecacheEntries: [
-    {
-      url: "/",
-      revision,
-    },
+
     {
       url: "/offline",
       revision,
     },
   ],
 });
+export async function GET(request: Request, context: Parameters<typeof serwistGET>[1]) {
+  if (!isModuleEnabled('pwa')) return new Response("self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(self.registration.unregister()));", { headers: { 'Content-Type': 'application/javascript', 'Cache-Control': 'no-store' } });
+  return serwistGET(request, context);
+}

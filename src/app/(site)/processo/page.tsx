@@ -1,3 +1,4 @@
+import { completeMetadata } from '@/core/lib/seo/complete-metadata';
 // src/app/(site)/processos/page.tsx
 
 import type { Metadata } from "next";
@@ -12,14 +13,15 @@ import {
 
 import { siteConfig } from "@/client/config/site.config";
 
-export const metadata: Metadata = {
+const originalMetadata: Metadata = {
   title: "Como Trabalhamos | BittUp",
   description:
     "Conheça o processo de criação de sites, landing pages, lojas virtuais e sistemas da BittUp.",
   alternates: {
-    canonical: "/processos",
+    canonical: "/processo",
   },
 };
+export const metadata = completeMetadata(originalMetadata, "/processo");
 
 const steps = [
   {

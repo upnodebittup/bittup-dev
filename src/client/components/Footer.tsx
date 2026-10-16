@@ -1,5 +1,6 @@
 // src/client/components/Footer.tsx
 "use client";
+import { isPublicLinkEnabled } from "@/core/lib/modules";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -392,7 +393,7 @@ export default function Footer() {
               </h2>
 
               <ul className="space-y-4">
-                {servicesLinks.map((item) => {
+                {servicesLinks.filter(item => isPublicLinkEnabled(item.href)).map((item) => {
                   const Icon = item.icon;
 
                   return (
@@ -435,7 +436,7 @@ export default function Footer() {
               </h2>
 
               <ul className="space-y-4">
-                {institutionalLinks.map((item) => (
+                {institutionalLinks.filter(item => isPublicLinkEnabled(item.href)).map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}
@@ -550,7 +551,7 @@ export default function Footer() {
               </div>
 
               <ul className="space-y-3">
-                {supportLinks.map((item) => (
+                {supportLinks.filter(item => isPublicLinkEnabled(item.href)).map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}

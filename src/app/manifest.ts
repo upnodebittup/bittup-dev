@@ -1,8 +1,12 @@
+import { isModuleEnabled } from '@/core/lib/modules';
+import { notFound } from 'next/navigation';
+export const dynamic = 'force-dynamic';
 import type { MetadataRoute } from "next";
 
 import { siteConfig } from "@/client/config/site.config";
 
 export default function manifest(): MetadataRoute.Manifest {
+  if (!isModuleEnabled("pwa")) notFound();
   return {
     name: siteConfig.nome,
 

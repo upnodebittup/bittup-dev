@@ -1,3 +1,7 @@
+import { Breadcrumbs } from '@/core/components/Breadcrumbs';
+import { requireModule } from '@/core/lib/module-server';
+import { completeMetadata } from '@/core/lib/seo/complete-metadata';
+import { seoConfig } from '@/client/config/seo.config';
 // src/app/(site)/portfolio/[slug]/page.tsx
 
 import type { Metadata } from "next";
@@ -33,16 +37,14 @@ export function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: ProjectPageProps): Promise<Metadata> {
+  requireModule("portfolio");
   const { slug } = await params;
+  if (seoConfig.records.pages["/portfolio/" + slug]?.published === false) notFound();
   const project = getProjectBySlug(slug);
 
-  if (!project) {
-    return {
-      title: "Projeto não encontrado | BittUp",
-    };
-  }
+  if (!project) notFound();
 
-  return {
+  return completeMetadata({
     title: `${project.title} | Portfólio BittUp`,
     description: project.shortDescription,
 
@@ -62,13 +64,15 @@ export async function generateMetadata({
         },
       ],
     },
-  };
+  }, `/portfolio/${slug}`);
 }
 
 export default async function ProjectPage({
   params,
 }: ProjectPageProps) {
+  requireModule("portfolio");
   const { slug } = await params;
+  if (seoConfig.records.pages["/portfolio/" + slug]?.published === false) notFound();
   const project = getProjectBySlug(slug);
 
   if (!project) {
@@ -79,6 +83,7 @@ export default async function ProjectPage({
 
   return (
     <main>
+      <Breadcrumbs items={[{ name: "Início", path: "/" }, { name: "Portfólio", path: "/portfolio" }, { name: project.title, path: `/portfolio/${project.slug}` }]} />
       {/* HERO */}
       <section
         className="relative overflow-hidden border-b pb-16 pt-[70px] md:pb-20"

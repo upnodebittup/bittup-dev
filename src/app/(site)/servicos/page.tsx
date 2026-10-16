@@ -1,3 +1,5 @@
+import { requireModule } from '@/core/lib/module-server';
+import { completeMetadata } from '@/core/lib/seo/complete-metadata';
 // src/app/(site)/servicos/page.tsx
 
 import type { Metadata } from "next";
@@ -19,7 +21,7 @@ import {
 
 import { siteConfig } from "@/client/config/site.config";
 
-export const metadata: Metadata = {
+const originalMetadata: Metadata = {
   title: "Serviços de Desenvolvimento Web | BittUp",
   description:
     "Conheça os serviços da BittUp: sites institucionais, landing pages, lojas virtuais e sistemas web personalizados para empresas.",
@@ -51,6 +53,7 @@ export const metadata: Metadata = {
     images: [siteConfig.seo.ogImage],
   },
 };
+export const metadata = completeMetadata(originalMetadata, "/servicos");
 
 const services = [
   {
@@ -221,6 +224,7 @@ const faqs = [
 ];
 
 export default function ServicesPage() {
+  requireModule("services");
   const whatsappHref = `https://wa.me/${
     siteConfig.whatsapp
   }?text=${encodeURIComponent(
