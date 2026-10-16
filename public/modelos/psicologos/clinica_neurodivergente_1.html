@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Modelo de site para clínica especializada em neurodivergência, autismo e avaliação neuropsicológica." />
+  <title>Clínica Prisma Neuro | Neurodivergência & Avaliação</title>
+
+  <style>
+    :root{
+      --bg:#fbfbfd;
+      --paper:#ffffff;
+      --ink:#24313a;
+      --muted:#6d7b84;
+
+      --red:#ef476f;
+      --orange:#f78c4b;
+      --yellow:#ffd166;
+      --green:#62c370;
+      --teal:#2ec4b6;
+      --blue:#4d7cff;
+      --violet:#8e63ce;
+
+      --line:rgba(36,49,58,.10);
+      --shadow:0 24px 70px rgba(44,63,80,.11);
+      --radius:28px;
+      --max:1200px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter,Arial,Helvetica,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 8% 10%, rgba(46,196,182,.10), transparent 22%),
+        radial-gradient(circle at 90% 10%, rgba(142,99,206,.10), transparent 24%),
+        radial-gradient(circle at 75% 80%, rgba(255,209,102,.12), transparent 24%),
+        var(--bg);
+      overflow-x:hidden;
+    }
+
+    a{color:inherit;text-decoration:none}
+    img{display:block;width:100%}
+    .container{width:min(calc(100% - 32px),var(--max));margin:auto}
+
+    header{
+      position:fixed;
+      inset:0 0 auto 0;
+      z-index:50;
+      background:rgba(251,251,253,.88);
+      backdrop-filter:blur(18px);
+      border-bottom:1px solid var(--line);
+    }
+
+    nav{
+      min-height:80px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:24px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:13px;
+      font-weight:900;
+      letter-spacing:-.035em;
+    }
+
+    .logo{
+      width:56px;
+      height:34px;
+      position:relative;
+      flex:0 0 auto;
+    }
+
+    .logo svg{width:100%;height:100%;display:block}
+
+    .brand-text small{
+      display:block;
+      color:var(--muted);
+      font-size:.62rem;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      margin-top:2px;
+    }
+
+    .brand-text strong{
+      font-size:1rem;
+    }
+
+    .brand-text strong span{
+      background:linear-gradient(90deg,var(--red),var(--orange),var(--green),var(--blue),var(--violet));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:23px;
+      font-size:.88rem;
+      color:#53636d;
+    }
+
+    .nav-links a:not(.nav-cta){
+      position:relative;
+    }
+
+    .nav-links a:not(.nav-cta)::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-7px;
+      width:100%;
+      height:2px;
+      background:linear-gradient(90deg,var(--red),var(--orange),var(--green),var(--blue),var(--violet));
+      transform:scaleX(0);
+      transform-origin:left;
+      transition:transform .28s ease;
+    }
+
+    .nav-links a:hover::after{transform:scaleX(1)}
+
+    .nav-cta,.btn-primary{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:48px;
+      padding:0 22px;
+      border-radius:999px;
+      color:white;
+      font-weight:800;
+      background:linear-gradient(90deg,var(--blue),var(--violet));
+      box-shadow:0 12px 30px rgba(77,124,255,.18);
+      transition:transform .25s ease,box-shadow .25s ease;
+    }
+
+    .nav-cta:hover,.btn-primary:hover{
+      transform:translateY(-3px);
+      box-shadow:0 18px 38px rgba(77,124,255,.25);
+    }
+
+    .hero{
+      min-height:100vh;
+      padding:130px 0 70px;
+      display:grid;
+      align-items:center;
+      position:relative;
+      isolation:isolate;
+    }
+
+    .hero::before,.hero::after{
+      content:"";
+      position:absolute;
+      z-index:-1;
+      border-radius:50%;
+      filter:blur(2px);
+    }
+
+    .hero::before{
+      width:480px;
+      height:480px;
+      left:-150px;
+      top:90px;
+      background:radial-gradient(circle,rgba(46,196,182,.20),transparent 67%);
+      animation:driftA 8s ease-in-out infinite alternate;
+    }
+
+    .hero::after{
+      width:450px;
+      height:450px;
+      right:-130px;
+      bottom:0;
+      background:radial-gradient(circle,rgba(239,71,111,.15),transparent 68%);
+      animation:driftB 9s ease-in-out infinite alternate;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:58px;
+      align-items:center;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:9px 14px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid var(--line);
+      box-shadow:0 9px 26px rgba(40,60,80,.06);
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      font-size:.73rem;
+      font-weight:900;
+      color:#4b5b65;
+      animation:fadeUp .8s both;
+    }
+
+    .eyebrow-dot{
+      width:9px;
+      height:9px;
+      border-radius:50%;
+      background:linear-gradient(135deg,var(--orange),var(--violet));
+      box-shadow:0 0 0 7px rgba(142,99,206,.08);
+      animation:pulse 2s ease-in-out infinite;
+    }
+
+    h1{
+      font-size:clamp(3.2rem,6.4vw,6.6rem);
+      line-height:.95;
+      letter-spacing:-.06em;
+      margin:22px 0 26px;
+      max-width:800px;
+      animation:fadeUp .9s .08s both;
+    }
+
+    .gradient-text{
+      background:linear-gradient(90deg,var(--red),var(--orange),var(--green),var(--blue),var(--violet));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+
+    .hero-copy{
+      color:var(--muted);
+      font-size:1.08rem;
+      line-height:1.85;
+      max-width:670px;
+      animation:fadeUp .9s .16s both;
+    }
+
+    .hero-actions{
+      margin-top:30px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+      animation:fadeUp .9s .24s both;
+    }
+
+    .btn-secondary{
+      min-height:48px;
+      padding:0 22px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid rgba(36,49,58,.16);
+      background:#fff;
+      font-weight:800;
+      transition:transform .25s ease,box-shadow .25s ease;
+    }
+
+    .btn-secondary:hover{
+      transform:translateY(-3px);
+      box-shadow:0 14px 30px rgba(50,70,90,.10);
+    }
+
+    .hero-visual{
+      position:relative;
+      min-height:650px;
+      animation:visualIn 1s .12s both;
+    }
+
+    .main-photo{
+      position:absolute;
+      width:82%;
+      height:590px;
+      right:0;
+      top:25px;
+      object-fit:cover;
+      border-radius:34px 150px 34px 150px;
+      box-shadow:var(--shadow);
+    }
+
+    .rainbow-frame{
+      position:absolute;
+      width:82%;
+      height:590px;
+      right:-18px;
+      top:43px;
+      border-radius:34px 150px 34px 150px;
+      padding:3px;
+      background:linear-gradient(145deg,var(--red),var(--orange),var(--yellow),var(--green),var(--teal),var(--blue),var(--violet));
+      z-index:-1;
+      animation:frameFloat 5s ease-in-out infinite;
+    }
+
+    .float-card{
+      position:absolute;
+      left:0;
+      bottom:32px;
+      width:49%;
+      background:rgba(255,255,255,.94);
+      backdrop-filter:blur(14px);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:20px;
+      box-shadow:var(--shadow);
+      animation:floatBox 4.4s ease-in-out infinite;
+    }
+
+    .float-card strong{
+      display:block;
+      font-size:1.2rem;
+      margin-bottom:6px;
+      background:linear-gradient(90deg,var(--blue),var(--violet));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+
+    .float-card span{
+      color:var(--muted);
+      font-size:.88rem;
+      line-height:1.55;
+    }
+
+    .mini-infinity{
+      position:absolute;
+      left:34px;
+      top:54px;
+      width:110px;
+      height:68px;
+      animation:softFloat 4s ease-in-out infinite;
+    }
+
+    .mini-infinity svg{width:100%;height:100%}
+
+    .rainbow-strip{
+      height:7px;
+      background:linear-gradient(90deg,var(--red),var(--orange),var(--yellow),var(--green),var(--teal),var(--blue),var(--violet));
+    }
+
+    .trust{
+      background:#273944;
+      color:white;
+      padding:20px 0;
+    }
+
+    .trust-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+    }
+
+    .trust-item{
+      text-align:center;
+      font-size:.85rem;
+      color:#dce6eb;
+    }
+
+    .trust-item b{
+      color:#fff;
+      display:block;
+      margin-bottom:4px;
+    }
+
+    section{padding:104px 0}
+
+    .section-head{
+      display:grid;
+      grid-template-columns:.72fr 1.28fr;
+      gap:50px;
+      margin-bottom:48px;
+    }
+
+    .label{
+      text-transform:uppercase;
+      letter-spacing:.17em;
+      font-size:.74rem;
+      font-weight:900;
+      color:var(--blue);
+    }
+
+    h2{
+      margin:0;
+      font-size:clamp(2.7rem,5vw,5rem);
+      line-height:1;
+      letter-spacing:-.05em;
+    }
+
+    .section-copy{
+      color:var(--muted);
+      line-height:1.85;
+      margin-top:18px;
+      max-width:760px;
+    }
+
+    .specialties{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:20px;
+    }
+
+    .specialty{
+      background:var(--paper);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:30px;
+      min-height:300px;
+      position:relative;
+      overflow:hidden;
+      transition:transform .3s ease,box-shadow .3s ease;
+    }
+
+    .specialty:hover{
+      transform:translateY(-8px);
+      box-shadow:var(--shadow);
+    }
+
+    .specialty::before{
+      content:"";
+      position:absolute;
+      width:160px;
+      height:160px;
+      border-radius:50%;
+      right:-65px;
+      top:-65px;
+      opacity:.28;
+      transition:transform .35s ease;
+    }
+
+    .specialty:nth-child(1)::before{background:var(--blue)}
+    .specialty:nth-child(2)::before{background:var(--orange)}
+    .specialty:nth-child(3)::before{background:var(--green)}
+    .specialty:nth-child(4)::before{background:var(--violet)}
+
+    .specialty:hover::before{transform:scale(1.5)}
+
+    .specialty-tag{
+      text-transform:uppercase;
+      font-size:.72rem;
+      letter-spacing:.13em;
+      font-weight:900;
+      color:var(--muted);
+    }
+
+    .specialty h3{
+      margin:50px 0 13px;
+      font-size:1.55rem;
+      letter-spacing:-.03em;
+    }
+
+    .specialty p{
+      color:var(--muted);
+      line-height:1.8;
+      max-width:90%;
+    }
+
+    .evaluation{
+      background:#eef3f8;
+    }
+
+    .eval-grid{
+      display:grid;
+      grid-template-columns:.92fr 1.08fr;
+      gap:60px;
+      align-items:center;
+    }
+
+    .eval-photo-wrap{
+      position:relative;
+    }
+
+    .eval-photo{
+      height:580px;
+      object-fit:cover;
+      border-radius:150px 28px 28px 28px;
+      box-shadow:var(--shadow);
+    }
+
+    .eval-badge{
+      position:absolute;
+      right:-24px;
+      bottom:38px;
+      width:230px;
+      background:white;
+      border-radius:22px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      animation:softFloat 4.8s ease-in-out infinite;
+    }
+
+    .eval-badge b{
+      display:block;
+      font-size:1.4rem;
+      margin-bottom:7px;
+      color:var(--violet);
+    }
+
+    .eval-badge span{
+      color:var(--muted);
+      font-size:.86rem;
+      line-height:1.5;
+    }
+
+    .steps{
+      display:grid;
+      gap:14px;
+      margin-top:30px;
+    }
+
+    .step{
+      display:grid;
+      grid-template-columns:50px 1fr;
+      gap:14px;
+      padding:18px;
+      background:rgba(255,255,255,.82);
+      border:1px solid rgba(36,49,58,.08);
+      border-radius:18px;
+      transition:transform .28s ease;
+    }
+
+    .step:hover{transform:translateX(8px)}
+
+    .step-number{
+      width:42px;
+      height:42px;
+      display:grid;
+      place-items:center;
+      border-radius:14px;
+      color:white;
+      font-weight:900;
+    }
+
+    .step:nth-child(1) .step-number{background:var(--red)}
+    .step:nth-child(2) .step-number{background:var(--orange)}
+    .step:nth-child(3) .step-number{background:var(--green)}
+    .step:nth-child(4) .step-number{background:var(--blue)}
+
+    .step h3{margin:0 0 5px;font-size:1rem}
+    .step p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.65}
+
+    .principles{
+      background:#fff;
+    }
+
+    .principle-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:20px;
+      margin-top:44px;
+    }
+
+    .principle{
+      padding:30px;
+      border-radius:26px;
+      min-height:250px;
+      color:white;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .principle:nth-child(1){background:linear-gradient(145deg,#305eaa,#4d7cff)}
+    .principle:nth-child(2){background:linear-gradient(145deg,#297f77,#2ec4b6)}
+    .principle:nth-child(3){background:linear-gradient(145deg,#7145a7,#8e63ce)}
+
+    .principle::after{
+      content:"";
+      position:absolute;
+      width:140px;
+      height:140px;
+      border-radius:50%;
+      background:rgba(255,255,255,.10);
+      right:-45px;
+      bottom:-45px;
+      animation:bubble 5s ease-in-out infinite;
+    }
+
+    .principle span{
+      display:inline-block;
+      font-size:2rem;
+      margin-bottom:28px;
+    }
+
+    .principle h3{
+      margin:0 0 10px;
+      font-size:1.35rem;
+    }
+
+    .principle p{
+      margin:0;
+      color:rgba(255,255,255,.82);
+      line-height:1.75;
+    }
+
+    .quote{
+      padding:120px 0;
+      text-align:center;
+      color:white;
+      background:
+        linear-gradient(rgba(36,49,58,.72),rgba(36,49,58,.78)),
+        url("https://images.unsplash.com/photo-1529390079861-591de354faf5?auto=format&fit=crop&w=1900&q=85") center/cover;
+    }
+
+    .quote p{
+      margin:0 auto;
+      max-width:1040px;
+      font-family:Georgia,serif;
+      font-size:clamp(2.4rem,5vw,5.2rem);
+      line-height:1.15;
+    }
+
+    .quote .accent-line{
+      display:block;
+      width:160px;
+      height:6px;
+      margin:28px auto 0;
+      border-radius:999px;
+      background:linear-gradient(90deg,var(--red),var(--orange),var(--yellow),var(--green),var(--teal),var(--blue),var(--violet));
+    }
+
+    .team-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:20px;
+      margin-top:44px;
+    }
+
+    .person{
+      background:white;
+      border:1px solid var(--line);
+      border-radius:24px;
+      overflow:hidden;
+      transition:transform .3s ease,box-shadow .3s ease;
+    }
+
+    .person:hover{
+      transform:translateY(-8px);
+      box-shadow:var(--shadow);
+    }
+
+    .person img{
+      height:340px;
+      object-fit:cover;
+    }
+
+    .person-info{
+      padding:21px;
+      border-top:5px solid transparent;
+      border-image:linear-gradient(90deg,var(--red),var(--orange),var(--green),var(--blue),var(--violet)) 1;
+    }
+
+    .person h3{margin:0 0 5px;font-size:1.12rem}
+    .person p{margin:0;color:var(--muted);font-size:.87rem}
+
+    .contact-card{
+      position:relative;
+      overflow:hidden;
+      color:white;
+      border-radius:34px;
+      padding:58px;
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:42px;
+      align-items:end;
+      background:#263b49;
+      box-shadow:var(--shadow);
+    }
+
+    .contact-card::before{
+      content:"";
+      position:absolute;
+      width:360px;
+      height:360px;
+      border-radius:50%;
+      right:-140px;
+      top:-160px;
+      background:conic-gradient(var(--red),var(--orange),var(--yellow),var(--green),var(--teal),var(--blue),var(--violet),var(--red));
+      opacity:.18;
+      animation:spinSlow 18s linear infinite;
+    }
+
+    .contact-card h2{color:white}
+    .contact-card p{
+      color:#d8e5eb;
+      line-height:1.8;
+      max-width:700px;
+    }
+
+    .contact-info{
+      display:grid;
+      gap:12px;
+      position:relative;
+      z-index:1;
+      color:#e7f0f4;
+      font-size:.92rem;
+    }
+
+    .contact-info .btn-primary{
+      margin-top:12px;
+      background:white;
+      color:#263b49;
+    }
+
+    footer{
+      padding:34px 0;
+      color:#788892;
+      font-size:.87rem;
+    }
+
+    .footer-row{
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    @keyframes fadeUp{
+      from{opacity:0;transform:translateY(28px)}
+      to{opacity:1;transform:none}
+    }
+
+    @keyframes visualIn{
+      from{opacity:0;transform:translateX(42px) scale(.97)}
+      to{opacity:1;transform:none}
+    }
+
+    @keyframes driftA{
+      to{transform:translate(60px,42px) scale(1.10)}
+    }
+
+    @keyframes driftB{
+      to{transform:translate(-45px,-38px) scale(1.08)}
+    }
+
+    @keyframes pulse{
+      0%,100%{transform:scale(1)}
+      50%{transform:scale(1.35)}
+    }
+
+    @keyframes frameFloat{
+      0%,100%{transform:translate(0,0)}
+      50%{transform:translate(10px,-10px)}
+    }
+
+    @keyframes floatBox{
+      0%,100%{transform:translateY(0) rotate(-.5deg)}
+      50%{transform:translateY(-11px) rotate(.5deg)}
+    }
+
+    @keyframes softFloat{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-10px)}
+    }
+
+    @keyframes bubble{
+      0%,100%{transform:translate(0,0) scale(1)}
+      50%{transform:translate(-18px,-12px) scale(1.12)}
+    }
+
+    @keyframes spinSlow{
+      to{transform:rotate(360deg)}
+    }
+
+    @media(max-width:900px){
+      .nav-links a:not(.nav-cta){display:none}
+      .hero-grid,.section-head,.eval-grid,.contact-card{grid-template-columns:1fr}
+      .hero-visual{min-height:560px}
+      .main-photo,.rainbow-frame{height:530px;width:84%}
+      .specialties,.principle-grid,.team-grid{grid-template-columns:1fr}
+      .trust-grid{grid-template-columns:1fr 1fr}
+      .eval-badge{right:12px}
+    }
+
+    @media(max-width:560px){
+      .hero{padding-top:112px}
+      .hero-visual{min-height:470px}
+      .main-photo,.rainbow-frame{height:440px;width:88%;border-radius:28px 100px 28px 100px}
+      .float-card{width:60%;bottom:14px}
+      .mini-infinity{width:90px;left:10px;top:38px}
+      .trust-grid{grid-template-columns:1fr}
+      .eval-photo{height:450px}
+      .eval-badge{width:185px}
+      .contact-card{padding:36px 24px}
+      section{padding:80px 0}
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <a href="#" class="brand">
+          <div class="logo" aria-label="Logo Clínica Prisma Neuro">
+            <svg viewBox="0 0 120 70" role="img">
+              <defs>
+                <linearGradient id="rainbow" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#ef476f"/>
+                  <stop offset="17%" stop-color="#f78c4b"/>
+                  <stop offset="34%" stop-color="#ffd166"/>
+                  <stop offset="50%" stop-color="#62c370"/>
+                  <stop offset="66%" stop-color="#2ec4b6"/>
+                  <stop offset="82%" stop-color="#4d7cff"/>
+                  <stop offset="100%" stop-color="#8e63ce"/>
+                </linearGradient>
+              </defs>
+              <path d="M19 35c0-14 12-24 25-24 17 0 27 19 36 33 8 12 15 15 23 15 10 0 18-9 18-20 0-12-8-21-18-21-10 0-16 7-23 18l-8 12C62 63 52 69 40 69 20 69 5 54 5 35S20 1 40 1c14 0 25 8 36 24l8 12c7 10 11 14 19 14 5 0 9-5 9-12 0-8-4-13-9-13-6 0-10 4-16 13-10 16-22 30-47 30" fill="none" stroke="url(#rainbow)" stroke-width="9" stroke-linecap="round"/>
+            </svg>
+          </div>
+
+          <div class="brand-text">
+            <strong>Prisma <span>Neuro</span></strong>
+            <small>Clínica especializada</small>
+          </div>
+        </a>
+
+        <div class="nav-links">
+          <a href="#especialidades">Especialidades</a>
+          <a href="#avaliacao">Avaliação</a>
+          <a href="#principios">Nosso olhar</a>
+          <a href="#equipe">Equipe</a>
+          <a class="nav-cta" href="#contato">Agendar conversa</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <div class="rainbow-strip"></div>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">
+            <span class="eyebrow-dot"></span>
+            Neurodivergência • Autismo • Neuroavaliação
+          </div>
+
+          <h1>
+            Diferentes formas de funcionar merecem um cuidado
+            <span class="gradient-text">individualizado.</span>
+          </h1>
+
+          <p class="hero-copy">
+            Clínica especializada em avaliação neuropsicológica e acompanhamento de
+            pessoas neurodivergentes, com atenção a autismo, TDAH, altas habilidades
+            e diferentes perfis cognitivos ao longo da vida.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn-primary" href="#contato">Solicitar informações</a>
+            <a class="btn-secondary" href="#avaliacao">Entender a avaliação</a>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="rainbow-frame"></div>
+
+          <img
+            class="main-photo"
+            src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=85"
+            alt="Profissional da saúde em ambiente clínico"
+          >
+
+          <div class="mini-infinity">
+            <svg viewBox="0 0 120 70" aria-hidden="true">
+              <defs>
+                <linearGradient id="rainbow2" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#ef476f"/>
+                  <stop offset="17%" stop-color="#f78c4b"/>
+                  <stop offset="34%" stop-color="#ffd166"/>
+                  <stop offset="50%" stop-color="#62c370"/>
+                  <stop offset="66%" stop-color="#2ec4b6"/>
+                  <stop offset="82%" stop-color="#4d7cff"/>
+                  <stop offset="100%" stop-color="#8e63ce"/>
+                </linearGradient>
+              </defs>
+              <path d="M19 35c0-14 12-24 25-24 17 0 27 19 36 33 8 12 15 15 23 15 10 0 18-9 18-20 0-12-8-21-18-21-10 0-16 7-23 18l-8 12C62 63 52 69 40 69 20 69 5 54 5 35S20 1 40 1c14 0 25 8 36 24l8 12c7 10 11 14 19 14 5 0 9-5 9-12 0-8-4-13-9-13-6 0-10 4-16 13-10 16-22 30-47 30" fill="none" stroke="url(#rainbow2)" stroke-width="9" stroke-linecap="round"/>
+            </svg>
+          </div>
+
+          <div class="float-card">
+            <strong>Neurodiversidade</strong>
+            <span>
+              Um olhar que considera diferenças de funcionamento, contexto,
+              potencialidades e necessidades de suporte.
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="trust">
+      <div class="container trust-grid">
+        <div class="trust-item"><b>Escuta qualificada</b>Sem reduzir a pessoa ao diagnóstico</div>
+        <div class="trust-item"><b>Avaliação individualizada</b>Instrumentos escolhidos conforme a demanda</div>
+        <div class="trust-item"><b>Equipe multiprofissional</b>Integração entre áreas quando necessário</div>
+        <div class="trust-item"><b>Diferentes fases da vida</b>Crianças, adolescentes e adultos</div>
+      </div>
+    </div>
+
+    <section id="especialidades">
+      <div class="container">
+        <div class="section-head">
+          <span class="label">Especialidades</span>
+
+          <div>
+            <h2>Um cuidado que começa pela compreensão do funcionamento.</h2>
+            <p class="section-copy">
+              O objetivo não é encaixar pessoas em um padrão, mas compreender como
+              cada pessoa percebe, aprende, se comunica, organiza demandas e responde
+              aos diferentes ambientes.
+            </p>
+          </div>
+        </div>
+
+        <div class="specialties">
+          <article class="specialty">
+            <span class="specialty-tag">01 • Neuroavaliação</span>
+            <h3>Avaliação neuropsicológica</h3>
+            <p>
+              Investigação integrada de aspectos cognitivos, emocionais e comportamentais,
+              considerando história clínica e contexto atual.
+            </p>
+          </article>
+
+          <article class="specialty">
+            <span class="specialty-tag">02 • Autismo</span>
+            <h3>Acompanhamento especializado</h3>
+            <p>
+              Psicoterapia e orientação com atenção às características de comunicação,
+              processamento sensorial, relações, rotina e necessidades de suporte.
+            </p>
+          </article>
+
+          <article class="specialty">
+            <span class="specialty-tag">03 • TDAH</span>
+            <h3>Funções executivas e cotidiano</h3>
+            <p>
+              Organização, planejamento, atenção, regulação emocional e desenvolvimento
+              de estratégias práticas adaptadas à realidade da pessoa.
+            </p>
+          </article>
+
+          <article class="specialty">
+            <span class="specialty-tag">04 • Família</span>
+            <h3>Orientação parental e familiar</h3>
+            <p>
+              Suporte para compreensão do perfil neurodivergente e construção de
+              estratégias mais respeitosas e funcionais para o cotidiano.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="evaluation" id="avaliacao">
+      <div class="container eval-grid">
+        <div class="eval-photo-wrap">
+          <img
+            class="eval-photo"
+            src="https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=1200&q=85"
+            alt="Atendimento clínico"
+          >
+
+          <div class="eval-badge">
+            <b>Processo em etapas</b>
+            <span>
+              A avaliação integra entrevistas, instrumentos, observação e história.
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <span class="label">Avaliação neuropsicológica</span>
+          <h2>Mais do que testes: contexto, história e integração de informações.</h2>
+
+          <p class="section-copy">
+            A avaliação não deve ser resumida a um resultado isolado. O processo
+            busca compreender padrões de funcionamento e oferecer informações úteis
+            para cuidado, adaptações e próximos passos.
+          </p>
+
+          <div class="steps">
+            <div class="step">
+              <div class="step-number">1</div>
+              <div>
+                <h3>Entrevista inicial</h3>
+                <p>Compreensão da demanda, história e desenvolvimento.</p>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-number">2</div>
+              <div>
+                <h3>Sessões de avaliação</h3>
+                <p>Uso de instrumentos selecionados conforme o caso.</p>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-number">3</div>
+              <div>
+                <h3>Análise integrada</h3>
+                <p>Leitura conjunta das informações clínicas e dos resultados.</p>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-number">4</div>
+              <div>
+                <h3>Devolutiva</h3>
+                <p>Explicação das conclusões, orientações e encaminhamentos possíveis.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="principios">
+      <div class="container">
+        <span class="label">Nosso olhar</span>
+        <h2>Cuidado baseado em respeito, contexto e singularidade.</h2>
+
+        <div class="principle-grid">
+          <article class="principle">
+            <span>∞</span>
+            <h3>Diferenças não são falhas</h3>
+            <p>
+              O objetivo é compreender características e necessidades sem transformar
+              toda diferença em déficit.
+            </p>
+          </article>
+
+          <article class="principle">
+            <span>◌</span>
+            <h3>Suporte precisa fazer sentido</h3>
+            <p>
+              Estratégias são construídas considerando rotina, ambiente, limites e
+              prioridades reais de cada pessoa.
+            </p>
+          </article>
+
+          <article class="principle">
+            <span>◇</span>
+            <h3>Diagnóstico não resume identidade</h3>
+            <p>
+              Uma hipótese ou diagnóstico pode ajudar na compreensão, mas não define
+              sozinho quem a pessoa é.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="quote">
+      <div class="container">
+        <p>
+          “Compreender uma pessoa neurodivergente é olhar para além do que ela precisa superar — e também reconhecer como ela funciona.”
+        </p>
+        <span class="accent-line"></span>
+      </div>
+    </section>
+
+    <section id="equipe">
+      <div class="container">
+        <span class="label">Equipe</span>
+        <h2>Profissionais com diferentes áreas de atuação.</h2>
+
+        <p class="section-copy">
+          Estrutura demonstrativa de equipe. Profissões, especialidades e registros
+          podem ser personalizados conforme a clínica.
+        </p>
+
+        <div class="team-grid">
+          <article class="person">
+            <img
+              src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=85"
+              alt="Profissional da saúde"
+            >
+            <div class="person-info">
+              <h3>Dra. Laura Menezes</h3>
+              <p>Psicóloga • Neuropsicologia</p>
+            </div>
+          </article>
+
+          <article class="person">
+            <img
+              src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=900&q=85"
+              alt="Profissional da saúde"
+            >
+            <div class="person-info">
+              <h3>Dr. Caio Ramos</h3>
+              <p>Psicólogo • Desenvolvimento e Adultos</p>
+            </div>
+          </article>
+
+          <article class="person">
+            <img
+              src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=900&q=85"
+              alt="Profissional da saúde"
+            >
+            <div class="person-info">
+              <h3>Dra. Sofia Nunes</h3>
+              <p>Psicóloga • Família e Orientação Parental</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="contato">
+      <div class="container">
+        <div class="contact-card">
+          <div>
+            <span class="label" style="color:#bfe9ff">Primeiro contato</span>
+            <h2>Quer saber qual atendimento pode ser indicado?</h2>
+            <p>
+              Entre em contato para receber informações sobre avaliação,
+              acompanhamento, disponibilidade e modalidades de atendimento.
+            </p>
+          </div>
+
+          <div class="contact-info">
+            <span>Atendimento mediante agendamento</span>
+            <span>Online e presencial</span>
+            <span>Crianças, adolescentes e adultos</span>
+
+            <a
+              class="btn-primary"
+              href="https://wa.me/5500000000000"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Falar com a clínica
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-row">
+      <span>© 2026 Clínica Prisma Neuro</span>
+      <span>Modelo demonstrativo • Personalizável pela BittUp</span>
+    </div>
+  </footer>
+</body>
+</html>

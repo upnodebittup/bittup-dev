@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Modelo de site masculino para psicólogo clínico, com visual sóbrio, moderno e acolhedor." />
+  <title>Dr. André Valença | Psicólogo Clínico</title>
+
+  <style>
+    :root{
+      --bg:#ece9e3;
+      --paper:#f8f6f1;
+      --ink:#1d2628;
+      --muted:#6f7877;
+      --forest:#314d47;
+      --sage:#9eafa8;
+      --sand:#cbbba4;
+      --line:rgba(29,38,40,.12);
+      --shadow:0 24px 70px rgba(29,38,40,.12);
+      --max:1200px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      overflow-x:hidden;
+    }
+
+    a{color:inherit;text-decoration:none}
+    img{display:block;width:100%}
+    .container{width:min(calc(100% - 32px),var(--max));margin:auto}
+
+    header{
+      position:fixed;
+      inset:0 0 auto 0;
+      z-index:40;
+      background:rgba(236,233,227,.86);
+      backdrop-filter:blur(18px);
+      border-bottom:1px solid var(--line);
+    }
+
+    nav{
+      min-height:78px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:24px;
+    }
+
+    .brand{
+      font-weight:900;
+      letter-spacing:-.04em;
+      font-size:1.08rem;
+    }
+
+    .brand span{color:var(--forest)}
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:26px;
+      font-size:.9rem;
+      color:#4f5d5d;
+    }
+
+    .nav-links a:not(.nav-cta){
+      transition:color .25s ease;
+    }
+
+    .nav-links a:not(.nav-cta):hover{color:var(--forest)}
+
+    .nav-cta,
+    .btn-primary{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:48px;
+      padding:0 22px;
+      border-radius:10px;
+      background:var(--forest);
+      color:#fff;
+      font-weight:800;
+      box-shadow:0 12px 28px rgba(49,77,71,.18);
+      transition:transform .25s ease,box-shadow .25s ease;
+    }
+
+    .nav-cta:hover,.btn-primary:hover{
+      transform:translateY(-3px);
+      box-shadow:0 16px 36px rgba(49,77,71,.25);
+    }
+
+    .hero{
+      min-height:100vh;
+      padding:126px 0 70px;
+      display:grid;
+      align-items:center;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      width:520px;
+      height:520px;
+      border-radius:50%;
+      background:radial-gradient(circle,rgba(158,175,168,.38),transparent 70%);
+      left:-180px;
+      bottom:-150px;
+      animation:drift 8s ease-in-out infinite alternate;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:.92fr 1.08fr;
+      gap:64px;
+      align-items:center;
+      position:relative;
+      z-index:1;
+    }
+
+    .hero-copy{
+      animation:fadeUp .9s both;
+    }
+
+    .eyebrow{
+      text-transform:uppercase;
+      letter-spacing:.17em;
+      font-size:.74rem;
+      font-weight:800;
+      color:var(--forest);
+    }
+
+    h1{
+      font-family:Georgia,serif;
+      font-size:clamp(3.6rem,7vw,7rem);
+      line-height:.92;
+      font-weight:500;
+      letter-spacing:-.055em;
+      margin:20px 0 24px;
+    }
+
+    h1 span{
+      color:var(--forest);
+      font-style:italic;
+    }
+
+    .hero-text{
+      max-width:620px;
+      font-size:1.08rem;
+      line-height:1.85;
+      color:var(--muted);
+    }
+
+    .hero-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+      margin-top:30px;
+    }
+
+    .btn-secondary{
+      display:inline-flex;
+      min-height:48px;
+      padding:0 22px;
+      align-items:center;
+      justify-content:center;
+      border:1px solid var(--forest);
+      border-radius:10px;
+      color:var(--forest);
+      font-weight:800;
+      transition:transform .25s ease,background .25s ease;
+    }
+
+    .btn-secondary:hover{
+      transform:translateY(-3px);
+      background:rgba(49,77,71,.06);
+    }
+
+    .hero-visual{
+      position:relative;
+      min-height:640px;
+      animation:visualIn 1s .1s both;
+    }
+
+    .photo-main{
+      width:74%;
+      height:610px;
+      object-fit:cover;
+      margin-left:auto;
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      filter:saturate(.78) contrast(1.02);
+    }
+
+    .photo-small{
+      position:absolute;
+      left:0;
+      bottom:24px;
+      width:43%;
+      height:265px;
+      object-fit:cover;
+      border:12px solid var(--bg);
+      box-shadow:var(--shadow);
+      animation:floatPhoto 4.6s ease-in-out infinite;
+    }
+
+    .vertical-label{
+      position:absolute;
+      right:-54px;
+      top:130px;
+      writing-mode:vertical-rl;
+      transform:rotate(180deg);
+      font-size:.72rem;
+      letter-spacing:.2em;
+      text-transform:uppercase;
+      color:var(--forest);
+      font-weight:800;
+    }
+
+    .number-card{
+      position:absolute;
+      left:16px;
+      top:40px;
+      background:var(--paper);
+      padding:18px 20px;
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      min-width:180px;
+    }
+
+    .number-card strong{
+      display:block;
+      font-family:Georgia,serif;
+      color:var(--forest);
+      font-size:2rem;
+      font-weight:500;
+    }
+
+    .number-card span{
+      color:var(--muted);
+      font-size:.82rem;
+    }
+
+    .manifesto{
+      background:var(--forest);
+      color:white;
+      padding:26px 0;
+      overflow:hidden;
+    }
+
+    .manifesto-track{
+      white-space:nowrap;
+      display:inline-block;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      font-weight:800;
+      font-size:.78rem;
+      animation:marquee 18s linear infinite;
+    }
+
+    section{padding:105px 0}
+
+    .section-head{
+      display:grid;
+      grid-template-columns:.72fr 1.28fr;
+      gap:50px;
+      margin-bottom:50px;
+    }
+
+    .label{
+      color:var(--forest);
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      font-weight:800;
+      font-size:.74rem;
+    }
+
+    h2{
+      font-family:Georgia,serif;
+      font-size:clamp(2.8rem,5vw,5rem);
+      line-height:1;
+      letter-spacing:-.05em;
+      font-weight:500;
+      margin:0;
+    }
+
+    .section-copy{
+      color:var(--muted);
+      line-height:1.85;
+      max-width:720px;
+      margin-top:18px;
+    }
+
+    .areas{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:20px;
+    }
+
+    .area{
+      background:var(--paper);
+      border:1px solid var(--line);
+      padding:30px;
+      min-height:320px;
+      border-radius:16px;
+      transition:transform .3s ease,box-shadow .3s ease;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .area:hover{
+      transform:translateY(-9px);
+      box-shadow:var(--shadow);
+    }
+
+    .area::after{
+      content:"";
+      width:120px;
+      height:120px;
+      border-radius:50%;
+      background:rgba(158,175,168,.18);
+      position:absolute;
+      right:-50px;
+      bottom:-50px;
+      transition:transform .35s ease;
+    }
+
+    .area:hover::after{transform:scale(1.5)}
+
+    .area-number{
+      font-family:Georgia,serif;
+      font-size:2.5rem;
+      color:var(--sand);
+    }
+
+    .area h3{
+      font-family:Georgia,serif;
+      font-size:1.4rem;
+      font-weight:500;
+      margin:46px 0 12px;
+    }
+
+    .area p{
+      color:var(--muted);
+      line-height:1.8;
+    }
+
+    .about{
+      background:var(--paper);
+    }
+
+    .about-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:68px;
+      align-items:center;
+    }
+
+    .about-image-wrap{
+      position:relative;
+    }
+
+    .about-image{
+      height:590px;
+      object-fit:cover;
+      border-radius:0 120px 0 0;
+      filter:saturate(.75);
+      box-shadow:var(--shadow);
+    }
+
+    .about-image-wrap::after{
+      content:"";
+      position:absolute;
+      inset:24px -22px -22px 24px;
+      border:1px solid rgba(49,77,71,.35);
+      border-radius:0 130px 0 0;
+      z-index:-1;
+      animation:frameMove 5s ease-in-out infinite;
+    }
+
+    .about p{
+      color:var(--muted);
+      line-height:1.9;
+      font-size:1.02rem;
+    }
+
+    .quote-inline{
+      border-left:3px solid var(--forest);
+      padding-left:20px;
+      margin:28px 0;
+      color:#485555;
+      font-family:Georgia,serif;
+      font-size:1.24rem;
+      font-style:italic;
+    }
+
+    .process{
+      background:#dfe5e1;
+    }
+
+    .process-list{
+      margin-top:48px;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:18px;
+    }
+
+    .step{
+      padding:26px;
+      background:rgba(248,246,241,.74);
+      border:1px solid rgba(49,77,71,.10);
+      border-radius:14px;
+      transition:transform .3s ease,background .3s ease;
+    }
+
+    .step:hover{
+      transform:translateY(-8px);
+      background:var(--paper);
+    }
+
+    .step span{
+      color:var(--forest);
+      font-size:.74rem;
+      letter-spacing:.15em;
+      font-weight:800;
+    }
+
+    .step h3{
+      font-family:Georgia,serif;
+      font-weight:500;
+      font-size:1.3rem;
+      margin:22px 0 10px;
+    }
+
+    .step p{
+      color:var(--muted);
+      line-height:1.75;
+      font-size:.93rem;
+    }
+
+    .quote{
+      min-height:520px;
+      display:grid;
+      place-items:center;
+      color:white;
+      text-align:center;
+      background:
+        linear-gradient(rgba(26,38,39,.62),rgba(26,38,39,.68)),
+        url("https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=1900&q=85") center/cover;
+      padding:100px 0;
+    }
+
+    .quote p{
+      max-width:980px;
+      margin:0 auto;
+      font-family:Georgia,serif;
+      font-size:clamp(2.6rem,5vw,5rem);
+      line-height:1.15;
+    }
+
+    .contact{
+      background:var(--forest);
+      color:white;
+    }
+
+    .contact-grid{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:50px;
+      align-items:end;
+    }
+
+    .contact h2{color:white}
+
+    .contact p{
+      color:#d4dedb;
+      line-height:1.85;
+      max-width:720px;
+    }
+
+    .contact-box{
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.16);
+      padding:28px;
+      border-radius:18px;
+      backdrop-filter:blur(10px);
+    }
+
+    .contact-line{
+      padding:12px 0;
+      border-bottom:1px solid rgba(255,255,255,.12);
+      color:#d8e2df;
+      font-size:.92rem;
+    }
+
+    .contact-box .btn-primary{
+      width:100%;
+      margin-top:18px;
+      background:var(--paper);
+      color:var(--forest);
+    }
+
+    footer{
+      background:var(--forest);
+      color:#b9c9c5;
+      padding:30px 0;
+      font-size:.86rem;
+      border-top:1px solid rgba(255,255,255,.08);
+    }
+
+    .footer-row{
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    @keyframes fadeUp{
+      from{opacity:0;transform:translateY(28px)}
+      to{opacity:1;transform:none}
+    }
+
+    @keyframes visualIn{
+      from{opacity:0;transform:translateX(42px) scale(.97)}
+      to{opacity:1;transform:none}
+    }
+
+    @keyframes drift{
+      to{transform:translate(70px,-50px) scale(1.1)}
+    }
+
+    @keyframes floatPhoto{
+      0%,100%{transform:translateY(0) rotate(-1deg)}
+      50%{transform:translateY(-12px) rotate(1deg)}
+    }
+
+    @keyframes frameMove{
+      0%,100%{transform:translate(0,0)}
+      50%{transform:translate(10px,-10px)}
+    }
+
+    @keyframes marquee{
+      to{transform:translateX(-50%)}
+    }
+
+    @media(max-width:900px){
+      .nav-links a:not(.nav-cta){display:none}
+      .hero-grid,.section-head,.about-grid,.contact-grid{grid-template-columns:1fr}
+      .hero-visual{min-height:560px}
+      .photo-main{height:530px;width:80%}
+      .areas{grid-template-columns:1fr}
+      .process-list{grid-template-columns:1fr 1fr}
+      .vertical-label{display:none}
+    }
+
+    @media(max-width:560px){
+      .hero{padding-top:112px}
+      .hero-visual{min-height:470px}
+      .photo-main{height:440px;width:84%}
+      .photo-small{height:200px;width:48%}
+      .number-card{min-width:150px;padding:14px}
+      .process-list{grid-template-columns:1fr}
+      .about-image{height:460px}
+      section{padding:80px 0}
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <a class="brand" href="#">André <span>Valença</span></a>
+
+        <div class="nav-links">
+          <a href="#atuacao">Atuação</a>
+          <a href="#sobre">Sobre</a>
+          <a href="#processo">Processo</a>
+          <a class="nav-cta" href="#contato">Agendar sessão</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow">Psicologia clínica • CRP 00/000000</div>
+
+          <h1>Compreender padrões para viver com mais <span>consciência.</span></h1>
+
+          <p class="hero-text">
+            Psicoterapia para homens e adultos que lidam com ansiedade, pressão,
+            relações difíceis, mudanças importantes ou a sensação de estar sempre
+            no limite.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn-primary" href="#contato">Agendar atendimento</a>
+            <a class="btn-secondary" href="#sobre">Conhecer meu trabalho</a>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <img
+            class="photo-main"
+            src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=1200&q=85"
+            alt="Homem em retrato profissional"
+          >
+
+          <img
+            class="photo-small"
+            src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=900&q=85"
+            alt="Ambiente profissional e acolhedor"
+          >
+
+          <div class="number-card">
+            <strong>50 min</strong>
+            <span>Sessões individuais<br>online e presenciais</span>
+          </div>
+
+          <div class="vertical-label">Escuta • presença • construção</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="manifesto">
+      <div class="manifesto-track">
+        ANSIEDADE • RELACIONAMENTOS • AUTOCOBRANÇA • TRABALHO • IDENTIDADE • RECOMEÇOS •
+        ANSIEDADE • RELACIONAMENTOS • AUTOCOBRANÇA • TRABALHO • IDENTIDADE • RECOMEÇOS •
+      </div>
+    </div>
+
+    <section id="atuacao">
+      <div class="container">
+        <div class="section-head">
+          <span class="label">Áreas de atuação</span>
+
+          <div>
+            <h2>Questões que podem ser trabalhadas em terapia.</h2>
+            <p class="section-copy">
+              O processo terapêutico é construído a partir da sua história, do seu
+              contexto e daquilo que faz sentido compreender agora.
+            </p>
+          </div>
+        </div>
+
+        <div class="areas">
+          <article class="area">
+            <div class="area-number">01</div>
+            <h3>Ansiedade e pressão</h3>
+            <p>
+              Excesso de preocupação, dificuldade de desligar, cobrança constante
+              e sensação de que sempre existe algo para resolver.
+            </p>
+          </article>
+
+          <article class="area">
+            <div class="area-number">02</div>
+            <h3>Relacionamentos e limites</h3>
+            <p>
+              Conflitos, padrões de repetição, dificuldade de comunicação e construção
+              de relações mais equilibradas.
+            </p>
+          </article>
+
+          <article class="area">
+            <div class="area-number">03</div>
+            <h3>Carreira e identidade</h3>
+            <p>
+              Mudanças profissionais, decisões importantes, esgotamento e questões
+              ligadas ao modo como você se percebe e se posiciona.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="about" id="sobre">
+      <div class="container about-grid">
+        <div class="about-image-wrap">
+          <img
+            class="about-image"
+            src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=85"
+            alt="Psicólogo em ambiente profissional"
+          >
+        </div>
+
+        <div>
+          <span class="label">Sobre</span>
+          <h2>Dr. André Valença</h2>
+
+          <p>
+            Sou psicólogo clínico e trabalho com adultos que desejam compreender
+            melhor o que vivem, como reagem e por que alguns padrões continuam
+            aparecendo mesmo quando já não fazem mais sentido.
+          </p>
+
+          <div class="quote-inline">
+            “Terapia não é sobre ter todas as respostas. É sobre criar espaço para olhar com mais clareza.”
+          </div>
+
+          <p>
+            O atendimento é conduzido com ética, sigilo e uma postura direta,
+            acolhedora e respeitosa, sem fórmulas prontas.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="process" id="processo">
+      <div class="container">
+        <span class="label">Como funciona</span>
+        <h2>Um processo simples de começar.</h2>
+
+        <div class="process-list">
+          <article class="step">
+            <span>PASSO 01</span>
+            <h3>Contato inicial</h3>
+            <p>Você envia uma mensagem para verificar horários, formato e valores.</p>
+          </article>
+
+          <article class="step">
+            <span>PASSO 02</span>
+            <h3>Primeira sessão</h3>
+            <p>Conversamos sobre o que trouxe você até aqui e sobre suas expectativas.</p>
+          </article>
+
+          <article class="step">
+            <span>PASSO 03</span>
+            <h3>Acompanhamento</h3>
+            <p>As sessões seguem a partir das questões que surgem e dos objetivos definidos.</p>
+          </article>
+
+          <article class="step">
+            <span>PASSO 04</span>
+            <h3>Reavaliação</h3>
+            <p>Ao longo do processo, observamos mudanças, novas demandas e próximos passos.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="quote">
+      <div class="container">
+        <p>
+          “Você não precisa esperar chegar ao limite para começar a cuidar do que está acontecendo.”
+        </p>
+      </div>
+    </section>
+
+    <section class="contact" id="contato">
+      <div class="container contact-grid">
+        <div>
+          <span class="label" style="color:#d5e2dd">Primeiro contato</span>
+          <h2>Quer conversar sobre iniciar a terapia?</h2>
+          <p>
+            Entre em contato para saber sobre horários disponíveis, formato de
+            atendimento e demais informações.
+          </p>
+        </div>
+
+        <div class="contact-box">
+          <div class="contact-line">Atendimento individual para adultos</div>
+          <div class="contact-line">Online e presencial</div>
+          <div class="contact-line">Segunda a sexta • mediante agendamento</div>
+
+          <a
+            class="btn-primary"
+            href="https://wa.me/5500000000000"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Falar pelo WhatsApp
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-row">
+      <span>© 2026 André Valença • Psicologia Clínica</span>
+      <span>CRP 00/000000 • Modelo demonstrativo BittUp</span>
+    </div>
+  </footer>
+</body>
+</html>

@@ -544,3 +544,41 @@ test('BittUp sitemap keeps actual services/projects and processo when dynamic so
  assert.ok(!urls.some(url => ['/loja/carrinho', '/loja/checkout', '/loja/pedido', '/api/'].some(prefix => url.includes(prefix))));
  assert.ok(entries.every(entry => !entry.lastModified));
 })
+
+
+test('recovered portfolio has 18 distinct projects, original records and nine model demos', () => {
+  reset(); const { projects, getProjectsByCategory } = load('src/client/projects/index.ts');
+  assert.equal(projects.length, 18); assert.equal(new Set(projects.map(project => project.slug)).size, 18);
+  for (const slug of ['jornada-da-transformacao', 'el-vidracaria', 'cm-teixeiras', 'maribela', 'geicy-croche', 'artesanaio', 'resgatando-anas', 'diario-de-sentimentos', 'jornada-da-protagonista']) assert.ok(projects.some(project => project.slug === slug));
+  const models = getProjectsByCategory('modelos'); assert.equal(models.length, 9);
+  for (const project of models) { assert.ok(project.url.startsWith('/modelos/')); const html = fs.readFileSync(path.join(root, 'public', project.url), 'utf8'); assert.match(html, /<!doctype html>/i); }
+  const missing = [];
+  for (const project of projects) for (const image of Object.values(project.images)) {
+    const file = path.join(root, 'public', image);
+    if (!fs.existsSync(file)) { missing.push(image); continue; }
+    assert.equal(fs.readFileSync(file).subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+  }
+  assert.deepEqual(missing, ['/assets/portfolio/resgatando-anas-03.png']);
+  const filter = require('react-dom/server').renderToStaticMarkup(require('react').createElement(load('src/client/projects/ProjectFilter.tsx').default, {value:'modelos',onChange(){}}));
+  assert.match(filter, /Modelos/);
+})
+
+test('all 18 portfolio records retain canonical metadata, breadcrumbs and real 404 handling', async () => {
+  reset(); const { projects } = load('src/client/projects/index.ts'); const route = load('src/app/(site)/portfolio/[slug]/page.tsx');
+  for (const project of projects) {
+    const params = Promise.resolve({slug:project.slug}); const metadata = await route.generateMetadata({params});
+    assert.equal(metadata.alternates.canonical, 'https://bittup.com.br/portfolio/' + project.slug);
+    assert.ok(metadata.title.absolute.includes(project.title)); assert.equal(metadata.robots.index, true);
+    const page = await route.default({params}); const children = require('react').Children.toArray(page.props.children);
+    const breadcrumb = children.find(child => child.props?.items); assert.ok(breadcrumb); assert.equal(breadcrumb.props.items.at(-1).path, '/portfolio/' + project.slug);
+  }
+  await assert.rejects(route.generateMetadata({params:Promise.resolve({slug:'missing-project'})}), /NEXT_NOT_FOUND/);
+})
+
+test('offline preparation includes all 18 project pages without enabling financial caches', () => {
+  reset(); const { projects } = load('src/client/projects/index.ts'); const page = load('src/app/(site)/preparar-offline/page.tsx').default();
+  const routes = page.props.routes; for (const project of projects) assert.ok(routes.includes('/portfolio/' + project.slug));
+  assert.equal(routes.filter(route => route.startsWith('/portfolio/')).length, 18);
+  assert.ok(!routes.some(route => ['/loja', '/api', '/admin', '/pedido'].some(prefix => route.startsWith(prefix))));
+  assert.equal(new Set(routes).size, routes.length);
+})
