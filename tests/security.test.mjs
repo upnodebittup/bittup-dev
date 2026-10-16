@@ -582,3 +582,18 @@ test('offline preparation includes all 18 project pages without enabling financi
   assert.ok(!routes.some(route => ['/loja', '/api', '/admin', '/pedido'].some(prefix => route.startsWith(prefix))));
   assert.equal(new Set(routes).size, routes.length);
 })
+
+
+test('remote links page preserves noindex/WhatsApp and respects service and portfolio modules', () => {
+  reset(); const React = require('react'), {renderToStaticMarkup} = require('react-dom/server');
+  const active = load('src/app/(standalone)/links/page.tsx'); const html = renderToStaticMarkup(React.createElement(active.default));
+  assert.ok(html.includes('href="/portfolio"')); assert.ok(html.includes('href="/servicos"')); assert.ok(html.includes('https://wa.me/5521982708329'));
+  assert.ok(!html.includes('/lp/intensivao')); assert.equal(active.metadata.robots.index, false);
+  assert.equal(active.metadata.alternates.canonical, 'https://bittup.com.br/links');
+  assert.equal(load('src/core/lib/seo.ts').isIndexablePath('/links'), false);
+  assert.equal(load('src/core/pwa/cache-policy.ts').canPrepareOfflinePath('/links'), false);
+  reset(); configOverride = {store:{enabled:true,checkout:true},blog:true,portfolio:false,services:false,pwa:true};
+  const disabledHtml = renderToStaticMarkup(React.createElement(load('src/app/(standalone)/links/page.tsx').default));
+  assert.ok(!disabledHtml.includes('href="/portfolio"')); assert.ok(!disabledHtml.includes('href="/servicos"')); assert.ok(disabledHtml.includes('https://wa.me/5521982708329'));
+  for (const filename of ['card-instagram.png','card-portfolio.png','card-servicos.png','card-site.png','card-whatsapp.png']) assert.ok(fs.existsSync(path.join(root,'public/assets/cards-links',filename)));
+})

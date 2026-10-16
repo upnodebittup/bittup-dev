@@ -13,6 +13,6 @@ export type SeoConfig = {
 export const seoConfig: SeoConfig = {
   indexing: true,
   products: { mode: 'all', reviewedSlugs: [], requireInStock: false, requireImage: false },
-  records: { pages: {}, products: {}, posts: {}, categories: {}, blogCategories: {} },
+  records: { pages: { "/links": { index: false } }, products: {}, posts: {}, categories: {}, blogCategories: {} },
   identity: { verified: true, sameAs: [], address: null },
 }
