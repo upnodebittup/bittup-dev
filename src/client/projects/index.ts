@@ -24,6 +24,7 @@ import type { Project, ProjectCategory } from "./types";
 
 export const projects: Project[] = [
 
+  
   jornadaTransformacao,
   elVidracaria,
   cmTeixeiras,
@@ -40,6 +41,7 @@ export const projects: Project[] = [
   modeloPsicologo1,
   modeloPsicologo2,
   modeloClinicaNeuro2,
+  modeloClinicaNeuro2,  
   modeloPetshop1,
   modeloPetshop2,
   modeloPetshop3,
