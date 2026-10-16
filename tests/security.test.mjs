@@ -597,3 +597,16 @@ test('remote links page preserves noindex/WhatsApp and respects service and port
   assert.ok(!disabledHtml.includes('href="/portfolio"')); assert.ok(!disabledHtml.includes('href="/servicos"')); assert.ok(disabledHtml.includes('https://wa.me/5521982708329'));
   for (const filename of ['card-instagram.png','card-portfolio.png','card-servicos.png','card-site.png','card-whatsapp.png']) assert.ok(fs.existsSync(path.join(root,'public/assets/cards-links',filename)));
 })
+
+
+test('manifest and Apple touch icon reference real PNGs with truthful dimensions', () => {
+ reset(); const manifest = load('src/app/manifest.ts').default();
+ for (const icon of manifest.icons) {
+   const file = path.join(root, 'public', icon.src); assert.ok(fs.existsSync(file), icon.src);
+   const png = fs.readFileSync(file); assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+   assert.equal(icon.sizes, png.readUInt32BE(16) + 'x' + png.readUInt32BE(20));
+ }
+ const maskable = manifest.icons.find(icon => icon.purpose === 'maskable');
+ assert.equal(maskable.src, '/logo-bittup-vertical.png'); assert.equal(maskable.sizes, '500x500');
+ const {siteConfig} = load('src/client/config/site.config.ts'); assert.ok(fs.existsSync(path.join(root, 'public', siteConfig.pwa.appleTouchIcon)));
+})

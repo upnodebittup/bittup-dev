@@ -112,8 +112,8 @@ export const siteConfig = {
 
   icon192: "/pwa/icon-192.png",
   icon512: "/pwa/icon-512.png",
-  maskableIcon512: "/pwa/icon-maskable-512.png",
-  appleTouchIcon: "/pwa/apple-touch-icon.png",
+  maskableIcon: "/logo-bittup-vertical.png",
+  appleTouchIcon: "/pwa/icon-192.png",
 
   offlineRoutes: [
     "/",

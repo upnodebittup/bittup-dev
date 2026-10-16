@@ -42,8 +42,9 @@ export default function manifest(): MetadataRoute.Manifest {
         purpose: "any",
       },
       {
-        src: siteConfig.pwa.maskableIcon512,
-        sizes: "512x512",
+        // Original logo has safe margins; declare its actual dimensions.
+        src: siteConfig.pwa.maskableIcon,
+        sizes: "500x500",
         type: "image/png",
         purpose: "maskable",
       },
