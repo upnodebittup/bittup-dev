@@ -610,3 +610,14 @@ test('manifest and Apple touch icon reference real PNGs with truthful dimensions
  assert.equal(maskable.src, '/logo-bittup-vertical.png'); assert.equal(maskable.sizes, '500x500');
  const {siteConfig} = load('src/client/config/site.config.ts'); assert.ok(fs.existsSync(path.join(root, 'public', siteConfig.pwa.appleTouchIcon)));
 })
+
+
+test('credit card form has readable inherited input color on the BittUp dark background', () => {
+ reset(); const React = require('react'); const html = require('react-dom/server').renderToStaticMarkup(React.createElement(load('src/core/components/payment/CreditCardForm.tsx').default, {total:25,onSubmit:async()=>{}}));
+ const {siteConfig} = load('src/client/config/site.config.ts');
+ const lum = hex => { const c = hex.replace('#','').match(/../g).map(v=>parseInt(v,16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4); return .2126*c[0]+.7152*c[1]+.0722*c[2] };
+ const foreground = lum(siteConfig.theme.textLight), background = lum(siteConfig.theme.bgTertiary);
+ assert.ok((Math.max(foreground,background)+.05)/(Math.min(foreground,background)+.05)>=4.5);
+ assert.match(html, /<form[^>]*text-\[var\(--color-text-light\)\]/);
+ assert.equal((html.match(/<input /g)||[]).length,5); assert.ok(!/readOnly|readonly|disabled=""/.test(html));
+})
