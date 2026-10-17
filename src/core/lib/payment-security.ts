@@ -10,6 +10,7 @@ export async function applyVerifiedPayment(orderId: string, value: unknown, stat
   // A late pending/rejected event must not undo settlement or refund/chargeback.
   const settled = ['approved', 'refunded', 'refund_pending', 'disputed']
   if (order.statusPagamento === status ||
+      (order.statusPagamento === 'refunded' && ['refund_pending', 'disputed'].includes(status)) ||
       (settled.includes(order.statusPagamento || '') && ['pending', 'overdue', 'rejected', 'cancelled'].includes(status)) ||
       (['refunded', 'refund_pending', 'disputed'].includes(order.statusPagamento || '') && status === 'approved')) return true
   const result = await prisma.order.updateMany({ where: { id: orderId, statusPagamento: order.statusPagamento }, data: { statusPagamento: status } })

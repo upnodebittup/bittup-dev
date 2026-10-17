@@ -390,6 +390,7 @@ export const ModelName = {
   Size: 'Size',
   Category: 'Category',
   Order: 'Order',
+  AsaasWebhookEvent: 'AsaasWebhookEvent',
   OrderItem: 'OrderItem',
   AdminUser: 'AdminUser',
   Client: 'Client',
@@ -413,7 +414,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "product" | "productImage" | "productColor" | "size" | "category" | "order" | "orderItem" | "adminUser" | "client" | "accessLog" | "blogCategory" | "post" | "postSEO" | "customPage"
+    modelProps: "product" | "productImage" | "productColor" | "size" | "category" | "order" | "asaasWebhookEvent" | "orderItem" | "adminUser" | "client" | "accessLog" | "blogCategory" | "post" | "postSEO" | "customPage"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -858,6 +859,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.OrderCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.OrderCountAggregateOutputType> | number
+        }
+      }
+    }
+    AsaasWebhookEvent: {
+      payload: Prisma.$AsaasWebhookEventPayload<ExtArgs>
+      fields: Prisma.AsaasWebhookEventFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AsaasWebhookEventFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AsaasWebhookEventPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AsaasWebhookEventFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AsaasWebhookEventPayload>
+        }
+        findFirst: {
+          args: Prisma.AsaasWebhookEventFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AsaasWebhookEventPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AsaasWebhookEventFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AsaasWebhookEventPayload>
+        }
+        findMany: {
+          args: Prisma.AsaasWebhookEventFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AsaasWebhookEventPayload>[]
+        }
+        create: {
+          args: Prisma.AsaasWebhookEventCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AsaasWebhookEventPayload>
+        }
+        createMany: {
+          args: Prisma.AsaasWebhookEventCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AsaasWebhookEventCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AsaasWebhookEventPayload>[]
+        }
+        delete: {
+          args: Prisma.AsaasWebhookEventDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AsaasWebhookEventPayload>
+        }
+        update: {
+          args: Prisma.AsaasWebhookEventUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AsaasWebhookEventPayload>
+        }
+        deleteMany: {
+          args: Prisma.AsaasWebhookEventDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AsaasWebhookEventUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AsaasWebhookEventUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AsaasWebhookEventPayload>[]
+        }
+        upsert: {
+          args: Prisma.AsaasWebhookEventUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AsaasWebhookEventPayload>
+        }
+        aggregate: {
+          args: Prisma.AsaasWebhookEventAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAsaasWebhookEvent>
+        }
+        groupBy: {
+          args: Prisma.AsaasWebhookEventGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AsaasWebhookEventGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AsaasWebhookEventCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AsaasWebhookEventCountAggregateOutputType> | number
         }
       }
     }
@@ -1564,6 +1639,18 @@ export const OrderScalarFieldEnum = {
 export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
 
 
+export const AsaasWebhookEventScalarFieldEnum = {
+  id: 'id',
+  event: 'event',
+  paymentId: 'paymentId',
+  receivedAt: 'receivedAt',
+  processedAt: 'processedAt',
+  outcome: 'outcome'
+} as const
+
+export type AsaasWebhookEventScalarFieldEnum = (typeof AsaasWebhookEventScalarFieldEnum)[keyof typeof AsaasWebhookEventScalarFieldEnum]
+
+
 export const OrderItemScalarFieldEnum = {
   id: 'id',
   orderId: 'orderId',
@@ -1934,6 +2021,7 @@ export type GlobalOmitConfig = {
   size?: Prisma.SizeOmit
   category?: Prisma.CategoryOmit
   order?: Prisma.OrderOmit
+  asaasWebhookEvent?: Prisma.AsaasWebhookEventOmit
   orderItem?: Prisma.OrderItemOmit
   adminUser?: Prisma.AdminUserOmit
   client?: Prisma.ClientOmit

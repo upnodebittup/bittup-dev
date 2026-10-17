@@ -57,6 +57,7 @@ export const ModelName = {
   Size: 'Size',
   Category: 'Category',
   Order: 'Order',
+  AsaasWebhookEvent: 'AsaasWebhookEvent',
   OrderItem: 'OrderItem',
   AdminUser: 'AdminUser',
   Client: 'Client',
@@ -153,6 +154,18 @@ export const OrderScalarFieldEnum = {
 } as const
 
 export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
+
+
+export const AsaasWebhookEventScalarFieldEnum = {
+  id: 'id',
+  event: 'event',
+  paymentId: 'paymentId',
+  receivedAt: 'receivedAt',
+  processedAt: 'processedAt',
+  outcome: 'outcome'
+} as const
+
+export type AsaasWebhookEventScalarFieldEnum = (typeof AsaasWebhookEventScalarFieldEnum)[keyof typeof AsaasWebhookEventScalarFieldEnum]
 
 
 export const OrderItemScalarFieldEnum = {

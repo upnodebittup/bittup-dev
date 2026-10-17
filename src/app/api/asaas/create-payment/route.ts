@@ -4,10 +4,11 @@ import { canAccessOrder } from '@/core/lib/order-access'
 import { mutationGuard, privateJson } from '@/core/lib/request-security'
 import { payableTotal } from '@/core/lib/commerce-security'
 import { NextRequest, NextResponse } from 'next/server';
-import { asaasFetch, logAsaasFailure, AsaasPayment } from '@/core/lib/asaas';
+import { asaasFetch, AsaasError, logAsaasFailure, AsaasPayment } from '@/core/lib/asaas';
 import * as yup from 'yup';
 
 export const runtime = 'nodejs';
+export const maxDuration = 90;
 
 
 const createPaymentSchema = yup.object({
@@ -51,7 +52,7 @@ async function POST(req: NextRequest) {
   const guard = mutationGuard(req, 'asaas-payment')
   if (guard) return guard
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => null);
 
     let validatedData: CreatePaymentRequest;
     try {
@@ -143,7 +144,7 @@ async function POST(req: NextRequest) {
       {
         error: 'Não foi possível criar a cobrança.',
       },
-      { status: 400 }
+      { status: error instanceof AsaasError ? (error.category === 'validation' ? 422 : error.category === 'configuration' ? 503 : error.category === 'timeout' ? 504 : 502) : 500 }
     );
   }
 }

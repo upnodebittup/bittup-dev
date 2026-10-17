@@ -6,6 +6,7 @@ import { canAccessOrder } from '@/core/lib/order-access'
 import { mutationGuard, privateJson } from '@/core/lib/request-security'
 
 export const runtime = 'nodejs'
+export const maxDuration = 120
 async function POST(req: NextRequest) {
   const guard = mutationGuard(req, 'asaas-customer')
   if (guard) return guard

@@ -48,6 +48,11 @@ export type Category = Prisma.CategoryModel
  */
 export type Order = Prisma.OrderModel
 /**
+ * Model AsaasWebhookEvent
+ *
+ */
+export type AsaasWebhookEvent = Prisma.AsaasWebhookEventModel
+/**
  * Model OrderItem
  * 
  */

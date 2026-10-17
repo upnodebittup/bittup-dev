@@ -1,41 +1,43 @@
 import { withModuleApi } from '@/core/lib/module-server'
 import { NextRequest } from 'next/server'
-import { asaasFetch, type AsaasPayment } from '@/core/lib/asaas'
-import { safeEqual, normalizedAsaasStatus } from '@/core/lib/commerce-security'
-import { applyVerifiedPayment } from '@/core/lib/payment-security'
+import { safeEqual } from '@/core/lib/commerce-security'
+import { processAsaasEvent } from '@/core/lib/asaas-reconciliation'
+import { prisma } from '@/core/lib/prisma'
 import { privateJson } from '@/core/lib/request-security'
 export const runtime = 'nodejs'
+export const maxDuration = 15
 async function POST(req: NextRequest) {
   const secret = process.env.ASAAS_WEBHOOK_TOKEN
   const header = req.headers.get('asaas-access-token')
-  const tokensMatch = Boolean(secret && header && safeEqual(header, secret))
-  const environment = process.env.VERCEL_ENV || process.env.NODE_ENV
-  // Temporary authentication diagnostic: remove after online webhook validation.
-  // Never normalize tokens or include their values, hashes or payloads here.
-  console.info({
-    headerPresent: header !== null,
-    headerLength: Buffer.byteLength(header || '', 'utf8'),
-    secretPresent: Boolean(secret),
-    secretLength: Buffer.byteLength(secret || '', 'utf8'),
-    tokensMatch,
-    runtimeEnvironment: environment && ['production', 'preview', 'development', 'test'].includes(environment) ? environment : 'unknown',
-  })
   if (!secret) return privateJson({ error: 'Webhook não configurado.' }, 503)
-  if (!tokensMatch) return privateJson({ error: 'Notificação não autorizada.' }, 401)
+  if (!header || !safeEqual(header, secret)) return privateJson({ error: 'Notificação não autorizada.' }, 401)
   const body = await req.json().catch(() => null)
-  if (typeof body?.event !== 'string' || !body.event.startsWith('PAYMENT_')) return privateJson({ status: 'ignored' })
-  const id = body?.payment?.id
-  if (typeof id !== 'string' || !/^[a-zA-Z0-9_-]{1,128}$/.test(id)) return privateJson({ error: 'Notificação inválida.' }, 400)
+  if (!body || typeof body.event !== 'string') return privateJson({ error: 'Notificação inválida.' }, 400)
+  if (!body.event.startsWith('PAYMENT_')) return privateJson({ status: 'ignored' })
+  const validId = (id: unknown): id is string => typeof id === 'string' && /^[a-zA-Z0-9_-]{1,128}$/.test(id)
+  // Event IDs are opaque: official examples contain '&', unlike payment IDs.
+  if (typeof body.id !== 'string' || !/^[\x21-\x7e]{1,255}$/.test(body.id) ||
+      !validId(body.payment?.id) || !/^PAYMENT_[A-Z_]{1,100}$/.test(body.event))
+    return privateJson({ error: 'Notificação inválida.' }, 400)
+  let stage = 'persist'
   try {
-    // Read current state from the configured account, not status/value in the notification.
-    const payment = await asaasFetch<AsaasPayment>('/payments/' + encodeURIComponent(id))
-    if (payment.id !== id || !payment.externalReference) return privateJson({ error: 'Pagamento inválido.' }, 400)
-    const status = normalizedAsaasStatus(payment.status)
-    if (!status) return privateJson({ status: 'ignored' })
-    if (!await applyVerifiedPayment(payment.externalReference, payment.value, status, payment.customer)) return privateJson({ error: 'Pagamento incompatível com pedido.' }, 400)
+    // Unique provider event ID persists before any remote I/O. No background promise in serverless.
+    const receipt = await prisma.asaasWebhookEvent.upsert({
+      where: { id: body.id }, update: {},
+      create: { id: body.id, event: body.event, paymentId: body.payment.id },
+    })
+    if (receipt.paymentId !== body.payment.id || receipt.event !== body.event)
+      return privateJson({ error: 'Evento incompatível.' }, 409)
+    if (receipt.processedAt) return privateJson({ success: true })
+    stage = 'process'
+    const outcome = await processAsaasEvent(receipt.id, receipt.paymentId)
+    console.info({ operation: 'asaas-webhook', outcome })
     return privateJson({ success: true })
-  } catch { return privateJson({ error: 'Não foi possível confirmar a notificação.' }, 503) }
+  } catch {
+    console.error({ operation: 'asaas-webhook', stage, outcome: 'retry' })
+    // Keep the receipt pending; provider retries or the manual recovery command can process it.
+    return privateJson({ error: 'Não foi possível confirmar a notificação.' }, 503)
+  }
 }
-
 const modulePOST = withModuleApi('/api/asaas/webhook', POST)
 export { modulePOST as POST }

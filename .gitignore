@@ -41,3 +41,10 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+/.npm-cache/
+/.asaas-validation/
+/.playwright-browsers/
+/playwright-report/
+/test-results/
+/.asaas-build/
+/tests/*-result.log

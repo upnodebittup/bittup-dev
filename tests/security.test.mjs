@@ -11,7 +11,7 @@ const jwt = require('jsonwebtoken')
 const { NextRequest } = require('next/server')
 const { Decimal } = require('@prisma/client/runtime/client')
 const root = path.resolve(import.meta.dirname, '..')
-test('webhook authentication logs only authorized diagnostics and fails closed without normalization', async () => {
+test('webhook authentication exposes no token diagnostics and fails closed without normalization', async () => {
   reset()
   const saved = { secret: process.env.ASAAS_WEBHOOK_TOKEN, environment: process.env.VERCEL_ENV }
   const originalInfo = console.info
@@ -40,20 +40,13 @@ test('webhook authentication logs only authorized diagnostics and fails closed w
         header === undefined ? {} : { 'asaas-access-token': header }))
       assert.equal(response.status, status)
       assert.equal(response.headers.get('cache-control'), 'private, no-store')
-      assert.deepEqual(logs.at(-1), [{
-        headerPresent: header !== undefined,
-        headerLength: Buffer.byteLength(header || ''),
-        secretPresent: Boolean(secret),
-        secretLength: Buffer.byteLength(secret || ''),
-        tokensMatch: status === 200,
-        runtimeEnvironment: 'production',
-      }])
+      assert.equal(logs.length, 0)
       const body = await response.json()
       assert.deepEqual(Object.keys(body), [status === 200 ? 'status' : 'error'])
     }
     process.env.VERCEL_ENV = 'unexpected-value-that-must-not-be-logged'
     await POST(request('/api/asaas/webhook', 'POST', {}))
-    assert.equal(logs.at(-1)[0].runtimeEnvironment, 'unknown')
+    assert.equal(logs.length, 0)
     assert.throws(() => request('/api/asaas/webhook', 'POST', {}, { 'asaas-access-token': 'synthetic\ntoken' }))
   } finally {
     console.info = originalInfo
@@ -99,7 +92,7 @@ function load(relative) {
   vm.runInThisContext(`(function(require,module,exports){${code}\n})`, { filename: file })(localRequire, module, module.exports)
   return module.exports
 }
-function reset() { cache = new Map(); cookieJar = new Map(); db = {}; configOverride = null; contentOverride = null; seoOverride = null; siteOverride = null; provider = async () => { throw new Error('Unexpected provider call') } }
+function reset() { cache = new Map(); cookieJar = new Map(); db = { asaasWebhookEvent: inbox() }; configOverride = null; contentOverride = null; seoOverride = null; siteOverride = null; provider = async () => { throw new Error('Unexpected provider call') } }
 function request(url, method = 'GET', body, headers = {}) {
   return new NextRequest('https://shop.example.invalid' + url, { method,
     headers: { 'content-type': 'application/json', 'x-forwarded-for': 'test-' + ++ip, ...headers },
@@ -252,7 +245,7 @@ test('webhooks fail closed; verified provider values associate order and duplica
   db.order = { findUnique: async () => current, updateMany: async ({ data }) => { updates++; current.statusPagamento = data.statusPagamento; return { count: 1 } } }
   provider = async () => ({ id: 'pay_test', externalReference: current.id, customer: current.customerId, value: 25, status: 'CONFIRMED' })
   const api = load('src/app/api/asaas/webhook/route.ts')
-  const body = { event: 'PAYMENT_CONFIRMED', payment: { id: 'pay_test', value: 0.01 } }
+  const body = { id: 'evt_test', event: 'PAYMENT_CONFIRMED', payment: { id: 'pay_test', value: 0.01 } }
   assert.equal((await api.POST(request('/api/asaas/webhook', 'POST', body))).status, 401)
   for (let i = 0; i < 2; i++) assert.equal((await api.POST(request('/api/asaas/webhook', 'POST', body, { 'asaas-access-token': process.env.ASAAS_WEBHOOK_TOKEN }))).status, 200)
   assert.equal(updates, 1); assert.equal(current.statusPagamento, 'approved')
@@ -799,4 +792,66 @@ test('Next environment parser requires escaped literal dollars in synthetic loca
     assert.equal(process.env.ASAAS_SYNTHETIC_ESCAPED,'$SYNTHETIC_MISSING_TOKEN');
   `
   require('node:child_process').execFileSync(process.execPath,['-e',code],{cwd:root,windowsHide:true,stdio:'pipe'})
+})
+
+function inbox() {
+  const rows = new Map()
+  return {
+    upsert: async ({where, create}) => { if (!rows.has(where.id)) rows.set(where.id, {...create, processedAt:null}); return rows.get(where.id) },
+    update: async ({where, data}) => { Object.assign(rows.get(where.id), data); return rows.get(where.id) },
+  }
+}
+test('durable webhook retries failure; duplicate avoids network and old state cannot undo approval', async () => {
+  reset(); const current = order(); let calls = 0
+  db.order = {findUnique: async()=>current, updateMany:async({data})=>{current.statusPagamento=data.statusPagamento;return {count:1}}}
+  const api=load('src/app/api/asaas/webhook/route.ts')
+  const send=(id='evt_recovery')=>api.POST(request('/api/asaas/webhook','POST',{id,event:'PAYMENT_RECEIVED',payment:{id:'pay_test'}},{'asaas-access-token':process.env.ASAAS_WEBHOOK_TOKEN}))
+  provider=async()=>{calls++;throw new Error('synthetic timeout')}
+  assert.equal((await send()).status,503)
+  provider=async()=>{calls++;return {id:'pay_test',externalReference:current.id,customer:current.customerId,value:25,status:'RECEIVED'}}
+  assert.equal((await send()).status,200);assert.equal(current.statusPagamento,'approved')
+  assert.equal((await send()).status,200);assert.equal(calls,2)
+  provider=async()=>({id:'pay_test',externalReference:current.id,customer:current.customerId,value:25,status:'OVERDUE'})
+  assert.equal((await send('evt_old')).status,200);assert.equal(current.statusPagamento,'approved')
+  db.asaasWebhookEvent.upsert=async()=>{throw new Error('synthetic database failure')}
+  let queried=false;provider=async()=>{queried=true}
+  assert.equal((await send('evt_db_failure')).status,503);assert.equal(queried,false)
+})
+test('webhook validates envelope and durably acknowledges unrelated account payments',async()=>{
+  reset(); const api=load('src/app/api/asaas/webhook/route.ts')
+  const headers={'asaas-access-token':process.env.ASAAS_WEBHOOK_TOKEN}
+  assert.equal((await api.POST(request('/api/asaas/webhook','POST',null,headers))).status,400)
+  assert.equal((await api.POST(request('/api/asaas/webhook','POST',{event:'PAYMENT_RECEIVED',payment:{id:'pay_test'}},headers))).status,400)
+  db.order={findUnique:async()=>null};provider=async()=>({id:'pay_test',externalReference:'another-system',customer:'cus_other',value:25,status:'RECEIVED'})
+  assert.equal((await api.POST(request('/api/asaas/webhook','POST',{id:'evt_other',event:'PAYMENT_RECEIVED',payment:{id:'pay_test'}},headers))).status,200)
+})
+
+test('payment distinguishes provider validation, configuration, timeout and network failures',async()=>{
+  for(const [category,expected]of [['validation',422],['configuration',503],['timeout',504],['network',502]]){
+    reset();grant();db.order={findUnique:async()=>order()}
+    const {AsaasError}=load('src/core/lib/asaas.ts')
+    provider=async()=>{throw new AsaasError(category)}
+    const api=load('src/app/api/asaas/create-payment/route.ts')
+    assert.equal((await api.POST(request('/api/asaas/create-payment','POST',{orderId:'order-one',billingType:'PIX'}))).status,expected)
+  }
+})
+test('official opaque event IDs containing ampersand are accepted; final refund cannot regress',async()=>{
+  reset();const current=order();current.statusPagamento='refunded';let updates=0
+  db.order={findUnique:async()=>current,updateMany:async()=>{updates++;return {count:1}}}
+  provider=async()=>({id:'pay_test',externalReference:current.id,customer:current.customerId,value:25,status:'REFUND_REQUESTED'})
+  const api=load('src/app/api/asaas/webhook/route.ts')
+  const response=await api.POST(request('/api/asaas/webhook','POST',{id:'evt_05b708f961d739ea7eba7e4db318f621&368604920',event:'PAYMENT_REFUND_IN_PROGRESS',payment:{id:'pay_test'}},{'asaas-access-token':process.env.ASAAS_WEBHOOK_TOKEN}))
+  assert.equal(response.status,200);assert.equal(updates,0)
+})
+
+test('webhook interruption after order update remains retryable without repeating the transition',async()=>{
+  reset();const current=order();let writes=0
+  db.order={findUnique:async()=>current,updateMany:async({data})=>{writes++;current.statusPagamento=data.statusPagamento;return {count:1}}}
+  const finish=db.asaasWebhookEvent.update;let interrupted=true
+  db.asaasWebhookEvent.update=async args=>{if(interrupted){interrupted=false;throw new Error('synthetic interruption')}return finish(args)}
+  provider=async()=>({id:'pay_test',externalReference:current.id,customer:current.customerId,value:25,status:'CONFIRMED'})
+  const api=load('src/app/api/asaas/webhook/route.ts')
+  const send=()=>api.POST(request('/api/asaas/webhook','POST',{id:'evt_interrupted',event:'PAYMENT_CONFIRMED',payment:{id:'pay_test'}},{'asaas-access-token':process.env.ASAAS_WEBHOOK_TOKEN}))
+  assert.equal((await send()).status,503);assert.equal(current.statusPagamento,'approved')
+  assert.equal((await send()).status,200);assert.equal(writes,1)
 })

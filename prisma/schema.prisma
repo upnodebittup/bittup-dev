@@ -82,6 +82,18 @@ model Order {
   items            OrderItem[]
 }
 
+// Minimal durable inbox: no customer, card or raw webhook payload is retained.
+model AsaasWebhookEvent {
+  id          String   @id
+  event       String
+  paymentId   String
+  receivedAt  DateTime @default(now())
+  processedAt DateTime?
+  outcome     String?
+
+  @@index([processedAt, receivedAt])
+}
+
 model OrderItem {
   id         String   @id @default(cuid())
   orderId    String
