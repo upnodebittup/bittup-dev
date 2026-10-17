@@ -6,7 +6,7 @@ import { withAdmin } from '@/core/lib/admin-access'
  */
 
 import { NextResponse } from 'next/server';
-import { asaasFetch, getAsaasConfig } from '@/core/lib/asaas';
+import { asaasFetch, getAsaasConfig, logAsaasFailure } from '@/core/lib/asaas';
 
 export const runtime = 'nodejs';
 
@@ -26,7 +26,8 @@ async function GET(request: Request) {
       environment: config.isSandbox ? 'sandbox' : 'production',
       message: `API key válida para ${env}`,
     });
-  } catch {
+  } catch (error) {
+    logAsaasFailure('validate-key', error)
     
     return NextResponse.json(
       {

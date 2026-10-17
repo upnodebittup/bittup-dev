@@ -4,7 +4,7 @@ import { canAccessOrder } from '@/core/lib/order-access'
 import { mutationGuard, privateJson } from '@/core/lib/request-security'
 import { payableTotal } from '@/core/lib/commerce-security'
 import { NextRequest, NextResponse } from 'next/server';
-import { asaasFetch, AsaasPayment } from '@/core/lib/asaas';
+import { asaasFetch, logAsaasFailure, AsaasPayment } from '@/core/lib/asaas';
 import * as yup from 'yup';
 
 export const runtime = 'nodejs';
@@ -136,7 +136,8 @@ async function POST(req: NextRequest) {
       paymentId: payment.id,
       payment: { id: payment.id, status: payment.status },
     });
-  } catch {
+  } catch (error) {
+    logAsaasFailure('payment', error)
 
     return NextResponse.json(
       {
