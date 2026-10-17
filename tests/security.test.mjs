@@ -11,58 +11,6 @@ const jwt = require('jsonwebtoken')
 const { NextRequest } = require('next/server')
 const { Decimal } = require('@prisma/client/runtime/client')
 const root = path.resolve(import.meta.dirname, '..')
-test('webhook authentication logs only authorized diagnostics and fails closed without normalization', async () => {
-  reset()
-  const saved = { secret: process.env.ASAAS_WEBHOOK_TOKEN, environment: process.env.VERCEL_ENV }
-  const originalInfo = console.info
-  const logs = []
-  console.info = (...args) => logs.push(args)
-  try {
-    process.env.VERCEL_ENV = 'production'
-    const { POST } = load('src/app/api/asaas/webhook/route.ts')
-    const cases = [
-      ['synthetic-token', 'synthetic-token', 200],
-      ['synthetic-token', undefined, 401],
-      ['synthetic-token', 'synthetic-wrong', 401],
-      ['synthetic-$!"\\+é', 'synthetic-$!"\\+é', 200],
-      [' synthetic-token', 'synthetic-token', 401],
-      ['synthetic-token ', 'synthetic-token', 401],
-      ['synthetic-token\n', 'synthetic-token', 401],
-      ['synthetic-token\r\n', 'synthetic-token', 401],
-      ['"synthetic-token"', 'synthetic-token', 401],
-      [undefined, 'synthetic-token', 503],
-      ['', '', 503],
-    ]
-    for (const [secret, header, status] of cases) {
-      if (secret === undefined) delete process.env.ASAAS_WEBHOOK_TOKEN
-      else process.env.ASAAS_WEBHOOK_TOKEN = secret
-      const response = await POST(request('/api/asaas/webhook', 'POST', { event: 'IGNORED' },
-        header === undefined ? {} : { 'asaas-access-token': header }))
-      assert.equal(response.status, status)
-      assert.equal(response.headers.get('cache-control'), 'private, no-store')
-      assert.deepEqual(logs.at(-1), [{
-        headerPresent: header !== undefined,
-        headerLength: Buffer.byteLength(header || ''),
-        secretPresent: Boolean(secret),
-        secretLength: Buffer.byteLength(secret || ''),
-        tokensMatch: status === 200,
-        runtimeEnvironment: 'production',
-      }])
-      const body = await response.json()
-      assert.deepEqual(Object.keys(body), [status === 200 ? 'status' : 'error'])
-    }
-    process.env.VERCEL_ENV = 'unexpected-value-that-must-not-be-logged'
-    await POST(request('/api/asaas/webhook', 'POST', {}))
-    assert.equal(logs.at(-1)[0].runtimeEnvironment, 'unknown')
-    assert.throws(() => request('/api/asaas/webhook', 'POST', {}, { 'asaas-access-token': 'synthetic\ntoken' }))
-  } finally {
-    console.info = originalInfo
-    for (const [name, value] of [['ASAAS_WEBHOOK_TOKEN', saved.secret], ['VERCEL_ENV', saved.environment]]) {
-      if (value === undefined) delete process.env[name]
-      else process.env[name] = value
-    }
-  }
-})
 // No dotenv, database client or real provider is loaded by this harness.
 process.env.AUTH_JWT_SECRET = 'synthetic-test-secret-with-at-least-32-characters'
 process.env.ASAAS_WEBHOOK_TOKEN = 'synthetic-asaas-webhook-token'

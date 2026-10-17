@@ -7,21 +7,8 @@ import { privateJson } from '@/core/lib/request-security'
 export const runtime = 'nodejs'
 async function POST(req: NextRequest) {
   const secret = process.env.ASAAS_WEBHOOK_TOKEN
-  const header = req.headers.get('asaas-access-token')
-  const tokensMatch = Boolean(secret && header && safeEqual(header, secret))
-  const environment = process.env.VERCEL_ENV || process.env.NODE_ENV
-  // Temporary authentication diagnostic: remove after online webhook validation.
-  // Never normalize tokens or include their values, hashes or payloads here.
-  console.info({
-    headerPresent: header !== null,
-    headerLength: Buffer.byteLength(header || '', 'utf8'),
-    secretPresent: Boolean(secret),
-    secretLength: Buffer.byteLength(secret || '', 'utf8'),
-    tokensMatch,
-    runtimeEnvironment: environment && ['production', 'preview', 'development', 'test'].includes(environment) ? environment : 'unknown',
-  })
   if (!secret) return privateJson({ error: 'Webhook não configurado.' }, 503)
-  if (!tokensMatch) return privateJson({ error: 'Notificação não autorizada.' }, 401)
+  if (!safeEqual(req.headers.get('asaas-access-token') || '', secret)) return privateJson({ error: 'Notificação não autorizada.' }, 401)
   const body = await req.json().catch(() => null)
   if (typeof body?.event !== 'string' || !body.event.startsWith('PAYMENT_')) return privateJson({ status: 'ignored' })
   const id = body?.payment?.id
