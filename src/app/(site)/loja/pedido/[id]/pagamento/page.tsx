@@ -7,9 +7,11 @@ import { toast } from 'react-hot-toast'
 import PaymentMethodSelector from '@/core/components/payment/PaymentMethodSelector'
 import CreditCardForm from '@/core/components/payment/CreditCardForm'
 import PixPayment from '@/core/components/payment/PixPayment'
+import MercadoPagoPayment from '@/core/components/payment/MercadoPagoPayment'
 import { Loader2 } from 'lucide-react'
 
 interface Order {
+  paymentProvider?: string
   id: string
   total: number
   frete: number
@@ -235,6 +237,7 @@ export default function PagamentoPage() {
             <h1 className="text-2xl font-bold mb-6">Pagamento do Pedido</h1>
 
             {/* SELETOR DE MÉTODO */}
+            {order.paymentProvider === 'mercado_pago' ? <MercadoPagoPayment orderId={order.id} total={totalGeral} email={order.email} /> : <>
             <PaymentMethodSelector
               selectedMethod={paymentMethod}
               onMethodSelect={(method) => setPaymentMethod(method as 'CREDIT_CARD' | 'PIX')}
@@ -268,6 +271,7 @@ export default function PagamentoPage() {
                 />
               )}
             </div>
+            </>}
           </div>
         </div>
 

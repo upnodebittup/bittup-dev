@@ -86,6 +86,7 @@ export default function AdminLayout({
                 <Link href="/">Site</Link>
                 {isPublicLinkEnabled("/loja") && (<Link href="/loja">Loja</Link>)}
                 <Link href="/admin">Dashboard</Link>
+                <Link href="/admin/configuracoes/pagamentos">Pagamentos</Link>
                 {isPublicLinkEnabled("/admin/products") && (<Link href="/admin/products">Produtos</Link>)}
                 <Link href="/admin/pedidos">Pedidos</Link>
                 {isPublicLinkEnabled("/admin/blog/categories") && (<Link href="/admin/blog/categories">Categorias Blog</Link>)}
@@ -109,6 +110,7 @@ export default function AdminLayout({
                 <Link href="/" onClick={() => setOpen(false)}>Site</Link>
                 {isPublicLinkEnabled("/loja") && (<Link href="/loja" onClick={() => setOpen(false)}>Loja</Link>)}
                 <Link href="/admin" onClick={() => setOpen(false)}>Dashboard</Link>
+                <Link href="/admin/configuracoes/pagamentos" onClick={() => setOpen(false)}>Pagamentos</Link>
                 {isPublicLinkEnabled("/admin/products") && (<Link href="/admin/products" onClick={() => setOpen(false)}>Produtos</Link>)}
                 <Link href="/admin/pedidos" onClick={() => setOpen(false)}>Pedidos</Link>
                 {isPublicLinkEnabled("/admin/blog/categories") && (<Link href="/admin/blog/categories" onClick={() => setOpen(false)}>Categorias Blog</Link>)}

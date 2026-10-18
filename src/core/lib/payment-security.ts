@@ -4,7 +4,7 @@ import { payableTotal, cents } from '@/core/lib/commerce-security'
 export async function applyVerifiedPayment(orderId: string, value: unknown, status: string,
   customerId?: string) {
   const order = await prisma.order.findUnique({ where: { id: orderId } })
-  if (!order || cents(value) !== cents(payableTotal(order)) ||
+  if (!order || order.paymentProvider === 'mercado_pago' || cents(value) !== cents(payableTotal(order)) ||
       (customerId !== undefined && order.customerId !== customerId)) return false
   // Compare-and-set makes redelivery a no-op and avoids clobbering a parallel update.
   // A late pending/rejected event must not undo settlement or refund/chargeback.

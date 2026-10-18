@@ -99,7 +99,7 @@ export default function CheckoutForm() {
       const orderData = await res.json()
       const { orderId } = orderData
 
-      // Redirecionar para a página de pagamento (checkout transparente Asaas)
+      // O pedido mantém o provedor definido pela loja, com checkout transparente.
       clearCart()
       router.push(`/loja/pedido/${orderId}/pagamento`)
     } catch (err) {

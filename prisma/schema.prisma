@@ -77,6 +77,9 @@ model Order {
   total            Decimal  @db.Decimal(10, 2)
   statusPagamento  String?
   customerId       String?  // Asaas Customer ID
+  paymentProvider  String   @default("asaas")
+  mpPayments       MercadoPagoPayment[]
+  commissionEntries UpnodeCommissionEntry[]
   createdAt        DateTime @default(now())
 
   items            OrderItem[]
@@ -92,6 +95,100 @@ model AsaasWebhookEvent {
   outcome     String?
 
   @@index([processedAt, receivedAt])
+}
+
+// One installation is one merchant; accounts remain referenced by historical payments.
+model PaymentSettings {
+  id String @id
+  provider String @default("asaas")
+  accountId String?
+  account MercadoPagoAccount? @relation(fields: [accountId], references: [id])
+  creditCents Int @default(0)
+}
+
+model MercadoPagoAccount {
+  id String @id @default(cuid())
+  userId String @unique
+  label String
+  access String?
+  refresh String?
+  expiresAt DateTime?
+  confirmedAt DateTime?
+  settings PaymentSettings[]
+  payments MercadoPagoPayment[]
+  createdAt DateTime @default(now())
+}
+
+model MercadoPagoOAuthAttempt {
+  hash String @id
+  sessionHash String
+  verifier String
+  expiresAt DateTime
+}
+
+model MercadoPagoPayment {
+  id String @id @default(cuid())
+  orderId String
+  order Order @relation(fields: [orderId], references: [id])
+  accountId String
+  account MercadoPagoAccount @relation(fields: [accountId], references: [id])
+  requestKey String
+  fingerprint String
+  requestBody String?
+  method String
+  totalCents Int
+  providerId String? @unique
+  status String @default("created")
+  detail String @default("created")
+  reversed Boolean @default(false)
+  qrCode String? @db.Text
+  qrImage String? @db.Text
+  checkedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([orderId, requestKey])
+  @@index([checkedAt, createdAt])
+}
+
+model MercadoPagoWebhookEvent {
+  key String @id
+  resourceId String
+  userId String
+  status String @default("pending")
+  attempts Int @default(0)
+  receivedAt DateTime @default(now())
+  processedAt DateTime?
+  @@index([status, receivedAt])
+}
+
+model UpnodeCommissionEntry {
+  key String @id
+  orderId String
+  order Order @relation(fields: [orderId], references: [id])
+  kind String
+  cents Int
+  salesCents Int @default(0)
+  refundCents Int @default(0)
+  statementId String?
+  statement UpnodeWeeklyStatement? @relation(fields: [statementId], references: [id])
+  createdAt DateTime @default(now())
+  @@index([statementId, createdAt])
+}
+
+model UpnodeWeeklyStatement {
+  id String @id @default(cuid())
+  start DateTime @unique
+  end DateTime
+  salesCents Int
+  refundCents Int
+  feesCents Int
+  adjustments Int
+  openingCredit Int
+  closingCredit Int
+  dueCents Int
+  status String @default("billing_disabled")
+  entries UpnodeCommissionEntry[]
+  createdAt DateTime @default(now())
 }
 
 model OrderItem {

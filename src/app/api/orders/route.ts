@@ -8,6 +8,8 @@ import { grantOrderAccess } from '@/core/lib/order-access'
 import { mutationGuard, privateJson } from '@/core/lib/request-security'
 import { verifyShippingQuote } from '@/core/lib/commerce-security'
 import { ValidationError } from 'yup'
+import { MERCHANT, checkoutReady } from '@/core/lib/mp/security'
+import { lock } from '@/core/lib/mp/ledger'
 
 const GET = withAdmin(async function GET() {
   const orders = await prisma.order.findMany({ include: { items: true }, orderBy: { createdAt: 'desc' } })
@@ -40,6 +42,10 @@ async function POST(req: NextRequest) {
     const quantity = [...quantities.values()].reduce((sum, value) => sum + value, 0)
     const frete = verifyShippingQuote(body.quoteToken, customer.address.zipCode, quantity, body.frete)
     const order = await prisma.$transaction(async tx => {
+      await lock(tx, MERCHANT)
+      const settings = await tx.paymentSettings.findUnique({ where: { id: MERCHANT }, include: { account: true } })
+      const paymentProvider = settings?.provider ?? 'asaas'
+      if (paymentProvider === 'mercado_pago' && (!checkoutReady() || !settings?.account?.access || !settings.account.confirmedAt)) throw new Error('Pagamento indisponível')
       const products = await tx.product.findMany({ where: { id: { in: [...quantities.keys()] } }, include: { colors: true, sizes: true } })
       if (products.length !== quantities.size) throw new Error('Produto inválido.')
       // Conditional decrement is atomic in PostgreSQL, including repeated cart lines.
@@ -60,7 +66,7 @@ async function POST(req: NextRequest) {
           price: product.price, size: item.size.name, color: item.color.name }
       })
       if (!total.isPositive()) throw new Error('Valor inválido.')
-      return tx.order.create({ data: { ...customer, total, frete, statusPagamento: 'pending', items: { create: validatedItems } } })
+      return tx.order.create({ data: { ...customer, total, frete, paymentProvider, statusPagamento: 'pending', items: { create: validatedItems } } })
     })
     return grantOrderAccess(NextResponse.json({ success: true, orderId: order.id }), [order.id])
   } catch (error) {

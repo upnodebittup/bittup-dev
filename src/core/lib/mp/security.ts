@@ -1,0 +1,40 @@
+import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto'
+
+export const MERCHANT = 'bittup'
+export const hash = (value: string) => createHash('sha256').update(value).digest('hex')
+export const nonce = () => randomBytes(32).toString('base64url')
+export function required(name: string) {
+  const value = process.env[name]
+  if (!value || value === 'NOT_CONFIGURED') throw new Error('Integração não configurada')
+  return value
+}
+function key() {
+  const value = Buffer.from(required('MP_TOKEN_ENCRYPTION_KEY'), 'base64')
+  if (value.length !== 32) throw new Error('Chave de criptografia inválida')
+  return value
+}
+// Same AES-256-GCM envelope validated in the Lab. Separate BittUp key.
+export function encrypt(text: string) {
+  const iv = randomBytes(12), cipher = createCipheriv('aes-256-gcm', key(), iv)
+  const data = Buffer.concat([cipher.update(text, 'utf8'), cipher.final()])
+  return Buffer.concat([iv, cipher.getAuthTag(), data]).toString('base64')
+}
+export function decrypt(text: string) {
+  const data = Buffer.from(text, 'base64')
+  const cipher = createDecipheriv('aes-256-gcm', key(), data.subarray(0, 12))
+  cipher.setAuthTag(data.subarray(12, 28))
+  return Buffer.concat([cipher.update(data.subarray(28)), cipher.final()]).toString('utf8')
+}
+export function baseUrl() {
+  const url = new URL(required('MP_BASE_URL'))
+  if (url.protocol !== 'https:' && url.hostname !== 'localhost' && url.hostname !== '127.0.0.1') throw new Error('URL inválida')
+  return url.origin
+}
+export function oauthReady() {
+  return ['MP_CLIENT_ID', 'MP_CLIENT_SECRET', 'MP_TOKEN_ENCRYPTION_KEY', 'MP_BASE_URL']
+    .every(name => !!process.env[name] && process.env[name] !== 'NOT_CONFIGURED') && ['test', 'live'].includes(process.env.MP_ENVIRONMENT ?? '')
+}
+export function checkoutReady() {
+  return oauthReady() && process.env.MP_PAYMENTS_ENABLED === 'true' &&
+    !!process.env.MP_PUBLIC_KEY && !!process.env.MP_WEBHOOK_SECRET && process.env.MP_WEBHOOK_CONFIGURED === 'true'
+}

@@ -199,7 +199,7 @@ test('checkout rejects nonpositive/fractional quantity and ignores browser price
   const item = { productId: 'product-one', quantity: 1, price: 0.01, size: { name: '' }, color: { name: '' } }
   const buyer = order(); let saved, reserve
   const product = { id: item.productId, name: 'Server product', price: new Decimal('10'), stock: 2, colors: [], sizes: [] }
-  const tx = { product: { findMany: async () => [product], updateMany: async input => { reserve = input; return { count: 1 } } },
+  const tx = { $executeRaw: async()=>0, paymentSettings: {findUnique:async()=>null}, product: { findMany: async () => [product], updateMany: async input => { reserve = input; return { count: 1 } } },
     order: { create: async ({ data }) => { saved = data; return { id: 'new-order' } } } }
   db.$transaction = async fn => fn(tx)
   const body = { ...buyer, items: [item, item], frete: 5, quoteToken: security.signShippingQuote('00000000', 2, '5.00', 1) }
@@ -232,12 +232,12 @@ test('card holder details use stored buyer; different holder is blocked without 
   assert.equal((await api.POST(request('/api/asaas/create-payment', 'POST', body))).status, 400); assert.equal(calls, 1)
 })
 
-test('Mercado Pago preference ignores fake items and charges server subtotal plus shipping', async () => {
-  reset(); grant(); db.order = { findUnique: async () => order() }; let sent
-  globalThis.fetch = async (url, options) => { sent = JSON.parse(options.body); return Response.json({ id: 'pref_test', init_point: 'https://example.invalid/pay' }) }
+test('legacy Checkout Pro cannot create new charges', async () => {
+  reset(); grant(); let calls=0
+  globalThis.fetch = async () => { calls++; throw Error('No Checkout Pro') }
   const api = load('src/app/api/mercado-pago/preference/route.ts')
-  assert.equal((await api.POST(request('/api/mercado-pago/preference', 'POST', { orderId: 'order-one', items: [{ price: 0.01, quantity: 1 }] }))).status, 200)
-  assert.equal(sent.items[0].unit_price, 10); assert.equal(sent.items[0].quantity, 2); assert.equal(sent.shipments.cost, 5)
+  assert.equal((await api.POST(request('/api/mercado-pago/preference', 'POST', { orderId: 'order-one' }))).status, 410)
+  assert.equal(calls,0)
 })
 
 test('webhooks fail closed; verified provider values associate order and duplicate notifications are no-ops', async () => {
@@ -854,4 +854,48 @@ test('webhook interruption after order update remains retryable without repeatin
   const send=()=>api.POST(request('/api/asaas/webhook','POST',{id:'evt_interrupted',event:'PAYMENT_CONFIRMED',payment:{id:'pay_test'}},{'asaas-access-token':process.env.ASAAS_WEBHOOK_TOKEN}))
   assert.equal((await send()).status,503);assert.equal(current.statusPagamento,'approved')
   assert.equal((await send()).status,200);assert.equal(writes,1)
+})
+
+test('MP encryption detects tampering and separates BittUp credentials',()=>{
+  reset(); process.env.MP_TOKEN_ENCRYPTION_KEY=Buffer.alloc(32,7).toString('base64')
+  const {encrypt,decrypt}=load('src/core/lib/mp/security.ts')
+  const sealed=encrypt('synthetic-secret'); assert.equal(decrypt(sealed),'synthetic-secret')
+  assert.equal(sealed.includes('synthetic-secret'),false)
+  const bytes=Buffer.from(sealed,'base64');bytes[20]^=1
+  assert.throws(()=>decrypt(bytes.toString('base64')))
+})
+test('MP money, settlement states and Sao Paulo weekly credits match Lab rules',()=>{
+  reset();const {centsFromMoney,financialState,weekStart,totals}=load('src/core/lib/mp/accounting.ts')
+  assert.equal(centsFromMoney('25.10'),2510);assert.throws(()=>centsFromMoney('25.1'))
+  assert.equal(financialState('processed','accredited'),'paid');assert.equal(financialState('processed','partially_refunded'),'reversed')
+  for(const status of ['created','failed','canceled','action_required'])assert.equal(financialState(status,'pending'),'unpaid')
+  assert.equal(weekStart(new Date('2026-10-19T02:59:00Z')).toISOString(),'2026-10-12T03:00:00.000Z')
+  assert.equal(weekStart(new Date('2026-10-19T03:00:00Z')).toISOString(),'2026-10-19T03:00:00.000Z')
+  assert.deepEqual(totals([{kind:'credit',cents:-100,salesCents:0,refundCents:2500}],0),{salesCents:0,refundCents:2500,feesCents:0,adjustments:-100,openingCredit:0,dueCents:0,closingCredit:-100})
+})
+test('MP payload includes shipping-derived amount, credit token and no split or Checkout Pro',()=>{
+  reset();process.env.MP_ENVIRONMENT='test'
+  const {orderPayload}=load('src/core/lib/mp/client.ts')
+  const pix=orderPayload('payment-id',2510,'buyer@testuser.com','pix')
+  assert.equal(pix.total_amount,'25.10');assert.equal(pix.payer.first_name,'APRO')
+  const card=orderPayload('payment-id',2510,'buyer@testuser.com','card',{token:'synthetic',payment_method_id:'master'})
+  assert.deepEqual(card.transactions.payments[0].payment_method,{id:'master',type:'credit_card',token:'synthetic',installments:1})
+  for(const key of ['application_fee','marketplace_fee','back_urls','init_point'])assert.equal(key in card,false)
+  process.env.MP_ENVIRONMENT='live';assert.equal('first_name' in orderPayload('p',100,'b@example.invalid','pix').payer,false)
+})
+test('MP admin settings, OAuth and payment queries require existing grants and reject CSRF',async()=>{
+  reset();const api=load('src/app/api/mercado-pago/[...path]/route.ts')
+  for(const path of ['settings','oauth/callback'])assert.equal((await api.GET(request('/api/mercado-pago/'+path))).status,401)
+  for(const path of ['oauth/start','oauth/disconnect','oauth/confirm','settings'])assert.equal((await api.POST(request('/api/mercado-pago/'+path,'POST',{}))).status,401)
+  assert.equal((await api.GET(request('/api/mercado-pago/payment?orderId=unknown'))).status,404)
+  db.adminUser={findUnique:async()=>({id:'a',email:'a@example.invalid',role:'admin'})}
+  const token=jwt.sign({id:'a',email:'a@example.invalid',role:'admin'},process.env.AUTH_JWT_SECRET,{expiresIn:'1h'})
+  assert.equal((await api.POST(request('/api/mercado-pago/settings','POST',{provider:'mercado_pago'},{cookie:'auth_token='+token,origin:'https://evil.example.invalid'}))).status,403)
+})
+test('Asaas and legacy payment callbacks cannot settle an Orders-bound order',async()=>{
+  reset();grant();db.order={findUnique:async()=>({...order(),paymentProvider:'mercado_pago'})}
+  const {applyVerifiedPayment}=load('src/core/lib/payment-security.ts')
+  assert.equal(await applyVerifiedPayment('order-one',25,'approved'),false)
+  const api=load('src/app/api/asaas/create-payment/route.ts')
+  assert.equal((await api.POST(request('/api/asaas/create-payment','POST',{orderId:'order-one',billingType:'PIX'}))).status,409)
 })

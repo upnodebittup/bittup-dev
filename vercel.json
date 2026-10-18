@@ -1,0 +1,3 @@
+{
+  "crons": [{ "path": "/api/mercado-pago/jobs", "schedule": "0 6 * * *" }]
+}

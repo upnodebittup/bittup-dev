@@ -20,6 +20,7 @@ async function POST(req: NextRequest) {
       await tx.$queryRaw`SELECT id FROM "Order" WHERE id = ${body.orderId} FOR UPDATE`
       const order = await tx.order.findUnique({ where: { id: body.orderId } })
       if (!order) throw new Error('Missing order')
+      if (order.paymentProvider === 'mercado_pago') throw new Error('Outro provedor')
       if (order.customerId) return order.customerId
       const address = order.address as Record<string, string>
       stage = 'customer-lookup'

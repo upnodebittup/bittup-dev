@@ -10,6 +10,7 @@ test('checkout: preços, quantidades, pedido, PIX, webhook duplicado e interface
   await page.locator('a[href="/loja/produto/synthetic-product"]').click()
   await page.getByRole('button',{name:'Adicionar ao carrinho'}).click()
   await page.getByRole('button',{name:'Adicionar ao carrinho'}).click()
+  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('loja-roupas-cart')||'[]')[0]?.quantity)).toBe(2)
   await page.goto('/loja/carrinho')
   const cart=await page.evaluate(()=>JSON.parse(localStorage.getItem('loja-roupas-cart')||'[]'))
   expect(cart).toHaveLength(1);expect(cart[0].quantity).toBe(2);expect(cart[0].price).toBe(20)
