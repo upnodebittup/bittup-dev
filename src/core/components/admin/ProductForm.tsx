@@ -349,6 +349,10 @@ export default function ProductForm({ mode, categories, product }: Props) {
             </select>
           </label>
 
+          <p className="mt-2 text-sm text-[var(--color-admin-text)]">
+            Selecione a categoria “Produto digital (sem frete)” para dispensar entrega física e cobrança de frete desse produto.
+          </p>
+
           <label className="mt-6 inline-flex items-center gap-3 text-sm font-medium text-[var(--color-admin-text)]">
             <input {...register('handmade')} type="checkbox" className="h-4 w-4 rounded border-[var(--color-admin-border)] text-[var(--color-bg-primary)] focus:ring-[var(--color-bg-primary)]" />
             Produto artesanal

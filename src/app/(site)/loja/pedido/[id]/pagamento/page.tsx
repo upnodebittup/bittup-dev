@@ -34,6 +34,8 @@ interface CreditCardFormData {
   creditCardExpirationMonth: string
   creditCardExpirationYear: string
   creditCardCvv: string
+  billingZipCode?: string
+  billingNumber?: string
 }
 
 export default function PagamentoPage() {
@@ -128,6 +130,8 @@ export default function PagamentoPage() {
           orderId: order.id,
           total: totalCents,
           billingType: 'CREDIT_CARD',
+          billingZipCode: data.billingZipCode,
+          billingNumber: data.billingNumber,
           creditCardData: {
             creditCardNumber: data.creditCardNumber.replace(/\s/g, ''),
             creditCardHolderName: data.creditCardHolderName.toUpperCase(),
@@ -250,6 +254,7 @@ export default function PagamentoPage() {
                   onSubmit={handleCreditCardSubmit}
                   isLoading={isProcessing}
                   total={totalGeral}
+                  needsBillingAddress={!order.address?.zipCode}
                 />
               )}
 

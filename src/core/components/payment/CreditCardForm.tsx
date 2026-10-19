@@ -32,6 +32,8 @@ const creditCardSchema = yup.object({
     .string()
     .required('CVV é obrigatório')
     .matches(/^\d{3,4}$/, 'CVV deve ter 3 ou 4 dígitos'),
+  billingZipCode: yup.string().when('$needsBillingAddress', { is: true, then: schema => schema.required('Informe o CEP de cobrança').matches(/^\d{8}$/, 'Informe 8 dígitos') }),
+  billingNumber: yup.string().max(30).when('$needsBillingAddress', { is: true, then: schema => schema.required('Informe o número de cobrança') }),
 });
 
 type CreditCardFormData = yup.InferType<typeof creditCardSchema>;
@@ -40,12 +42,14 @@ interface CreditCardFormProps {
   onSubmit: (data: CreditCardFormData) => Promise<void>;
   isLoading?: boolean;
   total: number;
+  needsBillingAddress?: boolean;
 }
 
 export default function CreditCardForm({
   onSubmit,
   isLoading = false,
   total,
+  needsBillingAddress = false,
 }: CreditCardFormProps) {
   const [showCvv, setShowCvv] = useState(false);
   const {
@@ -53,8 +57,9 @@ export default function CreditCardForm({
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<CreditCardFormData>({
+  } = useForm({
     resolver: yupResolver(creditCardSchema),
+    context: { needsBillingAddress },
   });
 
   const cardNumber = watch('creditCardNumber', '');
@@ -172,6 +177,19 @@ export default function CreditCardForm({
         )}
       </div>
 
+      {needsBillingAddress && (
+        <fieldset className="space-y-3">
+          <legend className="text-sm">Dados de cobrança do titular (sem frete)</legend>
+          <label className="block text-sm">CEP de cobrança
+            <input {...register('billingZipCode')} inputMode="numeric" maxLength={8} className="mt-2 w-full rounded-2xl border bg-[var(--color-bg-tertiary)] px-4 py-3" />
+          </label>
+          {errors.billingZipCode && <p className="text-sm text-[var(--color-error)]">{errors.billingZipCode.message}</p>}
+          <label className="block text-sm">Número de cobrança
+            <input {...register('billingNumber')} maxLength={30} className="mt-2 w-full rounded-2xl border bg-[var(--color-bg-tertiary)] px-4 py-3" />
+          </label>
+          {errors.billingNumber && <p className="text-sm text-[var(--color-error)]">{errors.billingNumber.message}</p>}
+        </fieldset>
+      )}
       {/* Total */}
       <div className="p-4 rounded-2xl bg-[var(--color-bg-secondary)] border border-[var(--color-border)]">
         <div className="flex justify-between items-center">

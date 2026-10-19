@@ -4,6 +4,25 @@ import jwt from 'jsonwebtoken'
 import pg from 'pg'
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL })
 test.afterAll(() => pool.end())
+
+test('Produto digital dispensa endereço e frete, com classificação consultada no banco', async ({ page }) => {
+  await page.goto('/loja/produto/synthetic-digital')
+  await page.getByRole('button', { name: 'Adicionar ao carrinho', exact: true }).click()
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('loja-roupas-cart') ?? '[]')[0]?.quantity)).toBe(1)
+  await page.goto('/loja/checkout')
+  await expect(page.getByText('Pedido com produtos digitais: sem frete e sem endereço de entrega.')).toBeVisible()
+  await expect(page.getByLabel('CEP', { exact: true })).toHaveCount(0)
+  await expect(page.getByText('Não se aplica — produto digital')).toBeVisible()
+  for (const [name, value] of Object.entries({ fullName: 'Comprador Digital', email: 'digital@example.invalid', cpf: '00000000000', phone: '11999999999' }))
+    await page.locator(`[name="${name}"]`).fill(value)
+  await page.screenshot({ path: '.mp-validation/checkout-digital.png', fullPage: true })
+  await page.getByRole('button', { name: 'Finalizar Pedido', exact: true }).click()
+  await expect(page).toHaveURL(/\/loja\/pedido\/[^/]+\/pagamento/)
+  const id = new URL(page.url()).pathname.split('/')[3]
+  const order = (await pool.query('SELECT total,frete,address FROM "Order" WHERE id=$1', [id])).rows[0]
+  expect(Number(order.total)).toBe(10); expect(Number(order.frete)).toBe(0)
+  expect(order.address.zipCode).toBe('')
+})
 const entryCount = async (orderId: string, kind?: string) => (await pool.query('SELECT count(*)::int AS n FROM "UpnodeCommissionEntry" WHERE "orderId"=$1 AND ($2::text IS NULL OR kind=$2)', [orderId, kind ?? null])).rows[0].n
 test('OAuth, confirmação, checkout real BittUp com PG local, PIX/cartão e webhook de provedor simulado', async ({ page, browser }) => {
   await page.route('**/api/mercado-pago/oauth/start', async route => {

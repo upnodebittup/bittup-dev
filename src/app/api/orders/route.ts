@@ -10,6 +10,7 @@ import { verifyShippingQuote } from '@/core/lib/commerce-security'
 import { ValidationError } from 'yup'
 import { MERCHANT, checkoutReady } from '@/core/lib/mp/security'
 import { lock } from '@/core/lib/mp/ledger'
+import { physicalQuantity } from '@/core/lib/digital-products'
 
 const GET = withAdmin(async function GET() {
   const orders = await prisma.order.findMany({ include: { items: true }, orderBy: { createdAt: 'desc' } })
@@ -32,22 +33,22 @@ async function POST(req: NextRequest) {
     const items: CartItem[] = body.items
     if (!Array.isArray(items) || items.length === 0 || items.length > 100 || !items.every(validItem))
       return privateJson({ error: 'Itens ou quantidades inválidos.' }, 400)
-    const customer = await checkoutSchema.validate(body, { abortEarly: false, stripUnknown: true })
     const quantities = new Map<string, number>()
     for (const item of items) {
       const quantity = (quantities.get(item.productId) || 0) + item.quantity
       if (!Number.isSafeInteger(quantity)) return privateJson({ error: 'Quantidade inválida.' }, 400)
       quantities.set(item.productId, quantity)
     }
-    const quantity = [...quantities.values()].reduce((sum, value) => sum + value, 0)
-    const frete = verifyShippingQuote(body.quoteToken, customer.address.zipCode, quantity, body.frete)
     const order = await prisma.$transaction(async tx => {
       await lock(tx, MERCHANT)
       const settings = await tx.paymentSettings.findUnique({ where: { id: MERCHANT }, include: { account: true } })
       const paymentProvider = settings?.provider ?? 'asaas'
       if (paymentProvider === 'mercado_pago' && (!checkoutReady() || !settings?.account?.access || !settings.account.confirmedAt)) throw new Error('Pagamento indisponível')
-      const products = await tx.product.findMany({ where: { id: { in: [...quantities.keys()] } }, include: { colors: true, sizes: true } })
+      const products = await tx.product.findMany({ where: { id: { in: [...quantities.keys()] } }, include: { colors: true, sizes: true, categories: { select: { slug: true } } } })
       if (products.length !== quantities.size) throw new Error('Produto inválido.')
+      const quantity = physicalQuantity(products, quantities)
+      const customer = await checkoutSchema.validate(body, { abortEarly: false, stripUnknown: true, context: { digitalOnly: quantity === 0 } })
+      const frete = quantity === 0 ? 0 : verifyShippingQuote(body.quoteToken, customer.address.zipCode, quantity, body.frete)
       // Conditional decrement is atomic in PostgreSQL, including repeated cart lines.
       for (const product of [...products].sort((a, b) => a.id.localeCompare(b.id))) {
         const reserved = await tx.product.updateMany({

@@ -189,3 +189,70 @@ test('PostgreSQL: automatic recovery drains durable failures without another cha
   assert.ok(result.processed >= 1); assert.equal(result.failed, 0); assert.equal(creates, before)
   assert.equal((await prisma.mercadoPagoWebhookEvent.findUniqueOrThrow({ where: { key: event.key } })).status, 'processed')
 })
+
+test('PostgreSQL: digital category skips freight/address; mixed carts quote physical units and reject forged free freight', async () => {
+  // Next's page redirect import needs the browser React runtime, absent in this
+  // react-server test process. Public POST routes never invoke this page helper.
+  const { default: Module } = await import('node:module')
+  const originalLoad = (Module as any)._load
+  ;(Module as any)._load = function(id: string, ...args: unknown[]) {
+    if (id === 'next/navigation') return { redirect() { throw Error('Unexpected page redirect') } }
+    if (id === 'next/headers') return { cookies: async () => ({ get: () => undefined }) }
+    return originalLoad.call(this, id, ...args)
+  }
+  let shipping: typeof import('../src/app/api/frete/route').POST
+  let checkout: typeof import('../src/app/api/orders/route').POST
+  try {
+    shipping = (await import('../src/app/api/frete/route')).POST
+    checkout = (await import('../src/app/api/orders/route')).POST
+  } finally { (Module as any)._load = originalLoad }
+  const { NextRequest } = await import('next/server')
+  const category = await prisma.category.upsert({ where: { slug: 'produto-digital' }, create: { name: 'Produto digital (sem frete)', slug: 'produto-digital' }, update: {} })
+  const digital = await prisma.product.create({ data: { name: 'Digital', slug: 'digital-test', description: 'Synthetic', price: 10, stock: 20, categories: { connect: { id: category.id } } } })
+  const physical = await prisma.product.create({ data: { name: 'Physical', slug: 'physical-test', description: 'Synthetic', price: 20, stock: 20 } })
+  await prisma.paymentSettings.upsert({ where: { id: MERCHANT }, create: { id: MERCHANT, provider: 'asaas' }, update: { provider: 'asaas' } })
+  const request = (path: string, body: unknown) => new NextRequest('http://localhost:3219/api/' + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+  const buyer = { fullName: 'Synthetic Digital', email: 'digital@example.invalid', cpf: '00000000000', phone: '11999999999' }
+  const line = (id: string, quantity: number) => ({ productId: id, quantity, size: { name: '' }, color: { name: '' } })
+  const digitalItems = [line(digital.id, 3)]
+  const quoteResponse = await shipping(request('frete', { items: digitalItems }))
+  assert.equal(quoteResponse.status, 200)
+  const [freeQuote] = await quoteResponse.json()
+  assert.equal(freeQuote.price, '0.00'); assert.equal(freeQuote.requiresShipping, false)
+  const digitalResponse = await checkout(request('orders', { ...buyer, items: digitalItems, frete: 999, digitalOnly: false }))
+  assert.equal(digitalResponse.status, 200)
+  const digitalOrder = await prisma.order.findUniqueOrThrow({ where: { id: (await digitalResponse.json()).orderId } })
+  assert.equal(Number(digitalOrder.frete), 0); assert.equal(Number(digitalOrder.total), 30)
+  assert.equal((digitalOrder.address as any).zipCode, '')
+  const mixed = [line(digital.id, 5), line(physical.id, 2)]
+  const address = { street: 'Synthetic', number: '1', neighborhood: 'Test', city: 'Test', state: 'SP', zipCode: '01001000' }
+  const forged = await checkout(request('orders', { ...buyer, address, items: mixed, frete: 0, quoteToken: freeQuote.quoteToken, digitalOnly: true }))
+  assert.equal(forged.status, 400)
+  assert.equal((await prisma.product.findUniqueOrThrow({ where: { id: physical.id } })).stock, 20)
+  const previousFetch = globalThis.fetch
+  const previousToken = process.env.MELHOR_ENVIO_TOKEN
+  let shippedQuantity = 0
+  process.env.MELHOR_ENVIO_TOKEN = 'synthetic-shipping'
+  globalThis.fetch = async (url, options) => {
+    if (String(url).includes('melhorenvio.com.br')) {
+      shippedQuantity = JSON.parse(String(options?.body)).products[0].quantity
+      return Response.json([{ id: 1, name: 'PAC', price: '7.00', delivery_time: 3 }])
+    }
+    return previousFetch(url, options)
+  }
+  try {
+    const response = await shipping(request('frete', { items: mixed, cepDestino: address.zipCode, quantidade: 999 }))
+    assert.equal(response.status, 200); assert.equal(shippedQuantity, 2)
+    const [quote] = await response.json()
+    const orderResponse = await checkout(request('orders', { ...buyer, address, items: mixed, frete: 7, quoteToken: quote.quoteToken }))
+    assert.equal(orderResponse.status, 200)
+    const order = await prisma.order.findUniqueOrThrow({ where: { id: (await orderResponse.json()).orderId } })
+    assert.equal(Number(order.total), 90); assert.equal(Number(order.frete), 7)
+    const noAddress = await checkout(request('orders', { ...buyer, items: [line(physical.id, 1)], digitalOnly: true }))
+    assert.equal(noAddress.status, 400)
+  } finally {
+    globalThis.fetch = previousFetch
+    if (previousToken === undefined) delete process.env.MELHOR_ENVIO_TOKEN
+    else process.env.MELHOR_ENVIO_TOKEN = previousToken
+  }
+})

@@ -15,6 +15,8 @@ const createPaymentSchema = yup.object({
   customerId: yup.string().optional(),
   orderId: yup.string().required(),
   total: yup.number().optional(),
+  billingZipCode: yup.string().matches(/^\d{8}$/).optional(),
+  billingNumber: yup.string().trim().min(1).max(30).optional(),
 
   billingType: yup
     .string()
@@ -117,9 +119,12 @@ async function POST(req: NextRequest) {
       if (normalizeName(validatedData.creditCardData.creditCardHolderName || '') !== normalizeName(order.fullName))
         return privateJson({ error: 'Cartão de outro titular exige dados adicionais ainda não disponíveis neste checkout.' }, 400)
       const address = order.address as Record<string, string>
+      const billingZipCode = address.zipCode || validatedData.billingZipCode
+      const billingNumber = address.number || validatedData.billingNumber
+      if (!billingZipCode || !billingNumber) return privateJson({ error: 'Informe o CEP e o número de cobrança do titular. Não há cobrança de frete.' }, 400)
       payload.creditCardHolderInfo = {
         name: order.fullName, email: order.email, cpfCnpj: order.cpf.replace(/\D/g, ''),
-        postalCode: address.zipCode.replace(/\D/g, ''), addressNumber: address.number,
+        postalCode: billingZipCode.replace(/\D/g, ''), addressNumber: billingNumber,
         phone: order.phone.replace(/\D/g, ''),
       };
     }

@@ -198,7 +198,7 @@ test('checkout rejects nonpositive/fractional quantity and ignores browser price
   reset(); const security = load('src/core/lib/commerce-security.ts'); const api = load('src/app/api/orders/route.ts')
   const item = { productId: 'product-one', quantity: 1, price: 0.01, size: { name: '' }, color: { name: '' } }
   const buyer = order(); let saved, reserve
-  const product = { id: item.productId, name: 'Server product', price: new Decimal('10'), stock: 2, colors: [], sizes: [] }
+  const product = { id: item.productId, name: 'Server product', price: new Decimal('10'), stock: 2, colors: [], sizes: [], categories: [] }
   const tx = { $executeRaw: async()=>0, paymentSettings: {findUnique:async()=>null}, product: { findMany: async () => [product], updateMany: async input => { reserve = input; return { count: 1 } } },
     order: { create: async ({ data }) => { saved = data; return { id: 'new-order' } } } }
   db.$transaction = async fn => fn(tx)
@@ -230,6 +230,18 @@ test('card holder details use stored buyer; different holder is blocked without 
   assert.equal(sent.creditCardHolderInfo.cpfCnpj, order().cpf)
   body.creditCardData.creditCardHolderName = 'Another Holder'
   assert.equal((await api.POST(request('/api/asaas/create-payment', 'POST', body))).status, 400); assert.equal(calls, 1)
+})
+
+test('digital Asaas card collects billing CEP/number without adding freight or using a fictitious address', async () => {
+  reset(); grant(); const current = { ...order(), frete: 0, address: {} }
+  db.order = { findUnique: async () => current }; let sent, calls = 0
+  provider = async (endpoint, method, payload) => { calls++; sent = payload; return { id: 'pay_test', status: 'CONFIRMED' } }
+  const api = load('src/app/api/asaas/create-payment/route.ts')
+  const body = { orderId: current.id, billingType: 'CREDIT_CARD', creditCardData: { creditCardNumber: '0000000000000000', creditCardExpirationMonth: '12', creditCardExpirationYear: '2030', creditCardCvv: '000', creditCardHolderName: 'Synthetic Buyer' } }
+  assert.equal((await api.POST(request('/api/asaas/create-payment', 'POST', body))).status, 400); assert.equal(calls, 0)
+  const result = await api.POST(request('/api/asaas/create-payment', 'POST', { ...body, billingZipCode: '01001000', billingNumber: '25' }))
+  assert.equal(result.status, 200); assert.equal(sent.creditCardHolderInfo.postalCode, '01001000')
+  assert.equal(sent.creditCardHolderInfo.addressNumber, '25'); assert.equal(sent.value, Number(current.total))
 })
 
 test('legacy Checkout Pro cannot create new charges', async () => {

@@ -37,9 +37,10 @@ async function POST(req: NextRequest) {
       stage = 'customer-create'
       const customer = found || await asaasFetch<AsaasCustomer>('/customers', 'POST', {
         name: order.fullName, email: order.email, cpfCnpj: order.cpf.replace(/\D/g, ''),
-        mobilePhone: order.phone.replace(/\D/g, ''), address: address.street,
-        addressNumber: address.number, province: address.neighborhood,
-        postalCode: address.zipCode.replace(/\D/g, ''), externalReference: order.id,
+        mobilePhone: order.phone.replace(/\D/g, ''),
+        ...(address.zipCode ? { address: address.street, addressNumber: address.number,
+          province: address.neighborhood, postalCode: address.zipCode.replace(/\D/g, '') } : {}),
+        externalReference: order.id,
       })
       if (!customer?.id || typeof customer.id !== 'string') throw new AsaasError('invalid_response')
       stage = 'database-save'
