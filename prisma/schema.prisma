@@ -110,6 +110,7 @@ model MercadoPagoAccount {
   id String @id @default(cuid())
   userId String @unique
   label String
+  publicKey String?
   access String?
   refresh String?
   expiresAt DateTime?

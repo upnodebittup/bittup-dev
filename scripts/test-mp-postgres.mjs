@@ -25,6 +25,7 @@ const env = { ...process.env, DATABASE_URL: `postgresql://postgres:${password}@1
   MP_TOKEN_ENCRYPTION_KEY: randomBytes(32).toString('base64'), MP_CLIENT_ID: '12345', MP_CLIENT_SECRET: 'synthetic-secret', MP_BASE_URL: 'http://localhost:3219',
   MP_ENVIRONMENT: 'test', MP_TEST_SELLER_IDS: '123,456', MP_PAYMENTS_ENABLED: 'true', MP_PUBLIC_KEY: 'synthetic-public-key', MP_WEBHOOK_SECRET: 'synthetic-webhook', MP_WEBHOOK_CONFIGURED: 'true',
   AUTH_JWT_SECRET: 'synthetic-test-secret-with-more-than-thirty-two-characters', NEXT_PUBLIC_SITE_URL: 'http://localhost:3219', NEXT_TELEMETRY_DISABLED: '1' }
+let failed = false
 try {
   await pg.initialise(); await pg.start(); await pg.createDatabase(name)
   console.log('PostgreSQL local descartável iniciado; sem banco externo.')
@@ -40,10 +41,11 @@ try {
     fs.copyFileSync(path.join(root, 'tests/fixtures/mp-fetch.ts'), path.join(target, 'src/core/lib/mp/test-fetch.ts'))
     await run(['node_modules/@playwright/test/cli.js', 'test', '--config', 'playwright.mp.config.ts'], { ...env, MP_TEST_APP_DIR: target, PLAYWRIGHT_BROWSERS_PATH: path.join(root, '.playwright-browsers') })
   } else await run(['--conditions=react-server', '--import', 'tsx', '--test', 'tests/mp-db.test.ts'], env)
-} catch (error) { console.error(error?.message ?? 'PostgreSQL não iniciou; confira postgres.log na pasta descartável.'); process.exitCode = 1 }
+} catch (error) { failed = true; console.error(error?.message ?? 'PostgreSQL não iniciou; confira postgres.log na pasta descartável.'); process.exitCode = 1 }
 finally {
   let timer
   await Promise.race([pg.stop().catch(() => {}), new Promise(resolve => { timer = setTimeout(resolve, 5000) })])
   clearTimeout(timer)
   console.log('PostgreSQL de teste encerrado. Dados somente na pasta ignorada .mp-validation.')
+  if (failed) process.exitCode = 1
 }

@@ -50,4 +50,6 @@ As pastas .mp-validation, .asaas-validation, .asaas-build e relatórios são loc
 
 ## Transporte futuro ao template
 
+Correção de tokenização: a Public Key utilizada pelo cartão vem do `public_key` retornado no OAuth da conta vinculada, armazenado em MercadoPagoAccount.publicKey. A chave acompanha conexão e refresh; vínculos anteriores sem chave fazem refresh autenticado, sem criar pagamento. MP_PUBLIC_KEY global deixou de controlar o checkout, evitando misturar chave de teste com vendedor real ou outra conta. Migração aditiva: 20261019000200_oauth_public_key. Falhas como invalid_card_token são extraídas da transação e exigem nova tokenização pelo comprador; não reenviar automaticamente uma transação recusada com o mesmo token.
+
 Somente após homologação publicada da BittUp: adaptar o identificador do lojista, guardar vínculos históricos, manter nomes/rotas centralizados, documentar upgrade Prisma e migração aditiva; repetir a regressão por instalação. Não copiar a configuração BittUp, contas, banco ou arquivos gerados entre versões incompatíveis. Template e demais clientes não foram modificados nesta missão.

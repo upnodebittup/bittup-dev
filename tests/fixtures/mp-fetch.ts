@@ -4,7 +4,7 @@ export async function mpTestFetch(input: string, options: RequestInit) {
   if (process.env.BITTUP_MP_ISOLATED_TEST !== 'yes' || !/@127\.0\.0\.1:\d+\/bittup_mp_/.test(process.env.DATABASE_URL ?? '')) throw Error('Isolated test only')
   const path = new URL(input).pathname
   if (path === '/users/me') return Response.json({ id: 123, nickname: 'Vendedor Sintético', tags: ['test_user'], site_id: 'MLB' })
-  if (path === '/oauth/token') return Response.json({ access_token: 'synthetic-access', refresh_token: 'synthetic-refresh', user_id: 123, expires_in: 3600 })
+  if (path === '/oauth/token') return Response.json({ access_token: 'synthetic-access', refresh_token: 'synthetic-refresh', public_key: 'synthetic-oauth-key', user_id: 123, expires_in: 3600 })
   if (path === '/v1/orders' && options.method === 'POST') {
     const body = JSON.parse(String(options.body))
     return Response.json(snapshot('ORD' + body.external_reference, body.external_reference, body.total_amount, false))

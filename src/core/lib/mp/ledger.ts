@@ -36,7 +36,7 @@ export async function reconcile(accountId: string, snapshot: ProviderOrder) {
     const keep = (payment.reversed && state !== 'reversed') || (payment.status === 'refunded' && snapshot.status !== 'refunded') ||
       (financialState(payment.status, payment.detail) === 'paid' && state === 'unpaid')
     const updated = await tx.mercadoPagoPayment.update({ where: { id: payment.id }, data: { providerId: snapshot.id, requestBody: null,
-      ...(!keep ? { status: snapshot.status, detail: snapshot.status_detail } : {}), reversed: payment.reversed || state === 'reversed',
+      ...(!keep ? { status: snapshot.status, detail: snapshot.status === 'failed' && item.status_detail ? item.status_detail : snapshot.status_detail } : {}), reversed: payment.reversed || state === 'reversed',
       qrCode: item.payment_method.qr_code, qrImage: item.payment_method.qr_code_base64, checkedAt: new Date() } })
     // Terminal state never regresses, even across different failed payment attempts.
     const settled = ['approved', 'refunded', 'disputed']

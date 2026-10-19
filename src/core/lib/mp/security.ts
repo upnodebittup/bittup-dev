@@ -36,5 +36,5 @@ export function oauthReady() {
 }
 export function checkoutReady() {
   return oauthReady() && process.env.MP_PAYMENTS_ENABLED === 'true' &&
-    !!process.env.MP_PUBLIC_KEY && !!process.env.MP_WEBHOOK_SECRET && process.env.MP_WEBHOOK_CONFIGURED === 'true'
+    !!process.env.MP_WEBHOOK_SECRET && process.env.MP_WEBHOOK_CONFIGURED === 'true'
 }

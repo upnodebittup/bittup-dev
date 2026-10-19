@@ -28,6 +28,7 @@ export type MercadoPagoAccountMinAggregateOutputType = {
   id: string | null
   userId: string | null
   label: string | null
+  publicKey: string | null
   access: string | null
   refresh: string | null
   expiresAt: Date | null
@@ -39,6 +40,7 @@ export type MercadoPagoAccountMaxAggregateOutputType = {
   id: string | null
   userId: string | null
   label: string | null
+  publicKey: string | null
   access: string | null
   refresh: string | null
   expiresAt: Date | null
@@ -50,6 +52,7 @@ export type MercadoPagoAccountCountAggregateOutputType = {
   id: number
   userId: number
   label: number
+  publicKey: number
   access: number
   refresh: number
   expiresAt: number
@@ -63,6 +66,7 @@ export type MercadoPagoAccountMinAggregateInputType = {
   id?: true
   userId?: true
   label?: true
+  publicKey?: true
   access?: true
   refresh?: true
   expiresAt?: true
@@ -74,6 +78,7 @@ export type MercadoPagoAccountMaxAggregateInputType = {
   id?: true
   userId?: true
   label?: true
+  publicKey?: true
   access?: true
   refresh?: true
   expiresAt?: true
@@ -85,6 +90,7 @@ export type MercadoPagoAccountCountAggregateInputType = {
   id?: true
   userId?: true
   label?: true
+  publicKey?: true
   access?: true
   refresh?: true
   expiresAt?: true
@@ -169,6 +175,7 @@ export type MercadoPagoAccountGroupByOutputType = {
   id: string
   userId: string
   label: string
+  publicKey: string | null
   access: string | null
   refresh: string | null
   expiresAt: Date | null
@@ -201,6 +208,7 @@ export type MercadoPagoAccountWhereInput = {
   id?: Prisma.StringFilter<"MercadoPagoAccount"> | string
   userId?: Prisma.StringFilter<"MercadoPagoAccount"> | string
   label?: Prisma.StringFilter<"MercadoPagoAccount"> | string
+  publicKey?: Prisma.StringNullableFilter<"MercadoPagoAccount"> | string | null
   access?: Prisma.StringNullableFilter<"MercadoPagoAccount"> | string | null
   refresh?: Prisma.StringNullableFilter<"MercadoPagoAccount"> | string | null
   expiresAt?: Prisma.DateTimeNullableFilter<"MercadoPagoAccount"> | Date | string | null
@@ -214,6 +222,7 @@ export type MercadoPagoAccountOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  publicKey?: Prisma.SortOrderInput | Prisma.SortOrder
   access?: Prisma.SortOrderInput | Prisma.SortOrder
   refresh?: Prisma.SortOrderInput | Prisma.SortOrder
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -230,6 +239,7 @@ export type MercadoPagoAccountWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.MercadoPagoAccountWhereInput[]
   NOT?: Prisma.MercadoPagoAccountWhereInput | Prisma.MercadoPagoAccountWhereInput[]
   label?: Prisma.StringFilter<"MercadoPagoAccount"> | string
+  publicKey?: Prisma.StringNullableFilter<"MercadoPagoAccount"> | string | null
   access?: Prisma.StringNullableFilter<"MercadoPagoAccount"> | string | null
   refresh?: Prisma.StringNullableFilter<"MercadoPagoAccount"> | string | null
   expiresAt?: Prisma.DateTimeNullableFilter<"MercadoPagoAccount"> | Date | string | null
@@ -243,6 +253,7 @@ export type MercadoPagoAccountOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  publicKey?: Prisma.SortOrderInput | Prisma.SortOrder
   access?: Prisma.SortOrderInput | Prisma.SortOrder
   refresh?: Prisma.SortOrderInput | Prisma.SortOrder
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -260,6 +271,7 @@ export type MercadoPagoAccountScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"MercadoPagoAccount"> | string
   userId?: Prisma.StringWithAggregatesFilter<"MercadoPagoAccount"> | string
   label?: Prisma.StringWithAggregatesFilter<"MercadoPagoAccount"> | string
+  publicKey?: Prisma.StringNullableWithAggregatesFilter<"MercadoPagoAccount"> | string | null
   access?: Prisma.StringNullableWithAggregatesFilter<"MercadoPagoAccount"> | string | null
   refresh?: Prisma.StringNullableWithAggregatesFilter<"MercadoPagoAccount"> | string | null
   expiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"MercadoPagoAccount"> | Date | string | null
@@ -271,6 +283,7 @@ export type MercadoPagoAccountCreateInput = {
   id?: string
   userId: string
   label: string
+  publicKey?: string | null
   access?: string | null
   refresh?: string | null
   expiresAt?: Date | string | null
@@ -284,6 +297,7 @@ export type MercadoPagoAccountUncheckedCreateInput = {
   id?: string
   userId: string
   label: string
+  publicKey?: string | null
   access?: string | null
   refresh?: string | null
   expiresAt?: Date | string | null
@@ -297,6 +311,7 @@ export type MercadoPagoAccountUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  publicKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   access?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refresh?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -310,6 +325,7 @@ export type MercadoPagoAccountUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  publicKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   access?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refresh?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -323,6 +339,7 @@ export type MercadoPagoAccountCreateManyInput = {
   id?: string
   userId: string
   label: string
+  publicKey?: string | null
   access?: string | null
   refresh?: string | null
   expiresAt?: Date | string | null
@@ -334,6 +351,7 @@ export type MercadoPagoAccountUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  publicKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   access?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refresh?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -345,6 +363,7 @@ export type MercadoPagoAccountUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  publicKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   access?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refresh?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -361,6 +380,7 @@ export type MercadoPagoAccountCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  publicKey?: Prisma.SortOrder
   access?: Prisma.SortOrder
   refresh?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
@@ -372,6 +392,7 @@ export type MercadoPagoAccountMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  publicKey?: Prisma.SortOrder
   access?: Prisma.SortOrder
   refresh?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
@@ -383,6 +404,7 @@ export type MercadoPagoAccountMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  publicKey?: Prisma.SortOrder
   access?: Prisma.SortOrder
   refresh?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
@@ -429,6 +451,7 @@ export type MercadoPagoAccountCreateWithoutSettingsInput = {
   id?: string
   userId: string
   label: string
+  publicKey?: string | null
   access?: string | null
   refresh?: string | null
   expiresAt?: Date | string | null
@@ -441,6 +464,7 @@ export type MercadoPagoAccountUncheckedCreateWithoutSettingsInput = {
   id?: string
   userId: string
   label: string
+  publicKey?: string | null
   access?: string | null
   refresh?: string | null
   expiresAt?: Date | string | null
@@ -469,6 +493,7 @@ export type MercadoPagoAccountUpdateWithoutSettingsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  publicKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   access?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refresh?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -481,6 +506,7 @@ export type MercadoPagoAccountUncheckedUpdateWithoutSettingsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  publicKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   access?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refresh?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -493,6 +519,7 @@ export type MercadoPagoAccountCreateWithoutPaymentsInput = {
   id?: string
   userId: string
   label: string
+  publicKey?: string | null
   access?: string | null
   refresh?: string | null
   expiresAt?: Date | string | null
@@ -505,6 +532,7 @@ export type MercadoPagoAccountUncheckedCreateWithoutPaymentsInput = {
   id?: string
   userId: string
   label: string
+  publicKey?: string | null
   access?: string | null
   refresh?: string | null
   expiresAt?: Date | string | null
@@ -533,6 +561,7 @@ export type MercadoPagoAccountUpdateWithoutPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  publicKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   access?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refresh?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -545,6 +574,7 @@ export type MercadoPagoAccountUncheckedUpdateWithoutPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  publicKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   access?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refresh?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -597,6 +627,7 @@ export type MercadoPagoAccountSelect<ExtArgs extends runtime.Types.Extensions.In
   id?: boolean
   userId?: boolean
   label?: boolean
+  publicKey?: boolean
   access?: boolean
   refresh?: boolean
   expiresAt?: boolean
@@ -611,6 +642,7 @@ export type MercadoPagoAccountSelectCreateManyAndReturn<ExtArgs extends runtime.
   id?: boolean
   userId?: boolean
   label?: boolean
+  publicKey?: boolean
   access?: boolean
   refresh?: boolean
   expiresAt?: boolean
@@ -622,6 +654,7 @@ export type MercadoPagoAccountSelectUpdateManyAndReturn<ExtArgs extends runtime.
   id?: boolean
   userId?: boolean
   label?: boolean
+  publicKey?: boolean
   access?: boolean
   refresh?: boolean
   expiresAt?: boolean
@@ -633,6 +666,7 @@ export type MercadoPagoAccountSelectScalar = {
   id?: boolean
   userId?: boolean
   label?: boolean
+  publicKey?: boolean
   access?: boolean
   refresh?: boolean
   expiresAt?: boolean
@@ -640,7 +674,7 @@ export type MercadoPagoAccountSelectScalar = {
   createdAt?: boolean
 }
 
-export type MercadoPagoAccountOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "label" | "access" | "refresh" | "expiresAt" | "confirmedAt" | "createdAt", ExtArgs["result"]["mercadoPagoAccount"]>
+export type MercadoPagoAccountOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "label" | "publicKey" | "access" | "refresh" | "expiresAt" | "confirmedAt" | "createdAt", ExtArgs["result"]["mercadoPagoAccount"]>
 export type MercadoPagoAccountInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   settings?: boolean | Prisma.MercadoPagoAccount$settingsArgs<ExtArgs>
   payments?: boolean | Prisma.MercadoPagoAccount$paymentsArgs<ExtArgs>
@@ -659,6 +693,7 @@ export type $MercadoPagoAccountPayload<ExtArgs extends runtime.Types.Extensions.
     id: string
     userId: string
     label: string
+    publicKey: string | null
     access: string | null
     refresh: string | null
     expiresAt: Date | null
@@ -1092,6 +1127,7 @@ export interface MercadoPagoAccountFieldRefs {
   readonly id: Prisma.FieldRef<"MercadoPagoAccount", 'String'>
   readonly userId: Prisma.FieldRef<"MercadoPagoAccount", 'String'>
   readonly label: Prisma.FieldRef<"MercadoPagoAccount", 'String'>
+  readonly publicKey: Prisma.FieldRef<"MercadoPagoAccount", 'String'>
   readonly access: Prisma.FieldRef<"MercadoPagoAccount", 'String'>
   readonly refresh: Prisma.FieldRef<"MercadoPagoAccount", 'String'>
   readonly expiresAt: Prisma.FieldRef<"MercadoPagoAccount", 'DateTime'>

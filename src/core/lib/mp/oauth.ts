@@ -35,8 +35,8 @@ export async function finishOAuth(request: Request) {
   await prisma.$transaction(async tx => {
     await lock(tx, MERCHANT)
     const account = await tx.mercadoPagoAccount.upsert({ where: { userId: user.id },
-      create: { userId: user.id, label: user.label, access: encrypt(tokens.access_token), refresh: encrypt(tokens.refresh_token), expiresAt: new Date(Date.now() + tokens.expires_in * 1000) },
-      update: { label: user.label, access: encrypt(tokens.access_token), refresh: encrypt(tokens.refresh_token), expiresAt: new Date(Date.now() + tokens.expires_in * 1000), confirmedAt: null } })
+      create: { userId: user.id, label: user.label, publicKey: tokens.public_key, access: encrypt(tokens.access_token), refresh: encrypt(tokens.refresh_token), expiresAt: new Date(Date.now() + tokens.expires_in * 1000) },
+      update: { label: user.label, publicKey: tokens.public_key, access: encrypt(tokens.access_token), refresh: encrypt(tokens.refresh_token), expiresAt: new Date(Date.now() + tokens.expires_in * 1000), confirmedAt: null } })
     // New accounts affect future attempts; every existing attempt retains its accountId.
     await tx.paymentSettings.upsert({ where: { id: MERCHANT }, create: { id: MERCHANT, accountId: account.id }, update: { accountId: account.id } })
   })
@@ -48,7 +48,7 @@ export async function disconnectAccount() {
     const settings = await tx.paymentSettings.findUnique({ where: { id: MERCHANT } })
     if (settings?.accountId) {
       await lock(tx, `mp-account:${settings.accountId}`)
-      await tx.mercadoPagoAccount.update({ where: { id: settings.accountId }, data: { access: null, refresh: null, expiresAt: null, confirmedAt: null } })
+      await tx.mercadoPagoAccount.update({ where: { id: settings.accountId }, data: { access: null, refresh: null, publicKey: null, expiresAt: null, confirmedAt: null } })
     }
     await tx.mercadoPagoOAuthAttempt.deleteMany({})
   })

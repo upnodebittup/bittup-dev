@@ -7,7 +7,7 @@ import { withModuleApi } from '@/core/lib/module-server'
 import { mutationGuard, privateJson } from '@/core/lib/request-security'
 import { safeEqual } from '@/core/lib/commerce-security'
 import { startOAuth, finishOAuth, disconnectAccount } from '@/core/lib/mp/oauth'
-import { accessFor } from '@/core/lib/mp/client'
+import { accessFor, publicKeyFor } from '@/core/lib/mp/client'
 import { baseUrl, checkoutReady, MERCHANT, oauthReady, required } from '@/core/lib/mp/security'
 import { lock } from '@/core/lib/mp/ledger'
 import { createPayment, paymentView } from '@/core/lib/mp/orders'
@@ -80,7 +80,7 @@ async function handler(request: NextRequest) {
         const order = await prisma.order.findUniqueOrThrow({ where: { id: orderId } })
         const settings = await prisma.paymentSettings.findUnique({ where: { id: MERCHANT }, include: { account: true } })
         return privateJson({ provider: order.paymentProvider, ready: checkoutReady() && !!settings?.account?.access && !!settings.account.confirmedAt,
-          publicKey: process.env.MP_PUBLIC_KEY ?? '', payment: await paymentView(order.id), status: order.statusPagamento })
+          publicKey: settings?.account?.access && settings.account.confirmedAt ? await publicKeyFor(settings.account.id) : '', payment: await paymentView(order.id), status: order.statusPagamento })
       }
     }
     return await admin(request)

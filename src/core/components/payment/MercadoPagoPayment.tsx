@@ -78,6 +78,7 @@ export default function MercadoPagoPayment({ orderId, total, email }: { orderId:
     </>}
     {payment && <div role="status" aria-live="polite">
       <p>{setup?.status === 'approved' ? 'Pagamento aprovado!' : setup?.status === 'refunded' ? 'Pagamento estornado' : setup?.status === 'disputed' ? 'Pagamento em contestação' : terminal ? 'Pagamento não aprovado' : 'Aguardando confirmação do pagamento'}</p>
+      {terminal && payment.detail === 'invalid_card_token' && <p>Não foi possível validar o cartão. Clique em tentar novo pagamento e preencha os dados novamente para gerar uma nova autorização.</p>}
       {payment.status === 'action_required' && payment.detail === 'waiting_transfer' && <div className="space-y-3">
         {/* Provider-generated data URI; never sends card data to the BittUp server. */}
         {payment.qrImage && <img alt="QR Code PIX" src={`data:image/png;base64,${payment.qrImage}`} className="w-56 h-56 bg-white p-3" />}

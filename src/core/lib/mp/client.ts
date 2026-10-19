@@ -8,7 +8,7 @@ export const providerOrder = z.object({
   id: z.string().regex(/^ORD[A-Za-z0-9_-]{1,100}$/), user_id: z.union([z.string(), z.number()]).transform(String),
   external_reference: z.string(), total_amount: z.string(), country_code: z.literal('BRA'), currency_id: z.literal('BRL').optional(), status: z.string(), status_detail: z.string(),
   transactions: z.object({ payments: z.array(z.object({ amount: z.string(), paid_amount: z.string().optional(), refunded_amount: z.string().optional(),
-    payment_method: z.object({ qr_code: z.string().optional(), qr_code_base64: z.string().optional() }) })) }),
+    status_detail: z.string().optional(), payment_method: z.object({ qr_code: z.string().optional(), qr_code_base64: z.string().optional() }) })) }),
 })
 export type ProviderOrder = z.infer<typeof providerOrder>
 export class MpHttpError extends Error {
@@ -26,7 +26,7 @@ export async function mp(path: string, token: string, method = 'GET', body?: unk
   }
   return response.json()
 }
-const tokenSchema = z.object({ access_token: z.string(), refresh_token: z.string(), expires_in: z.number().positive(), user_id: z.number() })
+const tokenSchema = z.object({ access_token: z.string(), refresh_token: z.string(), public_key: z.string().min(1), expires_in: z.number().positive(), user_id: z.number() })
 export async function exchange(body: Record<string, string>) {
   return tokenSchema.parse(await mp('/oauth/token', '', 'POST', { client_id: required('MP_CLIENT_ID'), client_secret: required('MP_CLIENT_SECRET'),
     ...body, ...(body.grant_type === 'authorization_code' ? { test_token: false } : {}) }))
@@ -46,16 +46,26 @@ export async function accessFor(accountId: string) {
     const account = await tx.mercadoPagoAccount.findUniqueOrThrow({ where: { id: accountId } })
     if (!account.access) throw new Error('Reconecte a conta Mercado Pago')
     let access = decrypt(account.access)
-    if (!account.expiresAt || account.expiresAt.getTime() < Date.now() + 120000) {
+    if (!account.publicKey || !account.expiresAt || account.expiresAt.getTime() < Date.now() + 120000) {
       if (!account.refresh) throw new Error('Reconecte a conta Mercado Pago')
       const tokens = await exchange({ grant_type: 'refresh_token', refresh_token: decrypt(account.refresh) })
       if (String(tokens.user_id) !== account.userId) throw new Error('Conta OAuth divergente')
       access = tokens.access_token
-      await tx.mercadoPagoAccount.update({ where: { id: accountId }, data: { access: encrypt(access), refresh: encrypt(tokens.refresh_token), expiresAt: new Date(Date.now() + tokens.expires_in * 1000) } })
+      await tx.mercadoPagoAccount.update({ where: { id: accountId }, data: { publicKey: tokens.public_key, access: encrypt(access), refresh: encrypt(tokens.refresh_token), expiresAt: new Date(Date.now() + tokens.expires_in * 1000) } })
     }
     await verifySeller(access, account.userId)
     return access
   }, { timeout: 45000 })
+}
+export async function publicKeyFor(accountId: string) {
+  let account = await prisma.mercadoPagoAccount.findUniqueOrThrow({ where: { id: accountId } })
+  if (!account.access) throw new Error('Conta desconectada')
+  if (!account.publicKey) {
+    await accessFor(accountId)
+    account = await prisma.mercadoPagoAccount.findUniqueOrThrow({ where: { id: accountId } })
+  }
+  if (!account.publicKey) throw new Error('Reconecte a conta Mercado Pago')
+  return account.publicKey
 }
 export function orderPayload(reference: string, cents: number, email: string, method: 'pix' | 'card', card?: { token: string; payment_method_id: string; identification?: { type: string; number: string } }) {
   return { type: 'online', processing_mode: 'automatic', external_reference: reference, total_amount: money(cents),

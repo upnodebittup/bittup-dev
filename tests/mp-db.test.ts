@@ -6,6 +6,7 @@ import { createPayment, paymentView, synchronizePayment } from '../src/core/lib/
 import { closeWeek, reconcile } from '../src/core/lib/mp/ledger'
 import { acceptWebhook, processEvent, recover } from '../src/core/lib/mp/webhooks'
 import { decrypt, encrypt, hash, MERCHANT } from '../src/core/lib/mp/security'
+import { publicKeyFor } from '../src/core/lib/mp/client'
 import { finishOAuth, startOAuth, disconnectAccount } from '../src/core/lib/mp/oauth'
 import { weekStart } from '../src/core/lib/mp/accounting'
 import { readFile } from 'node:fs/promises'
@@ -18,7 +19,7 @@ let creates = 0, failResponse = false, rejectValidation = false, accountUser = '
 globalThis.fetch = async (url, options) => {
   const path = new URL(String(url)).pathname
   if (path === '/users/me') return Response.json({ id: Number(accountUser), nickname: 'Vendedor Sintético', site_id: 'MLB', tags: ['test_user'] })
-  if (path === '/oauth/token') return Response.json({ access_token: 'synthetic-access', refresh_token: 'synthetic-refresh', user_id: Number(accountUser), expires_in: 3600 })
+  if (path === '/oauth/token') return Response.json({ access_token: 'synthetic-access', refresh_token: 'synthetic-refresh', public_key: 'synthetic-key-' + accountUser, user_id: Number(accountUser), expires_in: 3600 })
   if (path === '/v1/orders' && options?.method === 'POST') {
     if (rejectValidation) { rejectValidation = false; return Response.json({ error: 'synthetic-validation' }, { status: 422 }) }
     const body = JSON.parse(String(options.body)), key = (options.headers as Record<string, string>)['X-Idempotency-Key']
@@ -83,6 +84,8 @@ test('PostgreSQL: OAuth PKCE/session binding, consumed state, reconnection and d
   await prisma.mercadoPagoOAuthAttempt.create({ data: { hash: hash(expiredState), sessionHash: hash('synthetic-session'), verifier: encrypt('synthetic-verifier'), expiresAt: new Date(Date.now() - 1000) } })
   await assert.rejects(finishOAuth(new Request(`http://localhost:3219/api/mercado-pago/oauth/callback?state=${expiredState}&code=synthetic-code`, { headers: { cookie: 'auth_token=synthetic-session' } })))
   const settings = await prisma.paymentSettings.findUniqueOrThrow({ where: { id: MERCHANT }, include: { account: true } })
+  assert.equal(settings.account?.publicKey, 'synthetic-key-123')
+  assert.equal(await publicKeyFor(settings.account!.id), 'synthetic-key-123')
   assert.equal(settings.account?.confirmedAt, null)
   await disconnectAccount()
   assert.equal((await prisma.mercadoPagoAccount.findUniqueOrThrow({ where: { id: settings.accountId! } })).access, null)
@@ -255,4 +258,24 @@ test('PostgreSQL: digital category skips freight/address; mixed carts quote phys
     if (previousToken === undefined) delete process.env.MELHOR_ENVIO_TOKEN
     else process.env.MELHOR_ENVIO_TOKEN = previousToken
   }
+})
+
+test('PostgreSQL: card uses OAuth account key instead of stale global key and retains the nested rejection reason', async () => {
+  accountUser = '123'
+  const a = await account()
+  await prisma.mercadoPagoAccount.update({ where: { id: a.id }, data: { publicKey: null } })
+  const previousKey = process.env.MP_PUBLIC_KEY
+  process.env.MP_PUBLIC_KEY = 'wrong-key-from-test-environment'
+  try {
+    assert.equal(await publicKeyFor(a.id), 'synthetic-key-123')
+    await prisma.paymentSettings.update({ where: { id: MERCHANT }, data: { accountId: a.id, provider: 'mercado_pago' } })
+    const o = await order()
+    const payment = await createPayment({ orderId: o.id, requestKey: randomUUID(), method: 'card', token: 'synthetic-card', payment_method_id: 'master' })
+    const row = await prisma.mercadoPagoPayment.findUniqueOrThrow({ where: { id: payment!.id } })
+    const snapshot = snapshots.get(row.providerId!)
+    const rejected = { ...snapshot, status: 'failed', status_detail: 'failed', transactions: { payments: [{ ...snapshot.transactions.payments[0], status_detail: 'invalid_card_token' }] } }
+    await reconcile(a.id, rejected)
+    assert.equal((await paymentView(o.id))?.detail, 'invalid_card_token')
+    assert.equal(await prisma.upnodeCommissionEntry.count({ where: { orderId: o.id } }), 0)
+  } finally { process.env.MP_PUBLIC_KEY = previousKey }
 })

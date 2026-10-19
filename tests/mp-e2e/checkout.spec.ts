@@ -33,13 +33,14 @@ test('OAuth, confirmação, checkout real BittUp com PG local, PIX/cartão e web
     const state = location.searchParams.get('state')!
     await route.fulfill({ status: 303, headers: { location: `http://localhost:3219/api/mercado-pago/oauth/callback?state=${state}&code=synthetic-code` } })
   })
-  await page.route('https://sdk.mercadopago.com/js/v2', route => route.fulfill({ contentType: 'application/javascript', body: `window.MercadoPago=class { bricks(){return {create:async(kind,id,settings)=>{const host=document.getElementById(id);host.innerHTML='<label>Cartão sintético<input aria-label="Cartão sintético" /></label><button type="button">Pagar com cartão sintético</button>';host.querySelector('button').onclick=()=>settings.callbacks.onSubmit({token:'synthetic-token',payment_method_id:'master',payer:{identification:{type:'CPF',number:'00000000000'}}});settings.callbacks.onReady();return {unmount(){host.innerHTML=''}}}}}}` }))
+  await page.route('https://sdk.mercadopago.com/js/v2', route => route.fulfill({ contentType: 'application/javascript', body: `window.MercadoPago=class { constructor(key){window.__mpPublicKey=key} bricks(){return {create:async(kind,id,settings)=>{const host=document.getElementById(id);host.innerHTML='<label>Cartão sintético<input aria-label="Cartão sintético" /></label><button type="button">Pagar com cartão sintético</button>';host.querySelector('button').onclick=()=>settings.callbacks.onSubmit({token:'synthetic-token',payment_method_id:'master',payer:{identification:{type:'CPF',number:'00000000000'}}});settings.callbacks.onReady();return {unmount(){host.innerHTML=''}}}}}}` }))
   await page.goto('/admin/login')
   await page.locator('input[type=email]').fill('admin@synthetic.invalid')
   await page.locator('input[type=password]').fill('synthetic-test-password')
+  const loggedIn = page.waitForResponse(response => response.url().endsWith('/api/auth/login') && response.request().method() === 'POST')
   await page.getByRole('button', { name: 'Entrar', exact: true }).click()
-  await expect(page).toHaveURL(/\/admin$/, { timeout: 90000 })
-  await page.getByRole('link', { name: 'Pagamentos', exact: true }).first().click()
+  expect((await loggedIn).status()).toBe(200)
+  await page.goto('/admin/configuracoes/pagamentos')
   await page.getByRole('button', { name: 'Conectar Mercado Pago', exact: true }).click()
   await expect(page.getByText('Conta Mercado Pago conectada', { exact: false })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Conectar Mercado Pago', exact: true })).toHaveCount(0)
@@ -71,6 +72,7 @@ test('OAuth, confirmação, checkout real BittUp com PG local, PIX/cartão e web
       await expect(page.getByLabel('PIX copia e cola')).toBeVisible()
     } else {
       await page.getByRole('button', { name: 'Cartão de Crédito', exact: false }).click()
+      await expect.poll(() => page.evaluate(() => (window as Window & { __mpPublicKey?: string }).__mpPublicKey)).toBe('synthetic-oauth-key')
       await page.getByRole('button', { name: 'Pagar com cartão sintético' }).click()
     }
     await expect.poll(async () => (await pool.query('SELECT count(*)::int AS n FROM "MercadoPagoPayment" WHERE "orderId"=$1 AND "providerId" IS NOT NULL', [orderId])).rows[0].n).toBe(1)

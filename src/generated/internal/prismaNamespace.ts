@@ -2191,6 +2191,7 @@ export const MercadoPagoAccountScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   label: 'label',
+  publicKey: 'publicKey',
   access: 'access',
   refresh: 'refresh',
   expiresAt: 'expiresAt',
