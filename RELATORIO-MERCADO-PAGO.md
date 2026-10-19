@@ -1,6 +1,6 @@
 # Resultado da integração Mercado Pago na BittUp — 18/10/2026
 
-Implementação e validação locais concluídas. Migrações aplicadas no banco escolhido pelo usuário. Publicação/homologação externa pendentes de acesso ao projeto Vercel e configuração OAuth da BittUp. Durante a execução, o usuário orientou usar o banco indicado em .env.prod, mantendo o destino bittup-dev.vercel.app; essa orientação substitui a exigência inicial de banco exclusivamente dev. Não declarar homologação financeira da BittUp antes da etapa publicada.
+Implementação e validação locais concluídas. Migrações aplicadas no banco escolhido pelo usuário. Publicação em bittup-dev.vercel.app concluída e verificações HTTP/cron aprovadas. Homologação financeira externa pendente da configuração OAuth/webhook da aplicação BittUp. Durante a execução, o usuário orientou usar o banco indicado em .env.prod, mantendo o destino bittup-dev.vercel.app; essa orientação substitui a exigência inicial de banco exclusivamente dev. Não declarar homologação financeira da BittUp antes da etapa publicada.
 
 ## Auditoria e estratégia
 
@@ -72,3 +72,11 @@ Acesso pelo navegador ao time upnodebittup-4135s-projects liberado pelo usuário
 Consulta pública do catálogo confirmou que o site ainda lia .env.dev (IDs/preços/estoques coincidentes), diferente do banco de .env.prod escolhido pelo usuário e já migrado. Preparado arquivo privado ignorado .env.mp-deployment com conexão/aliases do banco escolhido, URL bittup-dev, flags MP inicialmente desativadas e segredos exclusivos de criptografia/cron. Nenhuma variável Asaas incluída. A extensão bloqueou seleção automática do arquivo; importação manual solicitada no formulário do projeto correto antes de salvar e fazer push. Credenciais OAuth e entrega de webhook oficial continuam pendentes.
 
 Importação manual concluída pelo usuário. Conferência na Vercel confirmou DATABASE_URL idêntica à conexão autorizada de .env.prod (comparação sem divulgar segredo), MP_BASE_URL=https://bittup-dev.vercel.app, MP_ENVIRONMENT=test e flags MP_PAYMENTS_ENABLED/MP_WEBHOOK_CONFIGURED=false. A interface também apresentou variáveis Cloudinary e AUTH_JWT_SECRET recém-importadas pelo usuário; o agente não alterou essas configurações. Credenciais OAuth oficiais continuam pendentes. Fetch confirmou zero commits remotos ausentes antes do push exclusivo para develop/develop.
+
+## Publicação e verificação externa concluídas
+
+Commit funcional 75cecf7b42536f04363aa65c50a4a2108e7d91b6 enviado a upnodebittup/bittup-dev, branch develop. Deploy BVtz9gR2J7ebywvuNDgSheMUkTM9, Ready em 47 segundos, associado a https://bittup-dev.vercel.app. Painel: https://vercel.com/upnodebittup-4135s-projects/bittup-dev/BVtz9gR2J7ebywvuNDgSheMUkTM9. Pendências anteriores de acesso e push foram resolvidas.
+
+HTTP publicado: inicial 200; /api/products 200 com 10 produtos; painel de pagamentos 307 para login; settings 401 anônimo; pagamento inexistente 404; jobs 401 anônimo. Conferência prévia do banco: 1 pedido, 10 produtos, zero pagamentos/eventos MP. Jobs autenticado retornou 200, processed=0 e failed=0. Evidência privada ignorada em .mp-validation/published-smoke-result.json.
+
+Limites: sem sessão administrativa real do lojista validada nesta publicação; sem OAuth oficial conectado, compra PIX/cartão ou webhook oficial da BittUp. Testes completos anteriores usam PostgreSQL real local e rede financeira simulada. Flags MP continuam desativadas e ambiente test. Cobrança semanal real permanece ausente. Usuário confirmou já possuir a aplicação Mercado Pago da BittUp; pendente configurar URLs e credenciais privadas. Não transportar ao template antes da homologação financeira.
