@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import Script from 'next/script'
 import PaymentMethodSelector from './PaymentMethodSelector'
+import CopyPixButton from './CopyPixButton'
 
 type CardData = { token: string; payment_method_id: string; payer?: { identification?: { type: string; number: string } } }
 type Brick = { unmount(): void }
@@ -83,7 +84,7 @@ export default function MercadoPagoPayment({ orderId, total, email }: { orderId:
         {/* Provider-generated data URI; never sends card data to the BittUp server. */}
         {payment.qrImage && <img alt="QR Code PIX" src={`data:image/png;base64,${payment.qrImage}`} className="w-56 h-56 bg-white p-3" />}
         <label className="block">PIX copia e cola<textarea readOnly value={payment.qrCode ?? ''} className="w-full border rounded p-2" /></label>
-        <button onClick={() => { void navigator.clipboard.writeText(payment.qrCode ?? '').catch(() => setError('Não foi possível copiar.')) }}>Copiar PIX</button>
+        <CopyPixButton code={payment.qrCode} />
       </div>}
       {terminal && <button onClick={() => { ignoredTerminal.current = payment.id; payload.current = null; setCardReady(false); setSetup(current => current ? { ...current, payment: null } : current) }}>Tentar novo pagamento</button>}
     </div>}
