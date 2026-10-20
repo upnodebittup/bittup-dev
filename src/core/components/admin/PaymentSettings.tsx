@@ -38,13 +38,7 @@ export default function PaymentSettings() {
         {data.connected && data.account && (data.account.confirmed ? <p>Conta recebedora confirmada.</p> : <button className={buttonClass} disabled={busy} onClick={() => change('oauth/confirm', { userId: data.account!.userId })}>Confirmar esta conta como recebedora</button>)}
         <p>Desconectar interrompe novos pagamentos. Para processar eventos de pedidos antigos, reconecte a conta original. A troca de conta não altera os vínculos históricos.</p>
       </section>
-      <section className="border rounded-2xl p-5 space-y-3">
-        <h2 className="text-xl font-semibold">Provedor para novos pedidos</h2>
-        <label>Provedor de pagamento <select className="border rounded-xl p-3" style={{ background: 'var(--color-admin-bg)' }} aria-label="Provedor de pagamento" disabled={busy} value={data.provider} onChange={e => change('settings', { provider: e.target.value })}>
-          <option value="asaas">Asaas</option><option value="mercado_pago" disabled={!data.checkoutReady || !data.connected || !data.account?.confirmed}>Mercado Pago</option>
-        </select></label>
-        <p>Pedidos existentes mantêm seu provedor de pagamento.</p>
-      </section>
+      <p>PIX e cartão processados exclusivamente pelo Mercado Pago.</p>
       <section className="border rounded-2xl p-5 space-y-3 overflow-x-auto">
         <h2 className="text-xl font-semibold">Comissões UpNode</h2>
         <p>R$ 1,00 por pedido Mercado Pago efetivamente pago. Cobrança semanal desativada durante a homologação.</p>

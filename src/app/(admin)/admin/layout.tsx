@@ -10,6 +10,7 @@ import { Menu, X } from 'lucide-react'
 import { Geist, Geist_Mono } from 'next/font/google'
 import '@/app/globals.css'
 import { Toaster } from 'react-hot-toast'
+import AdminBackButton from '@/core/components/admin/AdminBackButton'
 import { LogoutButton } from '@/core/components/admin/LogoutButton'
 import { siteConfig } from '@/client/config/site.config'
 
@@ -93,7 +94,6 @@ export default function AdminLayout({
                 {isPublicLinkEnabled("/admin/blog/posts") && (<Link href="/admin/blog/posts">Posts Blog</Link>)}
                 <Link href="/admin/custom-page">Páginas Personalizadas</Link>
                 <Link href="/admin/etiquetas">Etiquetas</Link>
-                {isPublicLinkEnabled("/admin/clients") && (<Link href="/admin/clients">Asaas</Link>)}
                 <LogoutButton />
               </nav>
 
@@ -123,6 +123,7 @@ export default function AdminLayout({
           </header>
 
           <main className="flex-1 mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8">
+            <AdminBackButton />
             {children}
           </main>
         </div>

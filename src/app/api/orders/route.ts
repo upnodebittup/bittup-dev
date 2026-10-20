@@ -42,8 +42,8 @@ async function POST(req: NextRequest) {
     const order = await prisma.$transaction(async tx => {
       await lock(tx, MERCHANT)
       const settings = await tx.paymentSettings.findUnique({ where: { id: MERCHANT }, include: { account: true } })
-      const paymentProvider = settings?.provider ?? 'asaas'
-      if (paymentProvider === 'mercado_pago' && (!checkoutReady() || !settings?.account?.access || !settings.account.confirmedAt)) throw new Error('Pagamento indisponível')
+      const paymentProvider = 'mercado_pago'
+      if (!checkoutReady() || !settings?.account?.access || !settings.account.confirmedAt) throw new Error('Pagamento indisponível')
       const products = await tx.product.findMany({ where: { id: { in: [...quantities.keys()] } }, include: { colors: true, sizes: true, categories: { select: { slug: true } } } })
       if (products.length !== quantities.size) throw new Error('Produto inválido.')
       const quantity = physicalQuantity(products, quantities)

@@ -22,12 +22,11 @@ export function requiredModule(pathname: string, method = 'GET'): ModuleName | n
   const path = pathname.split(/[?#]/, 1)[0]
   const read = ['GET', 'HEAD', 'OPTIONS'].includes(method.toUpperCase())
   if (matches(path, '/loja/pedido') && path.endsWith('/pagamento')) return 'checkout'
-  if (['/loja/checkout', '/loja/carrinho', '/carrinho', '/checkout', '/api/frete', '/api/asaas', '/api/mercado-pago', '/api/clients'].some(prefix => matches(path, prefix))) return 'checkout'
+  if (['/loja/checkout', '/loja/carrinho', '/carrinho', '/checkout', '/api/frete', '/api/mercado-pago'].some(prefix => matches(path, prefix))) return 'checkout'
   if (path === '/api/orders' && !read) return 'checkout'
   if (['/loja', '/pedido', '/minha-conta', '/api/orders', '/api/products', '/api/categorias'].some(prefix => matches(path, prefix))) return 'store'
   if (['/api/admin/products', '/api/admin/orders'].some(prefix => matches(path, prefix))) return read ? null : 'store'
   if (matches(path, '/admin/products')) return /\/(new|edit)$/.test(path) ? 'store' : null
-  if (matches(path, '/admin/clients')) return 'checkout'
   if (matches(path, '/api/admin/blog')) return read ? null : 'blog'
   if (matches(path, '/admin/blog')) return /\/(new|edit)$/.test(path) ? 'blog' : null
   if (matches(path, '/blog')) return 'blog'

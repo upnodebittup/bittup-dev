@@ -27,7 +27,7 @@ const admin = withAdmin(async (request: NextRequest) => {
   if (path === 'settings' && request.method === 'GET') {
     const settings = await prisma.paymentSettings.findUnique({ where: { id: MERCHANT }, include: { account: true } })
     const account = settings?.account
-    return privateJson({ provider: settings?.provider ?? 'asaas', connected: !!account?.access,
+    return privateJson({ provider: 'mercado_pago', connected: !!account?.access,
       account: account ? { userId: account.userId, label: account.label, confirmed: !!account.confirmedAt } : null,
       oauthReady: oauthReady(), checkoutReady: checkoutReady(), environment: process.env.MP_ENVIRONMENT ?? 'disabled', billingEnabled: false,
       statements: await prisma.upnodeWeeklyStatement.findMany({ orderBy: { start: 'desc' }, take: 12 }),
@@ -36,7 +36,7 @@ const admin = withAdmin(async (request: NextRequest) => {
     })
   }
   if (path === 'settings' && request.method === 'POST') {
-    const data = z.object({ provider: z.enum(['asaas', 'mercado_pago']) }).strict().parse(await request.json())
+    const data = z.object({ provider: z.literal('mercado_pago') }).strict().parse(await request.json())
     await prisma.$transaction(async tx => {
       await lock(tx, MERCHANT)
       const settings = await tx.paymentSettings.findUnique({ where: { id: MERCHANT }, include: { account: true } })

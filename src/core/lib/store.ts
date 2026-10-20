@@ -7,5 +7,5 @@ function matches(pathname: string, prefixes: string[]): boolean {
   return prefixes.some(prefix => path === prefix || path.startsWith(prefix + '/'))
 }
 export const isStorefrontPath = (path: string) => matches(path, ['/loja', '/carrinho', '/checkout', '/pedido', '/minha-conta'])
-export const isPublicStoreApiPath = (path: string) => matches(path, ['/api/products', '/api/categorias', '/api/orders', '/api/frete', '/api/asaas', '/api/mercado-pago', '/api/clients'])
+export const isPublicStoreApiPath = (path: string) => matches(path, ['/api/products', '/api/categorias', '/api/orders', '/api/frete', '/api/mercado-pago'])
 export const isDisabledStoreApi = (path: string, method: string) => !isRouteEnabled(path, method)

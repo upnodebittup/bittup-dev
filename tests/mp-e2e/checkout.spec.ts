@@ -16,12 +16,15 @@ test('Produto digital dispensa endereço e frete, com classificação consultada
   for (const [name, value] of Object.entries({ fullName: 'Comprador Digital', email: 'digital@example.invalid', cpf: '00000000000', phone: '11999999999' }))
     await page.locator(`[name="${name}"]`).fill(value)
   await page.screenshot({ path: '.mp-validation/checkout-digital.png', fullPage: true })
+  await pool.query(`INSERT INTO "MercadoPagoAccount" (id,"userId",label,access,"confirmedAt","createdAt") VALUES ('digital-ui-account','999','Synthetic','synthetic',now(),now())`)
+  await pool.query(`INSERT INTO "PaymentSettings" (id,provider,"accountId","creditCents") VALUES ('bittup','mercado_pago','digital-ui-account',0) ON CONFLICT (id) DO UPDATE SET "accountId"='digital-ui-account'`)
   await page.getByRole('button', { name: 'Finalizar Pedido', exact: true }).click()
   await expect(page).toHaveURL(/\/loja\/pedido\/[^/]+\/pagamento/)
   const id = new URL(page.url()).pathname.split('/')[3]
   const order = (await pool.query('SELECT total,frete,address FROM "Order" WHERE id=$1', [id])).rows[0]
   expect(Number(order.total)).toBe(10); expect(Number(order.frete)).toBe(0)
   expect(order.address.zipCode).toBe('')
+  await pool.query(`UPDATE "PaymentSettings" SET "accountId"=NULL WHERE "accountId"='digital-ui-account'`)
 })
 const entryCount = async (orderId: string, kind?: string) => (await pool.query('SELECT count(*)::int AS n FROM "UpnodeCommissionEntry" WHERE "orderId"=$1 AND ($2::text IS NULL OR kind=$2)', [orderId, kind ?? null])).rows[0].n
 test('OAuth, confirmação, checkout real BittUp com PG local, PIX/cartão e webhook de provedor simulado', async ({ page, browser }) => {
@@ -46,7 +49,19 @@ test('OAuth, confirmação, checkout real BittUp com PG local, PIX/cartão e web
   await expect(page.getByRole('button', { name: 'Conectar Mercado Pago', exact: true })).toHaveCount(0)
   await page.getByRole('button', { name: 'Confirmar esta conta como recebedora' }).click()
   await expect(page.getByText('Conta recebedora confirmada.')).toBeVisible()
-  await page.getByLabel('Provedor de pagamento').selectOption('mercado_pago')
+  await expect(page.getByText('PIX e cartão processados exclusivamente pelo Mercado Pago.')).toBeVisible()
+  await expect(page.getByRole('option', {name:'Asaas',exact:true})).toHaveCount(0)
+  for (const [path, label, destination] of [
+    ['/admin/products/synthetic-product/edit', 'Voltar aos produtos', '/admin/products'],
+    ['/admin/pedidos', 'Voltar ao painel', '/admin'],
+    ['/admin/blog/categories/new', 'Voltar às categorias', '/admin/blog/categories'],
+  ]) {
+    await page.goto(path)
+    await expect(page.getByRole('link',{name:label,exact:true})).toHaveAttribute('href', destination)
+    await page.getByRole('link',{name:label,exact:true}).click()
+    await expect(page).toHaveURL(new RegExp(destination + '$'))
+  }
+  await page.goto('/admin/configuracoes/pagamentos')
   await expect.poll(async () => (await (await page.request.get('/api/mercado-pago/settings')).json()).provider).toBe('mercado_pago')
   await page.route('**/api/frete', async route => {
     const data = route.request().postDataJSON()

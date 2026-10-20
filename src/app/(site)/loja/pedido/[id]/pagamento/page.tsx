@@ -1,12 +1,7 @@
 'use client'
 
 import { useParams } from 'next/navigation'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { toast } from 'react-hot-toast'
-import PaymentMethodSelector from '@/core/components/payment/PaymentMethodSelector'
-import CreditCardForm from '@/core/components/payment/CreditCardForm'
-import PixPayment from '@/core/components/payment/PixPayment'
 import MercadoPagoPayment from '@/core/components/payment/MercadoPagoPayment'
 import { Loader2 } from 'lucide-react'
 
@@ -28,27 +23,14 @@ interface Order {
   }>
 }
 
-interface CreditCardFormData {
-  creditCardNumber: string
-  creditCardHolderName: string
-  creditCardExpirationMonth: string
-  creditCardExpirationYear: string
-  creditCardCvv: string
-  billingZipCode?: string
-  billingNumber?: string
-}
 
 export default function PagamentoPage() {
   const params = useParams()
-  const router = useRouter()
   const orderId = params?.id as string
 
   const [order, setOrder] = useState<Order | null>(null)
-  const [paymentMethod, setPaymentMethod] = useState<'CREDIT_CARD' | 'PIX' | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [paymentId, setPaymentId] = useState<string | null>(null)
 
   // Buscar dados do pedido
   useEffect(() => {
@@ -75,131 +57,6 @@ export default function PagamentoPage() {
 
     fetchOrder()
   }, [orderId])
-
-  // Criar cliente Asaas se não existir
-  const createCustomerIfNeeded = async (orderData: Order) => {
-    if (orderData.customerId) {
-      return orderData.customerId
-    }
-
-    try {
-      const cpfClean = orderData.cpf.replace(/\D/g, '')
-      const phoneClean = orderData.phone.replace(/\D/g, '')
-
-      const res = await fetch('/api/asaas/create-customer', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          orderId: orderData.id,
-          email: orderData.email,
-          cpf: cpfClean,
-          phone: phoneClean,
-          address: orderData.address,
-        }),
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || 'Erro ao criar cliente')
-      }
-
-      const { customerId } = await res.json()
-
-      setOrder({ ...orderData, customerId })
-      return customerId
-    } catch (err) {
-      console.error('Erro ao criar cliente:', err)
-      throw err
-    }
-  }
-
-  // Manipulador de pagamento com cartão
-  const handleCreditCardSubmit = async (data: CreditCardFormData) => {
-    if (!order) return
-
-    setIsProcessing(true)
-    try {
-      const customerId = await createCustomerIfNeeded(order)
-      const totalCents = Math.round(Number(order.total) * 100) / 100
-
-      const paymentRes = await fetch('/api/asaas/create-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          customerId,
-          orderId: order.id,
-          total: totalCents,
-          billingType: 'CREDIT_CARD',
-          billingZipCode: data.billingZipCode,
-          billingNumber: data.billingNumber,
-          creditCardData: {
-            creditCardNumber: data.creditCardNumber.replace(/\s/g, ''),
-            creditCardHolderName: data.creditCardHolderName.toUpperCase(),
-            creditCardExpirationMonth: data.creditCardExpirationMonth,
-            creditCardExpirationYear: data.creditCardExpirationYear,
-            creditCardCvv: data.creditCardCvv,
-          },
-        }),
-      })
-
-      if (!paymentRes.ok) {
-        const errorData = await paymentRes.json()
-        throw new Error(errorData.error || 'Erro ao processar pagamento')
-      }
-
-      const paymentData = await paymentRes.json()
-      
-      if (paymentData.payment.status === 'CONFIRMED') {
-        toast.success('Pagamento aprovado!')
-        router.push(`/loja/pedido/${order.id}?status=approved&payment_id=${paymentData.paymentId}`)
-      } else {
-        toast.success('Pagamento enviado para análise')
-        setPaymentId(paymentData.paymentId)
-      }
-    } catch (err: unknown) {
-      console.error('Erro no pagamento:', err)
-      toast.error(err instanceof Error ? err.message : 'Erro ao processar pagamento')
-    } finally {
-      setIsProcessing(false)
-    }
-  }
-
-  // Manipulador de pagamento com PIX
-  const handlePixPayment = async () => {
-    if (!order) return
-
-    setIsProcessing(true)
-    try {
-      const customerId = await createCustomerIfNeeded(order)
-      const totalCents = Math.round(Number(order.total) * 100) / 100
-
-      const paymentRes = await fetch('/api/asaas/create-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          customerId,
-          orderId: order.id,
-          total: totalCents,
-          billingType: 'PIX',
-          dueDate: new Date(Date.now() + 30 * 60000).toISOString().split('T')[0],
-        }),
-      })
-
-      if (!paymentRes.ok) {
-        const errorData = await paymentRes.json()
-        throw new Error(errorData.error || 'Erro ao criar cobrança PIX')
-      }
-
-      const paymentData = await paymentRes.json()
-      setPaymentId(paymentData.paymentId)
-      toast.success('QR Code PIX gerado!')
-    } catch (err: unknown) {
-      console.error('Erro ao gerar PIX:', err)
-      toast.error(err instanceof Error ? err.message : 'Erro ao gerar PIX')
-    } finally {
-      setIsProcessing(false)
-    }
-  }
 
   if (loading) {
     return (
@@ -241,42 +98,7 @@ export default function PagamentoPage() {
             <h1 className="text-2xl font-bold mb-6">Pagamento do Pedido</h1>
 
             {/* SELETOR DE MÉTODO */}
-            {order.paymentProvider === 'mercado_pago' ? <MercadoPagoPayment orderId={order.id} total={totalGeral} email={order.email} /> : <>
-            <PaymentMethodSelector
-              selectedMethod={paymentMethod}
-              onMethodSelect={(method) => setPaymentMethod(method as 'CREDIT_CARD' | 'PIX')}
-            />
-
-            {/* FORMULÁRIO ESPECÍFICO DO MÉTODO */}
-            <div className="mt-8">
-              {paymentMethod === 'CREDIT_CARD' && (
-                <CreditCardForm
-                  onSubmit={handleCreditCardSubmit}
-                  isLoading={isProcessing}
-                  total={totalGeral}
-                  needsBillingAddress={!order.address?.zipCode}
-                />
-              )}
-
-              {paymentMethod === 'PIX' && !paymentId && (
-                <button
-                  onClick={handlePixPayment}
-                  disabled={isProcessing}
-                  className="w-full rounded-2xl bg-[var(--color-accent)] text-white font-semibold py-3 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {isProcessing && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {isProcessing ? 'Gerando QR Code...' : 'Gerar QR Code PIX'}
-                </button>
-              )}
-
-              {paymentMethod === 'PIX' && paymentId && (
-                <PixPayment
-                  paymentId={paymentId}
-                  total={totalGeral}
-                />
-              )}
-            </div>
-            </>}
+            {order.paymentProvider === 'mercado_pago' ? <MercadoPagoPayment orderId={order.id} total={totalGeral} email={order.email} /> : <p>Este pedido utiliza uma integração descontinuada. Entre em contato com a loja para continuar.</p>}
           </div>
         </div>
 

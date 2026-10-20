@@ -76,8 +76,8 @@ model Order {
   frete            Decimal? @db.Decimal(10, 2)
   total            Decimal  @db.Decimal(10, 2)
   statusPagamento  String?
-  customerId       String?  // Asaas Customer ID
-  paymentProvider  String   @default("asaas")
+  customerId       String?  // Identificador histórico da integração descontinuada
+  paymentProvider  String   @default("mercado_pago")
   mpPayments       MercadoPagoPayment[]
   commissionEntries UpnodeCommissionEntry[]
   createdAt        DateTime @default(now())
@@ -100,7 +100,7 @@ model AsaasWebhookEvent {
 // One installation is one merchant; accounts remain referenced by historical payments.
 model PaymentSettings {
   id String @id
-  provider String @default("asaas")
+  provider String @default("mercado_pago")
   accountId String?
   account MercadoPagoAccount? @relation(fields: [accountId], references: [id])
   creditCents Int @default(0)
