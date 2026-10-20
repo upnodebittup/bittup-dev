@@ -39,7 +39,7 @@ try {
     const client = path.join(target, 'src/core/lib/mp/client.ts')
     fs.writeFileSync(client, "import { mpTestFetch } from './test-fetch'\n" + fs.readFileSync(client, 'utf8').replace('const response = await fetch(', 'const response = await mpTestFetch('))
     fs.copyFileSync(path.join(root, 'tests/fixtures/mp-fetch.ts'), path.join(target, 'src/core/lib/mp/test-fetch.ts'))
-    await run(['node_modules/@playwright/test/cli.js', 'test', '--config', 'playwright.mp.config.ts'], { ...env, MP_TEST_APP_DIR: target, PLAYWRIGHT_BROWSERS_PATH: path.join(root, '.playwright-browsers') })
+    await run(['node_modules/@playwright/test/cli.js', 'test', '--config', 'playwright.mp.config.ts', ...(process.argv.includes('--navigation') ? ['admin-navigation.spec.ts'] : [])], { ...env, MP_TEST_APP_DIR: target, PLAYWRIGHT_BROWSERS_PATH: path.join(root, '.playwright-browsers') })
   } else await run(['--conditions=react-server', '--import', 'tsx', '--test', 'tests/mp-db.test.ts'], env)
 } catch (error) { failed = true; console.error(error?.message ?? 'PostgreSQL não iniciou; confira postgres.log na pasta descartável.'); process.exitCode = 1 }
 finally {
