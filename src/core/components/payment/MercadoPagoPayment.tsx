@@ -9,7 +9,7 @@ type CardData = { token: string; payment_method_id: string; payer?: { identifica
 type Brick = { unmount(): void }
 type SDK = { bricks(): { create(kind: string, container: string, settings: {
   initialization: { amount: number; payer: { email: string } };
-  customization: { paymentMethods: { types: { included: string[] }; minInstallments: number; maxInstallments: number } };
+  customization: { visual: { style: { theme: 'dark'; customVariables: Record<string, string> } }; paymentMethods: { types: { included: string[] }; minInstallments: number; maxInstallments: number } };
   callbacks: { onReady(): void; onError(): void; onSubmit(data: CardData): Promise<void> }
 }): Promise<Brick> } }
 declare global { interface Window { MercadoPago?: new (key: string, options: { locale: string }) => SDK } }
@@ -63,7 +63,7 @@ export default function MercadoPagoPayment({ orderId, total, email }: { orderId:
     const sdk = new window.MercadoPago!(setup.publicKey, { locale: 'pt-BR' })
     sdk.bricks().create('cardPayment', 'bittup-mp-card', {
       initialization: { amount: total, payer: { email } },
-      customization: { paymentMethods: { types: { included: ['credit_card'] }, minInstallments: 1, maxInstallments: 1 } },
+      customization: { visual: { style: { theme: 'dark', customVariables: { textPrimaryColor: '#FFFFFF', textSecondaryColor: '#FFFFFF', buttonTextColor: '#FFFFFF', formBackgroundColor: '#0C1F2B', inputBackgroundColor: '#0A2230' } } }, paymentMethods: { types: { included: ['credit_card'] }, minInstallments: 1, maxInstallments: 1 } },
       callbacks: { onReady: () => { if (!cancelled) setCardReady(true) }, onError: () => { if (!cancelled) setError('Não foi possível carregar o cartão.') }, onSubmit: data => submitRef.current(data) },
     }).then(value => { if (cancelled) value.unmount(); else brick = value }).catch(() => { if (!cancelled) setError('Falha ao carregar o cartão.') })
     return () => { cancelled = true; brick?.unmount() }
@@ -87,6 +87,6 @@ export default function MercadoPagoPayment({ orderId, total, email }: { orderId:
       </div>}
       {terminal && <button onClick={() => { ignoredTerminal.current = payment.id; payload.current = null; setCardReady(false); setSetup(current => current ? { ...current, payment: null } : current) }}>Tentar novo pagamento</button>}
     </div>}
-    {error && <p role="alert" className="text-[var(--color-error)]">{error}</p>}
+    {error && <p role="alert" className="text-white">{error}</p>}
   </div>
 }

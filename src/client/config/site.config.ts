@@ -136,12 +136,12 @@ export const siteConfig = {
     overlay: "#020B12",
 
     // TEXTOS
-    textPrimary: "#12324A",
-    textSecondary: "#A9BAC7",
-    textTertiary: "#7F96A8",
-    textMuted: "#607587",
+    textPrimary: "#FFFFFF",
+    textSecondary: "#FFFFFF",
+    textTertiary: "#FFFFFF",
+    textMuted: "#FFFFFF",
     textLight: "#FFFFFF",
-    textHeroMuted: "#C7D6E2",
+    textHeroMuted: "#FFFFFF",
 
     // CORES PRINCIPAIS
     accent: "#12324A",
@@ -165,7 +165,7 @@ export const siteConfig = {
 
     // ADMIN
     adminBg: "#081722",
-    adminText: "#F4F8FB",
+    adminText: "#FFFFFF",
     adminBorder: "#163041",
   },
 };

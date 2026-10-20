@@ -24,7 +24,7 @@ export default function CategoriasMenu() {
     >
       <ShoppingCart className="h-5 w-5" aria-hidden="true" />
       <span>Carrinho</span>
-      <span aria-hidden="true" className="min-w-5 rounded-full bg-white px-1.5 text-center text-xs leading-5 text-black">
+      <span aria-hidden="true" className="min-w-5 rounded-full bg-[var(--color-bg-secondary)] px-1.5 text-center text-xs leading-5 text-white">
         {totalItems}
       </span>
     </Link>
@@ -42,7 +42,7 @@ export default function CategoriasMenu() {
       
       {/* Mobile */}
       <div className="flex md:hidden items-center justify-between gap-2 px-4 py-2">
-        <Link href="/loja" className="text-sm font-semibold text-[var(--color-accent)]">
+        <Link href="/loja" className="text-sm font-semibold text-white">
           Início
         </Link>
 
@@ -78,7 +78,7 @@ export default function CategoriasMenu() {
       {/* Desktop */}
       <div className="hidden md:flex max-w-7xl mx-auto items-center gap-4 px-4 py-2">
         <div className="flex min-w-0 flex-1 items-center justify-between gap-4 overflow-x-auto font-bold">
-          <Link href="/loja" className="text-sm font-semibold text-[var(--color-accent)] hover:underline">
+          <Link href="/loja" className="text-sm font-semibold text-white hover:underline">
             Início
           </Link>
 

@@ -51,7 +51,7 @@ export default async function PedidoPage({ params }: PedidoPageProps) {
 
       <a
         href="/loja/meus-pedidos"
-        className="text-[var(--color-accent)] hover:underline mb-4 inline-block"
+        className="text-white hover:underline mb-4 inline-block"
       >
         ← Voltar aos meus pedidos
       </a>
@@ -93,7 +93,7 @@ export default async function PedidoPage({ params }: PedidoPageProps) {
               Quantidade: {item.quantity} — Tamanho: {item.size} — Cor: {item.color}
             </p>
 
-            <p className="text-sm font-semibold text-[var(--color-accent)] mt-1">
+            <p className="text-sm font-semibold text-white mt-1">
               R$ {(Number(item.price) * item.quantity).toFixed(2)}
             </p>
           </li>
@@ -109,7 +109,7 @@ export default async function PedidoPage({ params }: PedidoPageProps) {
           Frete: R$ {frete.toFixed(2)}
         </div>
 
-        <div className="font-bold text-lg text-[var(--color-accent)]">
+        <div className="font-bold text-lg text-white">
           Total: R$ {totalGeral.toFixed(2)}
         </div>
       </div>

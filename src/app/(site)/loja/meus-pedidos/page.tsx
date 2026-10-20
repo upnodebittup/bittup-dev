@@ -73,7 +73,7 @@ export default function MeusPedidosPage() {
                 className="w-full px-4 py-2 border border-[var(--color-border-light)] bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] rounded-lg focus:outline-none focus:border-[var(--color-accent)]"
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-[var(--color-error)]">
+                <p className="mt-1 text-sm text-white">
                   {errors.email.message}
                 </p>
               )}
@@ -91,7 +91,7 @@ export default function MeusPedidosPage() {
                 className="w-full px-4 py-2 border border-[var(--color-border-light)] bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] rounded-lg focus:outline-none focus:border-[var(--color-accent)]"
               />
               {errors.cpf && (
-                <p className="mt-1 text-sm text-[var(--color-error)]">
+                <p className="mt-1 text-sm text-white">
                   {errors.cpf.message}
                 </p>
               )}
@@ -119,7 +119,7 @@ export default function MeusPedidosPage() {
         {/* ⚠️ ERRO */}
         {erro && (
           <div className="mb-6 p-4 bg-red-950 border border-[var(--color-error)] rounded-lg">
-            <p className="text-[var(--color-error)]">⚠️ {erro}</p>
+            <p className="text-white">⚠️ {erro}</p>
           </div>
         )}
 

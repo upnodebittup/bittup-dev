@@ -30,14 +30,14 @@ export default async function LojaPage() {
           <div className="text-center max-w-xl">
             <h1
               className="text-2xl md:text-4xl font-bold"
-              style={{ color: 'var(--color-textPrimary)' }}
+              style={{ color: 'var(--color-text-primary)' }}
             >
               Lançamento da loja em breve
             </h1>
 
             <p
               className="mt-4 text-sm md:text-base"
-              style={{ color: 'var(--color-textSecondary)' }}
+              style={{ color: 'var(--color-text-secondary)' }}
             >
               Estamos preparando tudo com carinho para trazer novidades para você.
             </p>
@@ -57,7 +57,7 @@ export default async function LojaPage() {
             <Link
               key={product.id}
               href={`/loja/produto/${product.slug}`}
-              className="bg-white shadow-lg rounded-xl overflow-hidden hover:scale-105 transition flex flex-col"
+              className="bg-[var(--color-bg-card)] border border-[var(--color-border)] shadow-lg rounded-xl overflow-hidden hover:scale-105 transition flex flex-col"
             >
               <div className="w-full aspect-square md:aspect-auto md:h-72 relative">
                 <Image
@@ -71,12 +71,12 @@ export default async function LojaPage() {
               <div className="p-2 md:p-4 flex flex-col flex-1">
                 <h2
                   className="text-sm md:text-xl font-semibold line-clamp-2"
-                  style={{ color: 'var(--color-textPrimary)' }}
+                  style={{ color: 'var(--color-text-primary)' }}
                 >
                   {product.name}
                 </h2>
 
-                <p className="text-green-700 font-bold text-sm md:text-lg mt-1">
+                <p className="text-white font-bold text-sm md:text-lg mt-1">
                   R$ {Number(product.price).toFixed(2)}
                 </p>
 

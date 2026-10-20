@@ -10,7 +10,7 @@ export default function CheckoutPage() {
 
   return (
     <main className="max-w-5xl mx-auto p-6 bg-[var(--color-bg-primary)] min-h-screen text-[var(--color-text-primary)]">
-      <Link href="/loja" className="text-[var(--color-accent)] hover:underline">
+      <Link href="/loja" className="text-white hover:underline">
         ← Voltar à loja
       </Link>
 

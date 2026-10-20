@@ -95,7 +95,7 @@ export default function CreditCardForm({
           className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm font-mono"
         />
         {errors.creditCardNumber && (
-          <p className="mt-1 text-sm text-[var(--color-error)]">{errors.creditCardNumber.message}</p>
+          <p className="mt-1 text-sm text-white">{errors.creditCardNumber.message}</p>
         )}
       </div>
 
@@ -111,7 +111,7 @@ export default function CreditCardForm({
           className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm uppercase"
         />
         {errors.creditCardHolderName && (
-          <p className="mt-1 text-sm text-[var(--color-error)]">{errors.creditCardHolderName.message}</p>
+          <p className="mt-1 text-sm text-white">{errors.creditCardHolderName.message}</p>
         )}
       </div>
 
@@ -129,7 +129,7 @@ export default function CreditCardForm({
             className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
           />
           {errors.creditCardExpirationMonth && (
-            <p className="mt-1 text-xs text-[var(--color-error)]">{errors.creditCardExpirationMonth.message}</p>
+            <p className="mt-1 text-xs text-white">{errors.creditCardExpirationMonth.message}</p>
           )}
         </div>
 
@@ -145,7 +145,7 @@ export default function CreditCardForm({
             className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
           />
           {errors.creditCardExpirationYear && (
-            <p className="mt-1 text-xs text-[var(--color-error)]">{errors.creditCardExpirationYear.message}</p>
+            <p className="mt-1 text-xs text-white">{errors.creditCardExpirationYear.message}</p>
           )}
         </div>
       </div>
@@ -173,7 +173,7 @@ export default function CreditCardForm({
           </button>
         </div>
         {errors.creditCardCvv && (
-          <p className="mt-1 text-sm text-[var(--color-error)]">{errors.creditCardCvv.message}</p>
+          <p className="mt-1 text-sm text-white">{errors.creditCardCvv.message}</p>
         )}
       </div>
 
@@ -183,11 +183,11 @@ export default function CreditCardForm({
           <label className="block text-sm">CEP de cobrança
             <input {...register('billingZipCode')} inputMode="numeric" maxLength={8} className="mt-2 w-full rounded-2xl border bg-[var(--color-bg-tertiary)] px-4 py-3" />
           </label>
-          {errors.billingZipCode && <p className="text-sm text-[var(--color-error)]">{errors.billingZipCode.message}</p>}
+          {errors.billingZipCode && <p className="text-sm text-white">{errors.billingZipCode.message}</p>}
           <label className="block text-sm">Número de cobrança
             <input {...register('billingNumber')} maxLength={30} className="mt-2 w-full rounded-2xl border bg-[var(--color-bg-tertiary)] px-4 py-3" />
           </label>
-          {errors.billingNumber && <p className="text-sm text-[var(--color-error)]">{errors.billingNumber.message}</p>}
+          {errors.billingNumber && <p className="text-sm text-white">{errors.billingNumber.message}</p>}
         </fieldset>
       )}
       {/* Total */}

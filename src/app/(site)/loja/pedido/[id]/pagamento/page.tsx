@@ -215,7 +215,7 @@ export default function PagamentoPage() {
   if (error || !order) {
     return (
       <main className="max-w-2xl mx-auto py-10 px-4 min-h-screen bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]">
-        <a href="/loja/meus-pedidos" className="text-[var(--color-accent)] hover:underline mb-4 inline-block">
+        <a href="/loja/meus-pedidos" className="text-white hover:underline mb-4 inline-block">
           ← Voltar aos meus pedidos
         </a>
         <div className="p-4 border border-red-300 rounded-lg bg-red-50 text-red-700">
@@ -230,7 +230,7 @@ export default function PagamentoPage() {
 
   return (
     <main className="max-w-2xl mx-auto py-10 px-4 min-h-screen bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]">
-      <a href={`/loja/pedido/${orderId}`} className="text-[var(--color-accent)] hover:underline mb-4 inline-block">
+      <a href={`/loja/pedido/${orderId}`} className="text-white hover:underline mb-4 inline-block">
         ← Voltar ao pedido
       </a>
 
@@ -314,7 +314,7 @@ export default function PagamentoPage() {
 
               <div className="flex justify-between text-lg font-bold">
                 <span>Total:</span>
-                <span className="text-[var(--color-accent)]">R$ {Number(totalGeral.toFixed(2))}</span>
+                <span className="text-white">R$ {Number(totalGeral.toFixed(2))}</span>
               </div>
             </div>
           </div>

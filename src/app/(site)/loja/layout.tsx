@@ -9,7 +9,7 @@ export default function LojaLayout({
   requireModule('store')
 
   return (
-    <div>
+    <div className="bittup-storefront">
       <CategoriasMenu />
       {children}
     </div>

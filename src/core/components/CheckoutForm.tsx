@@ -137,7 +137,7 @@ export default function CheckoutForm() {
                 placeholder="Nome completo"
                 className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
               />
-              {errors.fullName && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.fullName.message}</p>}
+              {errors.fullName && <p className="mt-1 text-sm text-white">{errors.fullName.message}</p>}
             </div>
 
             <div>
@@ -151,7 +151,7 @@ export default function CheckoutForm() {
                 placeholder="seu@email.com"
                 className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
               />
-              {errors.email && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.email.message}</p>}
+              {errors.email && <p className="mt-1 text-sm text-white">{errors.email.message}</p>}
             </div>
 
             <div>
@@ -164,7 +164,7 @@ export default function CheckoutForm() {
                 placeholder="000.000.000-00"
                 className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
               />
-              {errors.cpf && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.cpf.message}</p>}
+              {errors.cpf && <p className="mt-1 text-sm text-white">{errors.cpf.message}</p>}
             </div>
 
             <div>
@@ -177,7 +177,7 @@ export default function CheckoutForm() {
                 placeholder="(00) 00000-0000"
                 className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
               />
-              {errors.phone && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.phone.message}</p>}
+              {errors.phone && <p className="mt-1 text-sm text-white">{errors.phone.message}</p>}
             </div>
           </div>
 
@@ -198,7 +198,7 @@ export default function CheckoutForm() {
                   placeholder="Rua das Flores"
                   className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
                 />
-                {errors.address?.street && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.address.street.message}</p>}
+                {errors.address?.street && <p className="mt-1 text-sm text-white">{errors.address.street.message}</p>}
               </div>
 
               <div>
@@ -211,7 +211,7 @@ export default function CheckoutForm() {
                   placeholder="123"
                   className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
                 />
-                {errors.address?.number && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.address.number.message}</p>}
+                {errors.address?.number && <p className="mt-1 text-sm text-white">{errors.address.number.message}</p>}
               </div>
 
               <div>
@@ -224,7 +224,7 @@ export default function CheckoutForm() {
                   placeholder="Centro"
                   className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
                 />
-                {errors.address?.neighborhood && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.address.neighborhood.message}</p>}
+                {errors.address?.neighborhood && <p className="mt-1 text-sm text-white">{errors.address.neighborhood.message}</p>}
               </div>
 
               <div>
@@ -237,7 +237,7 @@ export default function CheckoutForm() {
                   placeholder="São Paulo"
                   className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
                 />
-                {errors.address?.city && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.address.city.message}</p>}
+                {errors.address?.city && <p className="mt-1 text-sm text-white">{errors.address.city.message}</p>}
               </div>
 
               <div>
@@ -250,7 +250,7 @@ export default function CheckoutForm() {
                   placeholder="SP"
                   className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
                 />
-                {errors.address?.state && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.address.state.message}</p>}
+                {errors.address?.state && <p className="mt-1 text-sm text-white">{errors.address.state.message}</p>}
               </div>
 
               <div>
@@ -263,7 +263,7 @@ export default function CheckoutForm() {
                   placeholder="00000-000"
                   className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
                 />
-                {errors.address?.zipCode && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.address.zipCode.message}</p>}
+                {errors.address?.zipCode && <p className="mt-1 text-sm text-white">{errors.address.zipCode.message}</p>}
               </div>
             </div>
           </div>
@@ -287,7 +287,7 @@ export default function CheckoutForm() {
               <hr className="border-[var(--color-border)]" />
               <div className="flex justify-between text-lg font-semibold">
                 <span className="text-[var(--color-text-primary)]">Total:</span>
-                <span className="text-[var(--color-accent)]">R$ {totalGeral.toFixed(2)}</span>
+                <span className="text-white">R$ {totalGeral.toFixed(2)}</span>
               </div>
             </div>
           </div>

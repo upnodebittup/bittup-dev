@@ -75,7 +75,7 @@ export default function PixPayment({ paymentId, total }: PixPaymentProps) {
   if (error || !qrCode) {
     return (
       <div className="p-4 rounded-2xl bg-[var(--color-bg-secondary)] border border-[var(--color-error)] text-center">
-        <p className="text-[var(--color-error)]">{error || 'Erro ao gerar QR Code'}</p>
+        <p className="text-white">{error || 'Erro ao gerar QR Code'}</p>
         <button
           onClick={() => window.location.reload()}
           className="mt-3 px-4 py-2 rounded-lg bg-[var(--color-primary)] text-white text-sm hover:opacity-90"
