@@ -12,7 +12,7 @@ export default function CarrinhoPage() {
     return (
       <main className="p-6 text-center bg-[var(--color-bg-primary)] min-h-screen">
         <h2 className="text-2xl font-semibold mb-4 text-[var(--color-text-primary)]">Seu carrinho está vazio</h2>
-        <Link href="/loja" className="text-[var(--color-accent)] hover:underline">
+        <Link href="/loja" className="text-white hover:underline">
           Voltar à loja
         </Link>
       </main>
@@ -37,7 +37,7 @@ export default function CarrinhoPage() {
             />
             <div className="flex-1">
               <Link href={`/loja/produto/${item.slug}`}>
-                <h2 className="text-lg font-semibold hover:underline text-[var(--color-accent)]">{item.name}</h2>
+                <h2 className="text-lg font-semibold hover:underline text-white">{item.name}</h2>
               </Link>
               <p className="text-sm text-[var(--color-text-secondary)]">
                 Cor: <span className="font-medium">{item.color.name}</span>{' '}
@@ -47,7 +47,7 @@ export default function CarrinhoPage() {
                 />
               </p>
               <p className="text-sm text-[var(--color-text-secondary)]">Tamanho: {item.size.name}</p>
-              <p className="mt-1 text-[var(--color-accent)] font-bold">R$ {(item.price * item.quantity).toFixed(2)}</p>
+              <p className="mt-1 text-white font-bold">R$ {(item.price * item.quantity).toFixed(2)}</p>
             </div>
             <div className="flex flex-col items-end gap-2">
               <p className="text-sm">Qtd: {item.quantity}</p>
@@ -55,7 +55,7 @@ export default function CarrinhoPage() {
                 onClick={() =>
                   removeItem(item.productId, item.color.hex, item.size.name)
                 }
-                className="text-[var(--color-error)] hover:underline text-sm"
+                className="text-white hover:underline text-sm"
               >
                 Remover
               </button>

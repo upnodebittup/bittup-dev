@@ -45,10 +45,3 @@ export function verifyMercadoPagoWebhook(request: Request, secret: string): bool
   const hash = createHmac('sha256', secret).update(`id:${dataId};request-id:${requestId};ts:${ts};`).digest('hex')
   return safeEqual(hash, v1.toLowerCase())
 }
-
-export function normalizedAsaasStatus(status: string): string | null {
-  return ({ CONFIRMED: 'approved', RECEIVED: 'approved', RECEIVED_IN_CASH: 'approved',
-    PENDING: 'pending', OVERDUE: 'overdue', REFUNDED: 'refunded',
-    REFUND_REQUESTED: 'refund_pending', CHARGEBACK_REQUESTED: 'disputed',
-    CHARGEBACK_DISPUTE: 'disputed', AWAITING_CHARGEBACK_REVERSAL: 'disputed' } as Record<string, string>)[status] || null
-}

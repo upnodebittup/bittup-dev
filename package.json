@@ -10,7 +10,15 @@
     "seed": "tsx prisma/seed.ts",
     "seedb": "tsx prisma/seedblog.ts",
     "seedp": "tsx prisma/seedProdutos.ts",
-    "test:security": "node --test tests/security.test.mjs"
+    "test:security": "node --test tests/security.test.mjs",
+    "test:unit": "node --test tests/security.test.mjs",
+    "test:mp:db": "node scripts/test-mp-postgres.mjs",
+    "test:mp:e2e": "node scripts/test-mp-postgres.mjs --browser",
+    "test:e2e": "node scripts/test-mp-postgres.mjs --browser",
+    "test:report": "node scripts/playwright.mjs show-report",
+    "build:isolated": "node scripts/build-isolated.mjs",
+    "test:install": "node scripts/playwright.mjs install chromium",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.0",
@@ -37,10 +45,13 @@
     "react-input-mask": "^2.0.4",
     "react-pdf": "^10.4.1",
     "recharts": "^3.8.1",
-    "yup": "^1.6.1"
+    "server-only": "^0.0.1",
+    "yup": "^1.6.1",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.64.1",
     "@serwist/turbopack": "^9.5.11",
     "@tailwindcss/postcss": "^4",
     "@types/jsonwebtoken": "^9.0.10",
@@ -49,6 +60,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-input-mask": "^3.0.6",
+    "embedded-postgres": "^18.4.0-beta.17",
     "esbuild": "^0.28.1",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",

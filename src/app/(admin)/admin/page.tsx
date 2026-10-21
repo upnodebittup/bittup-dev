@@ -4,6 +4,7 @@ import { prisma } from '@/core/lib/prisma'
 import { subDays, format, eachDayOfInterval } from 'date-fns'
 import { OrdersTable } from '@/core/components/admin/OrdersTable'
 import { SalesChart } from '@/core/components/admin/SalesChart'
+import CreateProductLink from '@/core/components/admin/CreateProductLink'
 
 async function getDashboardData() {
   const from = subDays(new Date(), 29)
@@ -80,11 +81,14 @@ export default async function AdminPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold">Dashboard</h2>
-        <p className="text-[var(--color-text-secondary)]">
-          Visão geral dos últimos 30 dias
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Início</h2>
+          <p className="text-[var(--color-text-secondary)]">
+            Visão geral dos últimos 30 dias
+          </p>
+        </div>
+        <CreateProductLink />
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">

@@ -18,6 +18,7 @@ export default function CheckoutForm() {
   const [frete, setFrete] = useState<number | null>(null)
   const [quoteToken, setQuoteToken] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [digitalOnly, setDigitalOnly] = useState(false)
 
   const {
     register,
@@ -26,6 +27,7 @@ export default function CheckoutForm() {
     formState: { errors },
   } = useForm<CheckoutFormData>({
     resolver: yupResolver(checkoutSchema),
+    context: { digitalOnly },
   })
 
   const zipCode = watch('address.zipCode')
@@ -35,7 +37,8 @@ export default function CheckoutForm() {
     const calcularFrete = async () => {
       setFrete(null)
       setQuoteToken(null)
-      if (!zipCode || zipCode.length < 8 || items.length === 0) return
+      setDigitalOnly(false)
+      if (items.length === 0) return
 
 
       const quantidade = items.reduce((acc, item) => acc + item.quantity, 0)
@@ -44,7 +47,7 @@ export default function CheckoutForm() {
         const res = await fetch('/api/frete', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ cepDestino: zipCode, quantidade }),
+          body: JSON.stringify({ cepDestino: zipCode, quantidade, items: items.map(({ productId, quantity }) => ({ productId, quantity })) }),
           signal: controller.signal,
         })
 
@@ -52,6 +55,7 @@ export default function CheckoutForm() {
         if (controller.signal.aborted) return
         if (Array.isArray(data) && data.length > 0) {
           const melhor = data[0]
+          setDigitalOnly(melhor.requiresShipping === false)
           setFrete(Number(melhor.price)); setQuoteToken(melhor.quoteToken)
         } else {
           setFrete(null)
@@ -99,7 +103,7 @@ export default function CheckoutForm() {
       const orderData = await res.json()
       const { orderId } = orderData
 
-      // Redirecionar para a página de pagamento (checkout transparente Asaas)
+      // O pedido mantém o provedor definido pela loja, com checkout transparente.
       clearCart()
       router.push(`/loja/pedido/${orderId}/pagamento`)
     } catch (err) {
@@ -133,7 +137,7 @@ export default function CheckoutForm() {
                 placeholder="Nome completo"
                 className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
               />
-              {errors.fullName && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.fullName.message}</p>}
+              {errors.fullName && <p className="mt-1 text-sm text-white">{errors.fullName.message}</p>}
             </div>
 
             <div>
@@ -147,7 +151,7 @@ export default function CheckoutForm() {
                 placeholder="seu@email.com"
                 className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
               />
-              {errors.email && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.email.message}</p>}
+              {errors.email && <p className="mt-1 text-sm text-white">{errors.email.message}</p>}
             </div>
 
             <div>
@@ -160,7 +164,7 @@ export default function CheckoutForm() {
                 placeholder="000.000.000-00"
                 className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
               />
-              {errors.cpf && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.cpf.message}</p>}
+              {errors.cpf && <p className="mt-1 text-sm text-white">{errors.cpf.message}</p>}
             </div>
 
             <div>
@@ -173,12 +177,14 @@ export default function CheckoutForm() {
                 placeholder="(00) 00000-0000"
                 className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
               />
-              {errors.phone && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.phone.message}</p>}
+              {errors.phone && <p className="mt-1 text-sm text-white">{errors.phone.message}</p>}
             </div>
           </div>
 
           {/* ENDEREÇO */}
-          <div className="space-y-4">
+          {digitalOnly ? (
+            <p className="rounded-2xl bg-[var(--color-bg-tertiary)] p-4 text-sm text-[var(--color-text-light)]">Pedido com produtos digitais: sem frete e sem endereço de entrega.</p>
+          ) : <div className="space-y-4">
             <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">Endereço de Entrega</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -192,7 +198,7 @@ export default function CheckoutForm() {
                   placeholder="Rua das Flores"
                   className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
                 />
-                {errors.address?.street && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.address.street.message}</p>}
+                {errors.address?.street && <p className="mt-1 text-sm text-white">{errors.address.street.message}</p>}
               </div>
 
               <div>
@@ -205,7 +211,7 @@ export default function CheckoutForm() {
                   placeholder="123"
                   className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
                 />
-                {errors.address?.number && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.address.number.message}</p>}
+                {errors.address?.number && <p className="mt-1 text-sm text-white">{errors.address.number.message}</p>}
               </div>
 
               <div>
@@ -218,7 +224,7 @@ export default function CheckoutForm() {
                   placeholder="Centro"
                   className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
                 />
-                {errors.address?.neighborhood && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.address.neighborhood.message}</p>}
+                {errors.address?.neighborhood && <p className="mt-1 text-sm text-white">{errors.address.neighborhood.message}</p>}
               </div>
 
               <div>
@@ -231,7 +237,7 @@ export default function CheckoutForm() {
                   placeholder="São Paulo"
                   className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
                 />
-                {errors.address?.city && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.address.city.message}</p>}
+                {errors.address?.city && <p className="mt-1 text-sm text-white">{errors.address.city.message}</p>}
               </div>
 
               <div>
@@ -244,7 +250,7 @@ export default function CheckoutForm() {
                   placeholder="SP"
                   className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
                 />
-                {errors.address?.state && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.address.state.message}</p>}
+                {errors.address?.state && <p className="mt-1 text-sm text-white">{errors.address.state.message}</p>}
               </div>
 
               <div>
@@ -257,11 +263,12 @@ export default function CheckoutForm() {
                   placeholder="00000-000"
                   className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 py-3 text-sm"
                 />
-                {errors.address?.zipCode && <p className="mt-1 text-sm text-[var(--color-error)]">{errors.address.zipCode.message}</p>}
+                {errors.address?.zipCode && <p className="mt-1 text-sm text-white">{errors.address.zipCode.message}</p>}
               </div>
             </div>
           </div>
 
+          }
           {/* RESUMO DO PEDIDO */}
           <div className="bg-[var(--color-bg-tertiary)] rounded-2xl p-6 space-y-3">
             <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">Resumo do Pedido</h3>
@@ -273,14 +280,14 @@ export default function CheckoutForm() {
               </div>
               <div className="flex justify-between">
                 <span className="text-[var(--color-text-secondary)]">Frete:</span>
-                <span className="text-[var(--color-text-primary)] font-medium">
-                  {frete !== null ? `R$ ${frete.toFixed(2)}` : 'Calculando...'}
+                <span className="text-[var(--color-text-light)] font-medium">
+                  {digitalOnly ? 'Não se aplica — produto digital' : frete !== null ? `R$ ${frete.toFixed(2)}` : 'Informe o CEP para calcular'}
                 </span>
               </div>
               <hr className="border-[var(--color-border)]" />
               <div className="flex justify-between text-lg font-semibold">
                 <span className="text-[var(--color-text-primary)]">Total:</span>
-                <span className="text-[var(--color-accent)]">R$ {totalGeral.toFixed(2)}</span>
+                <span className="text-white">R$ {totalGeral.toFixed(2)}</span>
               </div>
             </div>
           </div>

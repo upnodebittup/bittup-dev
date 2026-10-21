@@ -11,12 +11,14 @@ interface PaymentMethodSelectorProps {
   onMethodSelect: (method: 'CREDIT_CARD' | 'PIX') => void;
   selectedMethod: 'CREDIT_CARD' | 'PIX' | null;
   isLoading?: boolean;
+  cardInstallments?: number;
 }
 
 export default function PaymentMethodSelector({
   onMethodSelect,
   selectedMethod,
   isLoading = false,
+  cardInstallments = 12,
 }: PaymentMethodSelectorProps) {
   return (
     <div className="space-y-4">
@@ -41,7 +43,7 @@ export default function PaymentMethodSelector({
               Cartão de Crédito
             </p>
             <p className="text-sm text-[var(--color-text-secondary)]">
-              Parcelado em até 12x
+              {cardInstallments === 1 ? 'Em uma parcela' : `Parcelado em até ${cardInstallments}x`}
             </p>
           </div>
         </button>
@@ -72,7 +74,7 @@ export default function PaymentMethodSelector({
         <div className="p-3 rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-border)]">
           <p className="text-sm text-[var(--color-text-secondary)]">
             {selectedMethod === 'CREDIT_CARD'
-              ? 'Você será redirecionado para a tela de pagamento com cartão'
+              ? cardInstallments === 1 ? 'Preencha o formulário seguro abaixo' : 'Você será redirecionado para a tela de pagamento com cartão'
               : 'Você receberá um QR Code Pix para escanear'}
           </p>
         </div>

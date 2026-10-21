@@ -8,10 +8,7 @@ const revision =
   process.env.GITHUB_SHA ??
   `${siteConfig.nome}-${process.env.npm_package_version ?? "1.0.0"}`;
 
-export const {
-  dynamic,
-  dynamicParams,
-  revalidate,
+const {
   generateStaticParams,
   GET: serwistGET,
 } = createSerwistRoute({
@@ -27,6 +24,11 @@ export const {
     },
   ],
 });
+// Next requires statically analyzable route config and rejects extra handler exports.
+export const dynamic = 'force-static';
+export const dynamicParams = false;
+export const revalidate = false;
+export { generateStaticParams };
 export async function GET(request: Request, context: Parameters<typeof serwistGET>[1]) {
   if (!isModuleEnabled('pwa')) return new Response("self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(self.registration.unregister()));", { headers: { 'Content-Type': 'application/javascript', 'Cache-Control': 'no-store' } });
   return serwistGET(request, context);

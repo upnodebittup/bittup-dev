@@ -104,7 +104,7 @@ export default function ProductDetailClient({ product }: { product: ProductDetai
       <div className="space-y-4">
         <h1 className="text-2xl font-bold text-[var(--color-text-secondary)]">{product.name}</h1>
 
-        <p className="text-lg font-semibold text-green-600">
+        <p className="text-lg font-semibold text-white">
           R$ {product.price.toFixed(2)}
         </p>
 

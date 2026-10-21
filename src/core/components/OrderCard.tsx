@@ -77,7 +77,7 @@ export function OrderCard({ pedido, onViewDetails }: OrderCardProps) {
       <div className="grid grid-cols-2 gap-4 mb-4 py-3 border-y border-[var(--color-border-light)]">
         <div>
           <p className="text-sm text-[var(--color-text-tertiary)] mb-1">Total</p>
-          <p className="text-xl font-bold text-[var(--color-accent)]">
+          <p className="text-xl font-bold text-white">
             {formatTotal(pedido.total)}
           </p>
         </div>
@@ -92,7 +92,7 @@ export function OrderCard({ pedido, onViewDetails }: OrderCardProps) {
       {/* Rodapé: Botão */}
       <button
         onClick={() => onViewDetails(pedido.id)}
-        className="inline-block mt-2 px-4 py-2 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-[var(--color-bg-primary)] text-sm font-medium rounded-lg transition duration-200"
+        className="inline-block mt-2 px-4 py-2 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white text-sm font-medium rounded-lg transition duration-200"
       >
         Ver detalhes completos →
       </button>

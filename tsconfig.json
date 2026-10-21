@@ -37,6 +37,11 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".validation-webhook",
+    ".asaas-validation",
+    ".npm-cache",
+    ".playwright-browsers",
+    ".asaas-build"
   ]
 }

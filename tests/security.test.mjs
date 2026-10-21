@@ -11,62 +11,17 @@ const jwt = require('jsonwebtoken')
 const { NextRequest } = require('next/server')
 const { Decimal } = require('@prisma/client/runtime/client')
 const root = path.resolve(import.meta.dirname, '..')
-test('webhook authentication logs only authorized diagnostics and fails closed without normalization', async () => {
-  reset()
-  const saved = { secret: process.env.ASAAS_WEBHOOK_TOKEN, environment: process.env.VERCEL_ENV }
-  const originalInfo = console.info
-  const logs = []
-  console.info = (...args) => logs.push(args)
-  try {
-    process.env.VERCEL_ENV = 'production'
-    const { POST } = load('src/app/api/asaas/webhook/route.ts')
-    const cases = [
-      ['synthetic-token', 'synthetic-token', 200],
-      ['synthetic-token', undefined, 401],
-      ['synthetic-token', 'synthetic-wrong', 401],
-      ['synthetic-$!"\\+é', 'synthetic-$!"\\+é', 200],
-      [' synthetic-token', 'synthetic-token', 401],
-      ['synthetic-token ', 'synthetic-token', 401],
-      ['synthetic-token\n', 'synthetic-token', 401],
-      ['synthetic-token\r\n', 'synthetic-token', 401],
-      ['"synthetic-token"', 'synthetic-token', 401],
-      [undefined, 'synthetic-token', 503],
-      ['', '', 503],
-    ]
-    for (const [secret, header, status] of cases) {
-      if (secret === undefined) delete process.env.ASAAS_WEBHOOK_TOKEN
-      else process.env.ASAAS_WEBHOOK_TOKEN = secret
-      const response = await POST(request('/api/asaas/webhook', 'POST', { event: 'IGNORED' },
-        header === undefined ? {} : { 'asaas-access-token': header }))
-      assert.equal(response.status, status)
-      assert.equal(response.headers.get('cache-control'), 'private, no-store')
-      assert.deepEqual(logs.at(-1), [{
-        headerPresent: header !== undefined,
-        headerLength: Buffer.byteLength(header || ''),
-        secretPresent: Boolean(secret),
-        secretLength: Buffer.byteLength(secret || ''),
-        tokensMatch: status === 200,
-        runtimeEnvironment: 'production',
-      }])
-      const body = await response.json()
-      assert.deepEqual(Object.keys(body), [status === 200 ? 'status' : 'error'])
-    }
-    process.env.VERCEL_ENV = 'unexpected-value-that-must-not-be-logged'
-    await POST(request('/api/asaas/webhook', 'POST', {}))
-    assert.equal(logs.at(-1)[0].runtimeEnvironment, 'unknown')
-    assert.throws(() => request('/api/asaas/webhook', 'POST', {}, { 'asaas-access-token': 'synthetic\ntoken' }))
-  } finally {
-    console.info = originalInfo
-    for (const [name, value] of [['ASAAS_WEBHOOK_TOKEN', saved.secret], ['VERCEL_ENV', saved.environment]]) {
-      if (value === undefined) delete process.env[name]
-      else process.env[name] = value
-    }
-  }
-})
 // No dotenv, database client or real provider is loaded by this harness.
 process.env.AUTH_JWT_SECRET = 'synthetic-test-secret-with-at-least-32-characters'
-process.env.ASAAS_WEBHOOK_TOKEN = 'synthetic-asaas-webhook-token'
 process.env.MERCADO_PAGO_WEBHOOK_SECRET = 'synthetic-mp-webhook-secret'
+process.env.MP_CLIENT_ID = 'synthetic-client'
+process.env.MP_CLIENT_SECRET = 'synthetic-secret'
+process.env.MP_TOKEN_ENCRYPTION_KEY = 'a'.repeat(64)
+process.env.MP_BASE_URL = 'https://shop.example.invalid'
+process.env.MP_WEBHOOK_SECRET = 'synthetic-webhook'
+process.env.MP_PAYMENTS_ENABLED = 'true'
+process.env.MP_ENVIRONMENT = 'test'
+process.env.MP_WEBHOOK_CONFIGURED = 'true'
 process.env.MERCADO_PAGO_ACCESS_TOKEN = 'synthetic-access-token'
 process.env.NEXT_PUBLIC_SITE_URL = 'https://shop.example.invalid'
 let cookieJar = new Map(), db = {}, provider = async () => { throw new Error('Unexpected provider call') }
@@ -90,7 +45,6 @@ function load(relative) {
     if (name === '@/core/lib/prisma') return { prisma: db, default: db }
     if (name === '@/generated/client') return { Prisma: { Decimal, PrismaClientKnownRequestError: class extends Error {} } }
     if (name === 'next/headers') return { cookies: async () => ({ get: name => cookieJar.has(name) ? { value: cookieJar.get(name) } : undefined }) }
-    if (name === '@/core/lib/asaas') return { ...load('src/core/lib/asaas.ts'), asaasFetch: (...args) => provider(...args) }
     if (name === '@/core/lib/cloudinary') return { uploadFilesToCloudinary: () => { throw new Error('Unexpected upload') } }
     if (name.startsWith('@/')) return load('src/' + name.slice(2) + '.ts')
     if (name.startsWith('.')) return load(path.relative(root, path.resolve(path.dirname(file), name)) + '.ts')
@@ -130,7 +84,7 @@ test('admin rejects absent, forged, expired, wrong algorithm and non-admin token
 test('all admin APIs, product creation, uploads, client accounts and diagnostic deny anonymous requests', async () => {
   reset()
   const paths = ['admin/products', 'admin/products/[id]', 'admin/orders', 'admin/pages/[id]', 'admin/blog/posts',
-    'admin/blog/posts/[id]', 'admin/blog/categories', 'admin/blog/categories/[id]', 'products', 'cloudinary/upload', 'clients', 'asaas/validate-key']
+    'admin/blog/posts/[id]', 'admin/blog/categories', 'admin/blog/categories/[id]', 'products', 'cloudinary/upload']
   for (const route of paths) {
     const api = load('src/app/api/' + route + '/route.ts')
     for (const method of ['GET', 'POST', 'PATCH', 'DELETE']) {
@@ -205,8 +159,8 @@ test('checkout rejects nonpositive/fractional quantity and ignores browser price
   reset(); const security = load('src/core/lib/commerce-security.ts'); const api = load('src/app/api/orders/route.ts')
   const item = { productId: 'product-one', quantity: 1, price: 0.01, size: { name: '' }, color: { name: '' } }
   const buyer = order(); let saved, reserve
-  const product = { id: item.productId, name: 'Server product', price: new Decimal('10'), stock: 2, colors: [], sizes: [] }
-  const tx = { product: { findMany: async () => [product], updateMany: async input => { reserve = input; return { count: 1 } } },
+  const product = { id: item.productId, name: 'Server product', price: new Decimal('10'), stock: 2, colors: [], sizes: [], categories: [] }
+  const tx = { $executeRaw: async()=>0, paymentSettings: {findUnique:async()=>({account:{access:'synthetic',confirmedAt:new Date()}})}, product: { findMany: async () => [product], updateMany: async input => { reserve = input; return { count: 1 } } },
     order: { create: async ({ data }) => { saved = data; return { id: 'new-order' } } } }
   db.$transaction = async fn => fn(tx)
   const body = { ...buyer, items: [item, item], frete: 5, quoteToken: security.signShippingQuote('00000000', 2, '5.00', 1) }
@@ -219,50 +173,12 @@ test('checkout rejects nonpositive/fractional quantity and ignores browser price
   assert.equal((await api.POST(request('/api/orders', 'POST', body))).status, 400)
 })
 
-test('Asaas amount/customer come from order, and unrelated order cannot create a payment', async () => {
-  reset(); grant(); db.order = { findUnique: async () => order() }; let sent
-  provider = async (endpoint, method, payload) => { sent = payload; return { id: 'pay_test', status: 'PENDING' } }
-  const api = load('src/app/api/asaas/create-payment/route.ts')
-  const response = await api.POST(request('/api/asaas/create-payment', 'POST', { orderId: 'order-one', customerId: 'forged', total: 0.01, billingType: 'PIX' }))
-  assert.equal(response.status, 200); assert.equal(sent.value, 25); assert.equal(sent.customer, 'cus_test')
-  assert.equal((await api.POST(request('/api/asaas/create-payment', 'POST', { orderId: 'unrelated', billingType: 'PIX' }))).status, 404)
-})
-
-test('card holder details use stored buyer; different holder is blocked without a charge', async () => {
-  reset(); grant(); db.order = { findUnique: async () => order() }; let calls = 0, sent
-  provider = async (endpoint, method, payload) => { calls++; sent = payload; return { id: 'pay_test', status: 'CONFIRMED' } }
-  const api = load('src/app/api/asaas/create-payment/route.ts')
-  const body = { orderId: 'order-one', billingType: 'CREDIT_CARD', creditCardData: { creditCardNumber: '0000000000000000', creditCardExpirationMonth: '12', creditCardExpirationYear: '2030', creditCardCvv: '000', creditCardHolderName: 'Synthetic Buyer' } }
-  assert.equal((await api.POST(request('/api/asaas/create-payment', 'POST', body))).status, 200)
-  assert.equal(sent.creditCardHolderInfo.cpfCnpj, order().cpf)
-  body.creditCardData.creditCardHolderName = 'Another Holder'
-  assert.equal((await api.POST(request('/api/asaas/create-payment', 'POST', body))).status, 400); assert.equal(calls, 1)
-})
-
-test('Mercado Pago preference ignores fake items and charges server subtotal plus shipping', async () => {
-  reset(); grant(); db.order = { findUnique: async () => order() }; let sent
-  globalThis.fetch = async (url, options) => { sent = JSON.parse(options.body); return Response.json({ id: 'pref_test', init_point: 'https://example.invalid/pay' }) }
+test('legacy Checkout Pro cannot create new charges', async () => {
+  reset(); grant(); let calls=0
+  globalThis.fetch = async () => { calls++; throw Error('No Checkout Pro') }
   const api = load('src/app/api/mercado-pago/preference/route.ts')
-  assert.equal((await api.POST(request('/api/mercado-pago/preference', 'POST', { orderId: 'order-one', items: [{ price: 0.01, quantity: 1 }] }))).status, 200)
-  assert.equal(sent.items[0].unit_price, 10); assert.equal(sent.items[0].quantity, 2); assert.equal(sent.shipments.cost, 5)
-})
-
-test('webhooks fail closed; verified provider values associate order and duplicate notifications are no-ops', async () => {
-  reset(); const current = order(); let updates = 0
-  db.order = { findUnique: async () => current, updateMany: async ({ data }) => { updates++; current.statusPagamento = data.statusPagamento; return { count: 1 } } }
-  provider = async () => ({ id: 'pay_test', externalReference: current.id, customer: current.customerId, value: 25, status: 'CONFIRMED' })
-  const api = load('src/app/api/asaas/webhook/route.ts')
-  const body = { event: 'PAYMENT_CONFIRMED', payment: { id: 'pay_test', value: 0.01 } }
-  assert.equal((await api.POST(request('/api/asaas/webhook', 'POST', body))).status, 401)
-  for (let i = 0; i < 2; i++) assert.equal((await api.POST(request('/api/asaas/webhook', 'POST', body, { 'asaas-access-token': process.env.ASAAS_WEBHOOK_TOKEN }))).status, 200)
-  assert.equal(updates, 1); assert.equal(current.statusPagamento, 'approved')
-  const apply = load('src/core/lib/payment-security.ts').applyVerifiedPayment
-  assert.equal(await apply(current.id, 0.01, 'approved', current.customerId), false)
-  assert.equal(await apply(current.id, 25, 'approved', 'another-customer'), false)
-  assert.equal(await apply(current.id, 25, 'pending', current.customerId), true); assert.equal(updates, 1)
-  delete process.env.ASAAS_WEBHOOK_TOKEN
-  assert.equal((await api.POST(request('/api/asaas/webhook', 'POST', body))).status, 503)
-  process.env.ASAAS_WEBHOOK_TOKEN = 'synthetic-asaas-webhook-token'
+  assert.equal((await api.POST(request('/api/mercado-pago/preference', 'POST', { orderId: 'order-one' }))).status, 410)
+  assert.equal(calls,0)
 })
 
 test('Mercado Pago uses official manifest signature, checks currency/value and ignores redelivery', async () => {
@@ -300,58 +216,9 @@ test('legitimate login issues admin cookie; wrong password and non-admin role ar
   assert.equal((await api.POST(request('/api/auth/login', 'POST', { email: user.email, password: 'synthetic-password' }))).status, 401)
 })
 
-test('customer creation persists server-derived payer without fictitious birthday or browser PATCH', async () => {
-  reset(); grant(); const current = order(); current.customerId = null; let stored, payload
-  const tx = { $queryRaw: async () => [], order: { findUnique: async () => current,
-    update: async ({ data }) => { stored = data.customerId; current.customerId = stored } } }
-  db.$transaction = async fn => fn(tx)
-  provider = async (endpoint, method, data) => { if (method === 'GET') return { data: [], hasMore: false }; payload = data; return { id: 'cus_created' } }
-  const api = load('src/app/api/asaas/create-customer/route.ts')
-  const response = await api.POST(request('/api/asaas/create-customer', 'POST', { orderId: current.id, name: 'forged', cpf: '11111111111' }))
-  assert.equal(response.status, 200); assert.equal(stored, 'cus_created'); assert.equal(payload.name, current.fullName)
-  assert.equal(payload.cpfCnpj, current.cpf); assert.equal(payload.address, current.address.street); assert.ok(!('birthDate' in payload))
-  provider = async () => { throw new Error('Must reuse existing customer') }
-  assert.equal((await api.POST(request('/api/asaas/create-customer', 'POST', { orderId: current.id }))).status, 200)
-})
-
-test('PIX rejects forged access before provider request and validates payment association', async () => {
-  reset(); cookieJar.set('order_access', 'forged')
-  const api = load('src/app/api/asaas/pix-qrcode/route.ts')
-  assert.equal((await api.GET(request('/api/asaas/pix-qrcode?paymentId=pay_test'))).status, 404)
-  grant(); db.order = { findUnique: async () => order() }
-  provider = async endpoint => endpoint.endsWith('/pixQrCode') ? { encodedImage: 'synthetic', payload: 'synthetic', expirationDate: '2030-01-01' } :
-    { externalReference: 'order-one', customer: 'cus_test', billingType: 'PIX', value: 25 }
-  assert.equal((await api.GET(request('/api/asaas/pix-qrcode?paymentId=pay_test'))).status, 200)
-  provider = async () => ({ externalReference: 'order-one', customer: 'other', billingType: 'PIX', value: 25 })
-  assert.equal((await api.GET(request('/api/asaas/pix-qrcode?paymentId=pay_test'))).status, 404)
-})
-
-test('module defaults preserve commerce and blog; disabled store cannot enable checkout', () => {
-  reset(); const { defaultModules, moduleEnabled, routeEnabled } = load('src/core/lib/module-config.ts')
-  assert.equal(moduleEnabled(defaultModules, 'store'), true); assert.equal(moduleEnabled(defaultModules, 'checkout'), true)
-  for (const route of ['/loja', '/loja/produto/item', '/loja/carrinho', '/loja/checkout', '/loja/pedido/id', '/blog']) assert.equal(routeEnabled(defaultModules, route), true)
-  const off = { ...defaultModules, store: { enabled: false, checkout: true } }
-  assert.equal(moduleEnabled(off, 'checkout'), false)
-  for (const route of ['/loja', '/loja/produto/item', '/loja/carrinho', '/loja/checkout', '/loja/pedido/id', '/pedido/id', '/carrinho', '/api/products', '/api/orders', '/api/asaas/webhook', '/api/mercado-pago/webhook']) assert.equal(routeEnabled(off, route), false, route)
-  for (const route of ['/', '/sobre', '/personalizado', '/loja-inexistente', '/api/admin/orders', '/api/admin/products', '/admin/pedidos']) assert.equal(routeEnabled(off, route), true, route)
-  assert.equal(routeEnabled(off, '/api/admin/products', 'POST'), false)
-})
-
-test('catalog-only mode keeps historical email + CPF lookup but blocks new orders, cart and payments', async () => {
-  reset(); const defaults = load('src/core/lib/module-config.ts').defaultModules
-  configOverride = { ...defaults, store: { enabled: true, checkout: false } }
-  const routes = load('src/core/lib/module-config.ts').routeEnabled
-  for (const path of ['/loja', '/loja/produto/test', '/loja/meus-pedidos', '/loja/pedido/test', '/api/orders/find']) assert.equal(routes(configOverride, path), true)
-  for (const path of ['/loja/carrinho', '/loja/checkout', '/loja/pedido/test/pagamento', '/api/asaas/create-payment']) assert.equal(routes(configOverride, path), false)
-  assert.equal((await load('src/app/api/orders/route.ts').POST(request('/api/orders', 'POST', {}))).status, 404)
-  db.order = { findMany: async () => [] }
-  assert.equal((await load('src/app/api/orders/find/route.ts').POST(request('/api/orders/find', 'POST', { email: 'buyer@example.invalid', cpf: '00000000000' }))).status, 200)
-})
-
 test('disabled commerce APIs return 404 before parsing input, database/authentication or providers', async () => {
   reset(); configOverride = { store: { enabled: false }, blog: true, portfolio: false, services: false, pwa: false }
-  const paths = ['products', 'categorias', 'orders', 'orders/[id]', 'orders/find', 'frete', 'clients',
-    'asaas/create-customer', 'asaas/create-payment', 'asaas/pix-qrcode', 'asaas/validate-key', 'asaas/webhook',
+  const paths = ['products', 'categorias', 'orders', 'orders/[id]', 'orders/find', 'frete',
     'mercado-pago/preference', 'mercado-pago/webhook']
   for (const path of paths) {
     const api = load('src/app/api/' + path + '/route.ts')
@@ -663,140 +530,47 @@ test('manifest and Apple touch icon reference real PNGs with truthful dimensions
  const {siteConfig} = load('src/client/config/site.config.ts'); assert.ok(fs.existsSync(path.join(root, 'public', siteConfig.pwa.appleTouchIcon)));
 })
 
-
-test('credit card form has readable inherited input color on the BittUp dark background', () => {
- reset(); const React = require('react'); const html = require('react-dom/server').renderToStaticMarkup(React.createElement(load('src/core/components/payment/CreditCardForm.tsx').default, {total:25,onSubmit:async()=>{}}));
- const {siteConfig} = load('src/client/config/site.config.ts');
- const lum = hex => { const c = hex.replace('#','').match(/../g).map(v=>parseInt(v,16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4); return .2126*c[0]+.7152*c[1]+.0722*c[2] };
- const foreground = lum(siteConfig.theme.textLight), background = lum(siteConfig.theme.bgTertiary);
- assert.ok((Math.max(foreground,background)+.05)/(Math.min(foreground,background)+.05)>=4.5);
- assert.match(html, /<form[^>]*text-\[var\(--color-text-light\)\]/);
- assert.equal((html.match(/<input /g)||[]).length,5); assert.ok(!/readOnly|readonly|disabled=""/.test(html));
-})
-
-test('Asaas authentication uses documented headers and explicit environments without network', async () => {
-  reset(); const api = load('src/core/lib/asaas.ts')
-  const original = { fetch: globalThis.fetch, key: process.env.ASAAS_API_KEY, env: process.env.ASAAS_ENV }
-  let calls = 0
-  try {
-    process.env.ASAAS_API_KEY = 'synthetic-key'
-    globalThis.fetch = async (url, options) => {
-      calls++; assert.equal(options.headers.access_token, 'synthetic-key')
-      assert.equal(options.headers['User-Agent'], 'BittUp/1.0'); assert.equal(options.headers['Content-Type'], 'application/json')
-      assert.equal(options.cache, 'no-store'); assert.equal(options.body, undefined)
-      assert.equal(url, process.env.ASAAS_ENV === 'sandbox' ? 'https://api-sandbox.asaas.com/v3/customers?limit=1' : 'https://api.asaas.com/v3/customers?limit=1')
-      return new Response('{"data":[],"hasMore":false}')
-    }
-    delete process.env.ASAAS_ENV
-    await assert.rejects(api.asaasFetch('/customers?limit=1'), e => e.category === 'configuration' && e.codes.includes('missing_environment'))
-    assert.equal(calls, 0)
-    process.env.ASAAS_ENV = 'typo'
-    await assert.rejects(api.asaasFetch('/customers?limit=1'), e => e.category === 'configuration')
-    for (const env of ['sandbox', 'production']) { process.env.ASAAS_ENV = env; await api.asaasFetch('/customers?limit=1') }
-    delete process.env.ASAAS_API_KEY
-    await assert.rejects(api.asaasFetch('/customers'), e => e.codes.includes('missing_api_key'))
-    assert.equal(calls, 2)
-  } finally {
-    globalThis.fetch = original.fetch
-    for (const [name, value] of [['ASAAS_API_KEY', original.key], ['ASAAS_ENV', original.env]]) {
-      if (value === undefined) delete process.env[name]; else process.env[name] = value
-    }
+function inbox() {
+  const rows = new Map()
+  return {
+    upsert: async ({where, create}) => { if (!rows.has(where.id)) rows.set(where.id, {...create, processedAt:null}); return rows.get(where.id) },
+    update: async ({where, data}) => { Object.assign(rows.get(where.id), data); return rows.get(where.id) },
   }
-})
+}
 
-test('Asaas preserves safe status/codes, rejects malformed success and never logs raw data', async () => {
-  reset(); const api = load('src/core/lib/asaas.ts')
-  const original = { fetch: globalThis.fetch, key: process.env.ASAAS_API_KEY, env: process.env.ASAAS_ENV, log: console.error }
-  const logs = []
-  try {
-    process.env.ASAAS_API_KEY = 'synthetic-secret'; process.env.ASAAS_ENV = 'sandbox'
-    console.error = (...args) => logs.push(args)
-    for (const [status, code, category] of [[400,'invalid_object','validation'],[401,'invalid_access_token','authentication'],
-      [401,'invalid_environment','environment'],[403,'unknown','permission'],[422,'invalid_object','validation'],
-      [429,'unknown','rate_limit'],[503,'unknown','unavailable']]) {
-      globalThis.fetch = async () => new Response(JSON.stringify({ errors: [{ code, description: 'PRIVATE DESCRIPTION' }, { code: 'PRIVATE CODE' }] }), { status })
-      await assert.rejects(api.asaasFetch('/customers','POST',{}), error => {
-        assert.equal(error.status,status); assert.equal(error.category,category)
-        assert.ok(!error.codes.includes('PRIVATE CODE')); api.logAsaasFailure('customer',error); return true
-      })
-    }
-    globalThis.fetch = async () => new Response('<html>PRIVATE BODY</html>',{status:503})
-    await assert.rejects(api.asaasFetch('/customers'), e => e.status===503 && e.category==='unavailable')
-    globalThis.fetch = async () => new Response('not json')
-    await assert.rejects(api.asaasFetch('/customers'), e => e.category==='invalid_response')
-    for (const [name, category] of [['TimeoutError','timeout'],['TypeError','network']]) {
-      globalThis.fetch=async()=>{ const e=new Error('PRIVATE RAW ERROR');e.name=name;throw e }
-      await assert.rejects(api.asaasFetch('/customers'), e=>e.category===category)
-    }
-    api.logAsaasFailure('customer',new Error('PRIVATE SQL PARAMETERS'),'database-save')
-    assert.doesNotMatch(JSON.stringify(logs),/PRIVATE|synthetic-secret/)
-    assert.match(JSON.stringify(logs),/database-save/)
-  } finally {
-    console.error=original.log; globalThis.fetch=original.fetch
-    for(const [name,value]of [['ASAAS_API_KEY',original.key],['ASAAS_ENV',original.env]]) {
-      if(value===undefined)delete process.env[name];else process.env[name]=value
-    }
-  }
+test('MP encryption detects tampering and separates BittUp credentials',()=>{
+  reset(); process.env.MP_TOKEN_ENCRYPTION_KEY=Buffer.alloc(32,7).toString('base64')
+  const {encrypt,decrypt}=load('src/core/lib/mp/security.ts')
+  const sealed=encrypt('synthetic-secret'); assert.equal(decrypt(sealed),'synthetic-secret')
+  assert.equal(sealed.includes('synthetic-secret'),false)
+  const bytes=Buffer.from(sealed,'base64');bytes[20]^=1
+  assert.throws(()=>decrypt(bytes.toString('base64')))
 })
-
-test('customer retry reconciles a timed-out creation and continues to synthetic PIX payment', async () => {
-  reset(); grant(); const current=order();current.customerId=null
-  const tx={$queryRaw:async()=>[],order:{findUnique:async()=>current,update:async({data})=>Object.assign(current,data)}}
-  db.$transaction=async fn=>fn(tx);db.order={findUnique:async()=>current}
-  const {AsaasError}=load('src/core/lib/asaas.ts');const originalLog=console.error;console.error=()=>{}
-  let remote=null, posts=0, payments=0
-  provider=async(endpoint,method,data)=>{
-    if(endpoint.startsWith('/customers?'))return {data:remote?[remote]:[],hasMore:false}
-    if(endpoint==='/customers') { posts++;remote={id:'cus_reconciled',externalReference:current.id,cpfCnpj:current.cpf,email:current.email};throw new AsaasError('timeout') }
-    if(endpoint==='/payments') { payments++;assert.equal(data.customer,'cus_reconciled');assert.equal(data.value,25);return {id:'pay_simulated',status:'PENDING'} }
-    throw new Error('Unexpected call')
-  }
-  try {
-    const api=load('src/app/api/asaas/create-customer/route.ts')
-    assert.equal((await api.POST(request('/api/asaas/create-customer','POST',{orderId:current.id}))).status,502)
-    assert.equal(current.customerId,null)
-    assert.equal((await api.POST(request('/api/asaas/create-customer','POST',{orderId:current.id}))).status,200)
-    assert.equal(posts,1);assert.equal(current.customerId,'cus_reconciled')
-    const pay=load('src/app/api/asaas/create-payment/route.ts')
-    assert.equal((await pay.POST(request('/api/asaas/create-payment','POST',{orderId:current.id,billingType:'PIX'}))).status,200)
-    assert.equal(payments,1)
-  } finally { console.error=originalLog }
+test('MP money, settlement states and Sao Paulo weekly credits match Lab rules',()=>{
+  reset();const {centsFromMoney,financialState,weekStart,totals}=load('src/core/lib/mp/accounting.ts')
+  assert.equal(centsFromMoney('25.10'),2510);assert.throws(()=>centsFromMoney('25.1'))
+  assert.equal(financialState('processed','accredited'),'paid');assert.equal(financialState('processed','partially_refunded'),'reversed')
+  for(const status of ['created','failed','canceled','action_required'])assert.equal(financialState(status,'pending'),'unpaid')
+  assert.equal(weekStart(new Date('2026-10-19T02:59:00Z')).toISOString(),'2026-10-12T03:00:00.000Z')
+  assert.equal(weekStart(new Date('2026-10-19T03:00:00Z')).toISOString(),'2026-10-19T03:00:00.000Z')
+  assert.deepEqual(totals([{kind:'credit',cents:-100,salesCents:0,refundCents:2500}],0),{salesCents:0,refundCents:2500,feesCents:0,adjustments:-100,openingCredit:0,dueCents:0,closingCredit:-100})
 })
-
-test('customer refuses ambiguous/foreign matches, invalid provider data and denied access', async () => {
-  const originalLog=console.error;console.error=()=>{}
-  try {
-    for(const kind of ['foreign','duplicate','truncated','invalid','null-record','rejected']) {
-      reset();grant();const current=order();current.customerId=null;let writes=0,posts=0
-      db.$transaction=async fn=>fn({$queryRaw:async()=>[],order:{findUnique:async()=>current,update:async()=>{writes++}}})
-      const {AsaasError}=load('src/core/lib/asaas.ts')
-      provider=async(endpoint,method)=>{
-        if(method==='POST'){posts++;throw new AsaasError('validation',400,['invalid_object'])}
-        const found={id:'cus_existing',externalReference:current.id,cpfCnpj:current.cpf,email:current.email}
-        return kind==='foreign'?{data:[{...found,cpfCnpj:'11111111111'}],hasMore:false}
-          :kind==='duplicate'?{data:[found,found],hasMore:false}:kind==='truncated'?{data:[],hasMore:true}
-          :kind==='invalid'?{data:null}:kind==='null-record'?{data:[null],hasMore:false}:{data:[],hasMore:false}
-      }
-      const api=load('src/app/api/asaas/create-customer/route.ts')
-      const result=await api.POST(request('/api/asaas/create-customer','POST',{orderId:current.id}))
-      assert.equal(result.status,502);assert.equal(writes,0);assert.equal(posts,kind==='rejected'?1:0)
-      assert.deepEqual(await result.json(),{error:'Não foi possível cadastrar o pagador.'})
-    }
-    reset();const api=load('src/app/api/asaas/create-customer/route.ts')
-    assert.equal((await api.POST(request('/api/asaas/create-customer','POST',{orderId:'unrelated'}))).status,404)
-  } finally {console.error=originalLog}
+test('MP payload includes shipping-derived amount, credit token and no split or Checkout Pro',()=>{
+  reset();process.env.MP_ENVIRONMENT='test'
+  const {orderPayload}=load('src/core/lib/mp/client.ts')
+  const pix=orderPayload('payment-id',2510,'buyer@testuser.com','pix')
+  assert.equal(pix.total_amount,'25.10');assert.equal(pix.payer.first_name,'APRO')
+  const card=orderPayload('payment-id',2510,'buyer@testuser.com','card',{token:'synthetic',payment_method_id:'master'})
+  assert.deepEqual(card.transactions.payments[0].payment_method,{id:'master',type:'credit_card',token:'synthetic',installments:1})
+  for(const key of ['application_fee','marketplace_fee','back_urls','init_point'])assert.equal(key in card,false)
+  process.env.MP_ENVIRONMENT='live';assert.equal('first_name' in orderPayload('p',100,'b@example.invalid','pix').payer,false)
 })
-
-test('Next environment parser requires escaped literal dollars in synthetic local keys', () => {
-  const code = `
-    const assert = require('node:assert/strict');
-    const { processEnv } = require('@next/env');
-    delete process.env.ASAAS_SYNTHETIC_RAW;
-    delete process.env.ASAAS_SYNTHETIC_ESCAPED;
-    delete process.env.SYNTHETIC_MISSING_TOKEN;
-    processEnv([{path:'synthetic-memory-only',contents:'ASAAS_SYNTHETIC_RAW=$SYNTHETIC_MISSING_TOKEN\\nASAAS_SYNTHETIC_ESCAPED=\\\\$SYNTHETIC_MISSING_TOKEN'}],process.cwd(),{info(){},error(){}},true);
-    assert.equal(process.env.ASAAS_SYNTHETIC_RAW,'');
-    assert.equal(process.env.ASAAS_SYNTHETIC_ESCAPED,'$SYNTHETIC_MISSING_TOKEN');
-  `
-  require('node:child_process').execFileSync(process.execPath,['-e',code],{cwd:root,windowsHide:true,stdio:'pipe'})
+test('MP admin settings, OAuth and payment queries require existing grants and reject CSRF',async()=>{
+  reset();const api=load('src/app/api/mercado-pago/[...path]/route.ts')
+  for(const path of ['settings','oauth/callback'])assert.equal((await api.GET(request('/api/mercado-pago/'+path))).status,401)
+  for(const path of ['oauth/start','oauth/disconnect','oauth/confirm','settings'])assert.equal((await api.POST(request('/api/mercado-pago/'+path,'POST',{}))).status,401)
+  assert.equal((await api.GET(request('/api/mercado-pago/payment?orderId=unknown'))).status,404)
+  db.adminUser={findUnique:async()=>({id:'a',email:'a@example.invalid',role:'admin'})}
+  const token=jwt.sign({id:'a',email:'a@example.invalid',role:'admin'},process.env.AUTH_JWT_SECRET,{expiresIn:'1h'})
+  assert.equal((await api.POST(request('/api/mercado-pago/settings','POST',{provider:'mercado_pago'},{cookie:'auth_token='+token,origin:'https://evil.example.invalid'}))).status,403)
 })

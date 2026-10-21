@@ -23,6 +23,28 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* The storefront keeps native fields and browser autofill readable on dark surfaces. */
+.bittup-storefront {
+  color: #fff;
+  color-scheme: dark;
+}
+
+.bittup-storefront :is(input, textarea, select, option) {
+  color: #fff;
+}
+
+.bittup-storefront :is(input, textarea)::placeholder {
+  color: #fff;
+  opacity: 0.7;
+}
+
+.bittup-storefront input:autofill,
+.bittup-storefront input:-webkit-autofill {
+  -webkit-text-fill-color: #fff;
+  caret-color: #fff;
+  box-shadow: 0 0 0 1000px var(--color-bg-tertiary) inset;
+}
+
 /* =====================================================
    ANIMAÇÕES
    ===================================================== */
