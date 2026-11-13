@@ -5,12 +5,13 @@ import { fetchMercadoPagoPayment } from '@/core/lib/mercado-pago-security'
 import { applyVerifiedPayment } from '@/core/lib/payment-security'
 import { privateJson } from '@/core/lib/request-security'
 import { acceptWebhook } from '@/core/lib/mp/webhooks'
+import { acceptHubWebhook, relayHubEnabled } from '@/core/lib/mp/relay-hub'
 export const runtime = 'nodejs'
 export const maxDuration = 90
 async function POST(req: NextRequest) {
   const notification = await req.clone().json().catch(() => null)
   if (notification?.type === 'order') {
-    try { return await acceptWebhook(req) }
+    try { return await (relayHubEnabled() ? acceptHubWebhook(req) : acceptWebhook(req)) }
     catch { return privateJson({ error: 'Notificação não processada.' }, 503) }
   }
   const secret = process.env.MERCADO_PAGO_WEBHOOK_SECRET

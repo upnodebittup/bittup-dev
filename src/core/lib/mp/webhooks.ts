@@ -33,6 +33,8 @@ export async function acceptWebhook(request: Request) {
   catch { return privateJson({ received: true, retry: true }, 503) }
 }
 export async function recover() {
+  const { recoverRelayHub } = await import('./relay-hub')
+  const relay = await recoverRelayHub()
   let processed = 0, failed = 0
   const deadline = Date.now() + 210000
   const events = await prisma.mercadoPagoWebhookEvent.findMany({ where: { status: { not: 'processed' } }, orderBy: [{ attempts: 'asc' }, { receivedAt: 'asc' }], take: 10 })
@@ -52,5 +54,7 @@ export async function recover() {
   }
   await prisma.mercadoPagoOAuthAttempt.deleteMany({ where: { expiresAt: { lt: new Date() } } })
   await closeWeek()
-  return { processed, failed }
+  if (process.env.MP_RELAY_RECEIVER_ENABLED === 'true')
+    await prisma.mercadoPagoRelayNonce.deleteMany({ where: { expiresAt: { lt: new Date() } } })
+  return { processed, failed, relay }
 }

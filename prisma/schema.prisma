@@ -151,6 +151,47 @@ model MercadoPagoPayment {
   @@index([checkedAt, createdAt])
 }
 
+model MercadoPagoRelayInstallation {
+  id String @id
+  destination String
+  secretEnv String
+  local Boolean @default(false)
+  enabled Boolean @default(true)
+  createdAt DateTime @default(now())
+  deliveries MercadoPagoRelayDelivery[]
+}
+
+model MercadoPagoRelayEvent {
+  key String @id
+  resourceId String
+  receivedAt DateTime @default(now())
+  deliveries MercadoPagoRelayDelivery[]
+}
+
+model MercadoPagoRelayDelivery {
+  id String @id @default(cuid())
+  eventKey String
+  event MercadoPagoRelayEvent @relation(fields: [eventKey], references: [key])
+  installationId String
+  installation MercadoPagoRelayInstallation @relation(fields: [installationId], references: [id])
+  status String @default("pending")
+  outcome String?
+  attempts Int @default(0)
+  nextAttemptAt DateTime @default(now())
+  leaseUntil DateTime?
+  leaseToken String?
+  lastError String?
+  deliveredAt DateTime?
+  @@unique([eventKey, installationId])
+  @@index([status, nextAttemptAt])
+}
+
+model MercadoPagoRelayNonce {
+  nonce String @id
+  expiresAt DateTime
+  @@index([expiresAt])
+}
+
 model MercadoPagoWebhookEvent {
   key String @id
   resourceId String

@@ -40,7 +40,7 @@ try {
     fs.writeFileSync(client, "import { mpTestFetch } from './test-fetch'\n" + fs.readFileSync(client, 'utf8').replace('const response = await fetch(', 'const response = await mpTestFetch('))
     fs.copyFileSync(path.join(root, 'tests/fixtures/mp-fetch.ts'), path.join(target, 'src/core/lib/mp/test-fetch.ts'))
     await run(['node_modules/@playwright/test/cli.js', 'test', '--config', 'playwright.mp.config.ts', ...(process.argv.includes('--navigation') ? ['admin-navigation.spec.ts'] : [])], { ...env, MP_TEST_APP_DIR: target, PLAYWRIGHT_BROWSERS_PATH: path.join(root, '.playwright-browsers') })
-  } else await run(['--conditions=react-server', '--import', 'tsx', '--test', 'tests/mp-db.test.ts'], env)
+  } else await run(['--conditions=react-server', '--import', 'tsx', '--test', process.argv.includes('--relay') ? 'tests/mp-relay.test.ts' : 'tests/mp-db.test.ts'], env)
 } catch (error) { failed = true; console.error(error?.message ?? 'PostgreSQL não iniciou; confira postgres.log na pasta descartável.'); process.exitCode = 1 }
 finally {
   let timer
@@ -49,3 +49,4 @@ finally {
   console.log('PostgreSQL de teste encerrado. Dados somente na pasta ignorada .mp-validation.')
   if (failed) process.exitCode = 1
 }
+process.exit(failed ? 1 : 0)
